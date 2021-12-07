@@ -1,9 +1,11 @@
+'''Test the app endpoints'''
 import os
 import pytest
-from app.app import create_app
+from app import create_app
 
 @pytest.fixture
 def client():
+    '''Client fixture'''
     app = create_app({'TESTING': True})
 
     with app.test_client() as client:
