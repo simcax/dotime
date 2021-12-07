@@ -24,4 +24,4 @@ jobs:
         pylint --fail-under=9 app
     - name: Testing the code with pytest
       run: |
-        pytest app
+        python -m pytest
