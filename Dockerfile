@@ -17,4 +17,4 @@ WORKDIR /
 EXPOSE 30000
 
 ENTRYPOINT [ "./docker_entrypoint.sh" ]
-CMD [ "/venv/bin/gunicorn", "-c", "python:config.gunicorn", "app:create_app" ]
+CMD [ "/venv/bin/gunicorn", "-c", "python:config.gunicorn", "app.app:app" ]
