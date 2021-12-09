@@ -14,5 +14,5 @@ def create_app(test_config=None):
 
     @app.route("/")
     def home():
-        return "Welcome to doTime"
+        return "Welcome to doTime! It's awesome :-)"
     return app
