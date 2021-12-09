@@ -54,7 +54,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        name: simcax/deploy-dotime.me
+        repository: simcax/deploy-dotime.me
         token: ${{ secrets.DEPLOY_DOTIME_TOKEN }}
     - name: Update image tag in deploy 
       run: |
