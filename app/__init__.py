@@ -12,7 +12,10 @@ def create_app(test_config=None):
     if test_config:
         print("Test config is set")
 
-    @app.route("/")
-    def home():
-        return render_template('home.html')
-    return app
+    with app.app_context():
+        from app.routes import profile_routes
+        app.register_blueprint(profile_routes.bp)
+        @app.route("/")
+        def home():
+            return render_template('home.html')
+        return app
