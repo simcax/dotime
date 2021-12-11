@@ -16,3 +16,10 @@ def test_generate_password():
     password = createRandomString()
     hashed_password = prof.create_password(password)
     assert check_password_hash(hashed_password,password)
+
+def test_password_check():
+    '''Checking to see a generated password can be validated'''
+    prof = ProfileHandling()
+    password = createRandomString()
+    hashed_password = prof.create_password(password)
+    assert prof.validate_password(hashed_password,password)
