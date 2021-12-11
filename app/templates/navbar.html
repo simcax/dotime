@@ -1,0 +1,32 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Afstemning.nu</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+            </li>
+            {% if g.user %}
+            <li class="nav-item active">
+              <a class="nav-link" href="/auth/logout">Log Out </a>
+            </li>
+            {% endif %}
+            {% if not g.user %}
+            <li class="nav-item active">
+              <a class="nav-link" href="/createprofile">Create Profile</a>
+            </li>
+            {% endif %}
+        </ul>
+        {% if g.user %}
+        <a href="/profile">
+          {{ g.user.email }}
+          <i class="bi-person"></i>
+        </a>
+        {% else %}
+          {% include 'login.html' %}
+        {% endif %}
+    </div>
+
+</nav>

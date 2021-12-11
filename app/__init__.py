@@ -1,5 +1,5 @@
 '''Do Time Flask App'''
-from flask import Flask
+from flask import Flask, render_template
 
 
 def create_app(test_config=None):
@@ -14,5 +14,5 @@ def create_app(test_config=None):
 
     @app.route("/")
     def home():
-        return "Welcome to doTime! It will be awesome :-)"
+        return render_template('home.html')
     return app
