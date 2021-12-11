@@ -21,3 +21,4 @@ def test_create_profile_endpoint(client):
     '''Test the create profile endpoint'''
     rv = client.get("/profile/create")
     assert b'Create Profile' in rv.data
+
