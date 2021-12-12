@@ -1,0 +1,23 @@
+name: Database Migration
+on: 
+  push:
+    paths:
+      - '.github/workflows/db-migrations.yml'
+      - 'database/sql/**.*'
+jobs:
+  dbmigration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run download
+        run: |
+          sudo apt-get install -y wget
+          export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          export DB_USERNAME=${{ secrets.DB_USERNAME }}
+          export DB_NAME=${{ secrect.DB_NAME }}
+          curl --create-dirs -o /tmp/.postgresql/root.crt -O ${{ secrets.DB_CERT_URL }}
+          wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/8.2.0/flyway-commandline-8.2.0-linux-x64.tar.gz | tar xvz && sudo ln -s `pwd`/flyway-8.2.0/flyway /usr/local/bin 
+          cd sql/versioned
+          flyway info
+          flyway migrate
+          flyway info
