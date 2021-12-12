@@ -1,6 +1,11 @@
 name: Lint and Build
 
-on: push
+on: 
+  push:
+    paths:
+      - '!sql/**'
+      - 'app/**'
+      - '.github/workflows/pylint.yml'
 
 jobs:
   pylint:
