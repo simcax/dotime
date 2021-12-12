@@ -16,7 +16,7 @@ jobs:
           export DB_USERNAME=${{ secrets.DB_USERNAME }}
           export DB_NAME=${{ secrets.DB_NAME }}
           export DB_HOST=${{ secrets.DB_HOST }}
-          export DB_SSL_MODE=required
+          export DB_SSL_MODE=require
           export DB_SSL=true
           export DB_ROOT_CERT_PATH=/tmp/.postgresql/root.crt
           curl --create-dirs -o /tmp/.postgresql/root.crt -O ${{ secrets.DB_CERT_URL }}
