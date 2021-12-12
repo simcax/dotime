@@ -15,10 +15,13 @@ jobs:
           export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
           export DB_USERNAME=${{ secrets.DB_USERNAME }}
           export DB_NAME=${{ secrets.DB_NAME }}
+          export DB_HOST=${{ secrets.DB_HOST }}
+          export DB_SSL_MODE=required
+          export DB_SSL=true
+          export DB_ROOT_CERT_PATH=/tmp/.postgresql/root.crt
           curl --create-dirs -o /tmp/.postgresql/root.crt -O ${{ secrets.DB_CERT_URL }}
-          wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/8.2.0/flyway-commandline-8.2.0-linux-x64.tar.gz | tar xvz && sudo ln -s `pwd`/flyway-8.2.0/flyway /usr/local/bin 
+          wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/8.2.1/flyway-commandline-8.2.1-linux-x64.tar.gz | tar xvz && sudo ln -s `pwd`/flyway-8.2.1/flyway /usr/local/bin 
           cd database
           flyway info
-          flyway repair
           flyway migrate
           flyway info
