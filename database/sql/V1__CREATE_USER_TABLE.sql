@@ -2,7 +2,7 @@ CREATE TABLE soc.users(
 	usersId UUID DEFAULT gen_random_uuid() PRIMARY KEY,
 	username STRING NOT NULL UNIQUE,
 	email STRING NOT NULL,
-	INDEX (usersId, groupId)
+	INDEX (usersId, username, email)
 );
 
 CREATE TABLE soc.userPasswords (
