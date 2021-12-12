@@ -19,5 +19,6 @@ jobs:
           wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/8.2.0/flyway-commandline-8.2.0-linux-x64.tar.gz | tar xvz && sudo ln -s `pwd`/flyway-8.2.0/flyway /usr/local/bin 
           cd database
           flyway info
+          flyway repair
           flyway migrate
           flyway info
