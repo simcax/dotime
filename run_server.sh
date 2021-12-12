@@ -16,5 +16,6 @@ export DB_HOST=localhost
 export DB_SSL_MODE=required
 export DB_SSL=true
 export DB_ROOT_CERT_PATH=/tmp/.postgresql/root.crt
+export SECRET_KEY=d2563cb665a7b04fac77ccf4
 export FLASK_APP=app
 flask run --host 0.0.0.0 --port 25000
