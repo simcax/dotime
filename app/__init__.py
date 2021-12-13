@@ -7,7 +7,7 @@ def create_app(test_config=None):
     '''App factory'''
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
-        SECRET_KEY=environ.get('SECRET_KEY',urandom(12).hex)
+        SECRET_KEY=environ.get('SECRET_KEY',urandom(12).hex())
     )
 
     if test_config:
