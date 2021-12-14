@@ -51,7 +51,8 @@ jobs:
         flyway info
     - name: Testing the code with pytest
       run: |
-        cd
+        ls
+        cd ..
         python -m pytest
   docker:
     needs: pylint
