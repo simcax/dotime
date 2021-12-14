@@ -13,6 +13,12 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.10"]
+    services:
+      cockroach:
+        image: cockroachdb/cockroach:v21.2.2
+        ports: 
+          - 26257:26257
+        options: start-single-node --insecure
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -27,6 +33,23 @@ jobs:
     - name: Analysing the code with pylint
       run: |
         pylint --fail-under=9 app
+    - name: Create unit test database
+      run: |
+        sudo apt-get install -y wget
+        export DB_PASSWORD=
+        export DB_USERNAME=root
+        export DB_NAME=dotimetest
+        export DB_HOST=localhost
+        export DB_SSL_MODE=disable
+        export DB_SSL=false
+        export DB_ROOT_CERT_PATH=/tmp/.postgresql/root.crt
+        curl https://binaries.cockroachdb.com/cockroach-v21.2.2.linux-amd64.tgz | tar -xz && sudo cp -i cockroach-v21.2.2.linux-amd64/cockroach /usr/local/bin/
+        cockroach sql --url "postgresql://root@localhost:26257/defaultdb?sslmode=disable" --execute "CREATE DATABASE ${DB_NAME}"
+        wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/8.2.1/flyway-commandline-8.2.1-linux-x64.tar.gz | tar xvz && sudo ln -s `pwd`/flyway-8.2.1/flyway /usr/local/bin 
+        cd database
+        flyway info
+        flyway migrate 
+        flyway info
     - name: Testing the code with pytest
       run: |
         python -m pytest
