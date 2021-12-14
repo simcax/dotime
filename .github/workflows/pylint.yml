@@ -52,7 +52,6 @@ jobs:
     - name: Testing the code with pytest
       run: |
         ls
-        cd ..
         python -m pytest
   docker:
     needs: pylint
