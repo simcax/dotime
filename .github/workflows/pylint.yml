@@ -13,12 +13,6 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.10"]
-    services:
-      cockroach:
-        image: cockroachdb/cockroach:v21.2.2
-        ports: 
-          - 26257:26257
-        options: start-single-node --insecure
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -33,13 +27,16 @@ jobs:
     - name: Analysing the code with pylint
       run: |
         pylint --fail-under=9 app
+    - name: Run cockroach db single node cluster
+      run: | 
+        docker run -d --name=roachtest --hostname=roachtest -p 26257:26257 -p 8085:8080 -v "${PWD}/cockroach-data/roach1:/cockroach/cockroach-data" cockroachdb/cockroach:v21.2.2 start-single-node --insecure
     - name: Create unit test database
       run: |
         sudo apt-get install -y wget
         export DB_PASSWORD=
         export DB_USERNAME=root
         export DB_NAME=dotimetest
-        export DB_HOST=localhost
+        export DB_HOST=roachtest
         export DB_SSL_MODE=disable
         export DB_SSL=false
         export DB_ROOT_CERT_PATH=/tmp/.postgresql/root.crt
