@@ -6,6 +6,7 @@ on:
       - '!sql/**'
       - 'app/**'
       - '.github/workflows/pylint.yml'
+      - 'requirements.txt'
 
 jobs:
   pylint:
