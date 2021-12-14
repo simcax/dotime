@@ -32,16 +32,18 @@ jobs:
         docker run -d --name=roachtest --hostname=roachtest -p 26257:26257 -p 8085:8080 -v "${PWD}/cockroach-data/roach1:/cockroach/cockroach-data" cockroachdb/cockroach:v21.2.2 start-single-node --insecure
     - name: Create unit test database
       run: |
+        docker ps
         sudo apt-get install -y wget
         export DB_PASSWORD=
         export DB_USERNAME=root
         export DB_NAME=dotimetest
-        export DB_HOST=roachtest
+        export DB_HOST=localhost
         export DB_SSL_MODE=disable
         export DB_SSL=false
         export DB_ROOT_CERT_PATH=/tmp/.postgresql/root.crt
         curl https://binaries.cockroachdb.com/cockroach-v21.2.2.linux-amd64.tgz | tar -xz && sudo cp -i cockroach-v21.2.2.linux-amd64/cockroach /usr/local/bin/
         cockroach sql --url "postgresql://root@localhost:26257/defaultdb?sslmode=disable" --execute "CREATE DATABASE ${DB_NAME}"
+        cockroach sql --url "postgresql://root@localhost:26257/defaultdb?sslmode=disable" --execute "SHOW DATABASES"
         wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/8.2.1/flyway-commandline-8.2.1-linux-x64.tar.gz | tar xvz && sudo ln -s `pwd`/flyway-8.2.1/flyway /usr/local/bin 
         cd database
         flyway info
