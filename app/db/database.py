@@ -1,5 +1,6 @@
 '''Database connectivity'''
 from os import environ
+import psycopg2
 
 class Database:
     '''Class to handle database connectivity'''
@@ -21,3 +22,11 @@ class Database:
         self.db_connection_string = f"postgresql://{self.db_username.rstrip()}:\
         {self.db_password.rstrip()}@{self.db_host.rstrip()}:26257/\
         {self.db_name.rstrip()}?{self.db_ssl_settings.rstrip()}"
+    
+    def connect(self):
+        '''Get a new connection to the database'''
+        try:
+            conn = psycopg2.connect(self.db_connection_string)
+        except psycopg2.DatabaseError as error:
+            conn = False
+        return conn
