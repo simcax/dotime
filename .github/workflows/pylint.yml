@@ -52,7 +52,7 @@ jobs:
     - name: Testing the code with pytest
       run: |
         ls app
-        python -m pytest
+        python -m pytest --ignore=cockroach-data 
   docker:
     needs: pylint
     runs-on: ubuntu-latest
