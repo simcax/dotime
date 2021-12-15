@@ -53,7 +53,7 @@ jobs:
     - name: Testing the code with pytest
       run: |
         ls app
-        coverage -m pytest --ignore=cockroach-data 
+        coverage run -m pytest --ignore=cockroach-data 
         coverage html
   docker:
     needs: pylint
