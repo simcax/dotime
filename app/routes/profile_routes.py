@@ -8,6 +8,7 @@ bp = Blueprint('profile_blueprint', __name__, url_prefix='/profile')
 def create_profile():
     '''Endpoint for creating a profile'''
     if request.method == 'POST':
-        return "Your profile was created!"
+        return_value = "Your profile was created!"
     else:
-        return render_template('create_profile.html')
+        return_value = render_template('create_profile.html')
+    return return_value

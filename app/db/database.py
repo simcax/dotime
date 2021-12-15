@@ -19,14 +19,13 @@ class Database:
             self.db_ssl_settings = "sslmode=disable"
         else:
             self.db_ssl_settings = "sslmode=verify-full"
-        self.db_connection_string = f"postgresql://{self.db_username.rstrip()}:\
-        {self.db_password.rstrip()}@{self.db_host.rstrip()}:26257/\
-        {self.db_name.rstrip()}?{self.db_ssl_settings.rstrip()}"
-    
+        self.db_connection_string = f"postgresql://{self.db_username.strip()}:{self.db_password.strip()}@{self.db_host.strip()}:26257/{self.db_name.strip()}?{self.db_ssl_settings.strip()}"
+
     def connect(self):
         '''Get a new connection to the database'''
         try:
             conn = psycopg2.connect(self.db_connection_string)
         except psycopg2.DatabaseError as error:
+            print(f"Couldn't connect: {error}")
             conn = False
         return conn

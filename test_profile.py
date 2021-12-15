@@ -1,9 +1,11 @@
 '''Test profile handling'''
 from profile import Profile
+import profile
 import random
 import string
-from app.profile.profile import ProfileHandling
 from werkzeug.security import check_password_hash
+from app.profile.profile import ProfileHandling
+from test_utils import TestUtils
 
 def createRandomString():
     ''''Helper function to create a random string - 10 chars long'''
@@ -23,3 +25,13 @@ def test_password_check():
     password = createRandomString()
     hashed_password = prof.create_password(password)
     assert prof.validate_password(hashed_password,password)
+
+def test_add_user():
+    '''Test adding a user'''
+    tu = TestUtils()
+    username = tu.createRandomString()
+    password = tu.createRandomString()
+    email = tu.createRandomEmail()
+    prof = ProfileHandling()
+    user_id = prof.add_user(username,password,email)
+    assert isinstance(user_id,str)
