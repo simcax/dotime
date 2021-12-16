@@ -55,6 +55,7 @@ jobs:
         ls app
         coverage run -m pytest --ignore=cockroach-data 
         coverage html
+        rm coverage.svg
         coverage-badge -o coverage.svg
         git add coverage.svg
         git commit -m "Added updated coverage SVG"
