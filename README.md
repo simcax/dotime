@@ -1,4 +1,5 @@
 ![code coverage](https://github.com/simcax/dotime/blob/master/coverage.svg)
+![Lint and Build](https://github.com/simcax/dotime/actions/workflows/pylint.yml/badge.svg)
 # dotime - a time registration project
 
 My workplace is discontinuing their timeregistration application. So I decided to try and create my own, with a Python Flask project backed by [cockroachdb](https://www.cockroachlabs.com/). 
@@ -20,7 +21,7 @@ The list here is a start of what I'd like to end up with CI/CD, and how far I am
 
 
 ### Future - CI
-* Session management in redis
+* Test Session management in redis
 
 ### Future - CD
 * Automatic promotion from DEV --> TEST
