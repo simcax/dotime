@@ -1,3 +1,4 @@
+![code coverage](https://github.com/simcax/dotime/blob/master/coverage.svg)
 # dotime - a time registration project
 
 My workplace is discontinuing their timeregistration application. So I decided to try and create my own, with a Python Flask project backed by [cockroachdb](https://www.cockroachlabs.com/). 
