@@ -56,9 +56,11 @@ jobs:
         coverage run -m pytest --ignore=cockroach-data 
         coverage html
         rm coverage.svg
-        coverage-badge -o coverage.svg
         git config --global user.name "Carsten Skov"
         git config --global user.email "carsten@simcax.dk"
+        git add coverage.svg
+        git commit -m "Added updated coverage SVG"
+        coverage-badge -o coverage.svg
         git add coverage.svg
         git commit -m "Added updated coverage SVG"
         git push
