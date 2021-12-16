@@ -14,8 +14,9 @@ def create_app(test_config=None):
         print("Test config is set")
 
     with app.app_context():
-        from app.routes import profile_routes
+        from app.routes import profile_routes, health_routes
         app.register_blueprint(profile_routes.bp)
+        app.register_blueprint(health_routes.bp1)
         @app.route("/")
         def home():
             return render_template('home.html')

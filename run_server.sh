@@ -13,9 +13,11 @@ export DB_PASSWORD=
 export DB_USERNAME=root
 export DB_NAME=dotimetest
 export DB_HOST=localhost
-export DB_SSL_MODE=required
-export DB_SSL=true
+export DB_SSL_MODE=disable
+export DB_SSL=false
 export DB_ROOT_CERT_PATH=/tmp/.postgresql/root.crt
 export SECRET_KEY=d2563cb665a7b04fac77ccf4
 export FLASK_APP=app
+export FLASK_ENV=DEVELOPMENT
+export FLASK_DEBUG=TRUE
 flask run --host 0.0.0.0 --port 25000

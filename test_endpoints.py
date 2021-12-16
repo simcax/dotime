@@ -38,3 +38,8 @@ def test_create_profile_1(client):
     email = tu.createRandomEmail()
     rv = createProfile(client, username, email, password)
     assert b'Your profile was created!' in rv.data
+
+def test_health_endpoint(client):
+    ''''Testing the endpoint is defined'''
+    rv = client.get("/health", follow_redirects=True)
+    assert rv.status_code == 200
