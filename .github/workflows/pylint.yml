@@ -55,6 +55,10 @@ jobs:
         ls app
         coverage run -m pytest --ignore=cockroach-data 
         coverage html
+        coverage-badge -o coverage.svg
+        git add coverage.svg
+        git commit -m "Added updated coverage SVG"
+        git push
   docker:
     needs: pylint
     runs-on: ubuntu-latest

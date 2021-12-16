@@ -2,6 +2,7 @@ astroid==2.9.0
 attrs==21.2.0
 click==8.0.3
 coverage==6.2
+coverage-badge==1.1.0
 Flask==2.0.2
 gunicorn==20.1.0
 iniconfig==1.1.1
