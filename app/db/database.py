@@ -24,6 +24,7 @@ class Database:
     def connect(self):
         '''Get a new connection to the database'''
         try:
+            print('Connecting to the database')
             conn = psycopg2.connect(self.db_connection_string)
         except psycopg2.DatabaseError as error:
             print(f"Couldn't connect: {error}")
