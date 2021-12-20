@@ -1,4 +1,5 @@
 FROM python:3.10.0b2
+LABEL maintainer="carsten@skov.codes"
 RUN apt update
 RUN apt install -y gunicorn3
 # Upgrade pip 
