@@ -43,3 +43,7 @@ def test_health_endpoint(client):
     ''''Testing the endpoint is defined'''
     rv = client.get("/health", follow_redirects=True)
     assert rv.status_code == 200
+def test_login_endpoint(client):
+    '''Testing the login endpoint exists and is reachable'''
+    rv = client.get("/auth/login")
+    assert rv.status_code == 200
