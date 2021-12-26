@@ -62,3 +62,21 @@ class ProfileHandling:
         except DatabaseError as error:
             print(f'Problem performing sql: {sql} - error: {error}')
         return return_value
+
+    def check_credentials(self,email,password):
+        '''Authenticate user against the users and passwords tables'''
+        try:
+            db_obj = Database()
+            conn = db_obj.connect()
+            validated = False
+            with conn.cursor() as cur:
+                sql = f"SELECT u.username, u.email, p.passwordhash FROM soc.users u \
+                    INNER JOIN soc.userpasswords p ON u.usersid = p.usersid WHERE u.email = '{email}'"
+                cur.execute(sql)
+                row = cur.fetchone()
+                validated = self.validate_password(row[2],password)
+        except DatabaseError as error:
+            print(f"Problem performing sql: {sql} - Error: {error}")
+        finally:
+            conn.close()
+        return validated

@@ -3,6 +3,7 @@ import os
 import pytest
 from app import create_app
 from test_utils import TestUtils
+from app.profile.profile import ProfileHandling
 
 @pytest.fixture
 def client():
@@ -12,7 +13,20 @@ def client():
     with app.test_client() as client:
         yield client
 
-def createProfile(client,username,email,password):
+@pytest.fixture
+def create_user():
+    '''Provide a test user'''
+    tu = TestUtils()
+    user_details = {}
+    user_details['username'] = tu.createRandomString()
+    user_details['password'] = tu.createRandomString()
+    user_details['email'] = tu.createRandomEmail()
+    prof = ProfileHandling()
+    user_details['user_id'] = prof.add_user(user_details['username'],user_details['password'],user_details['email'])
+    return user_details
+    
+
+def create_profile(client,username,email,password):
     '''Helper function to call the createprofile endpoint with POST data'''
     return client.post('/profile/create',data=dict(
         profileUsername = username,
@@ -20,6 +34,12 @@ def createProfile(client,username,email,password):
         profilePassword = password,
     ), follow_redirects = True)
 
+def login(client,email,password):
+    ''''Helper function to login a user'''
+    return client.post('/auth/login', data=dict(
+       email = email,
+       password = password 
+    ), follow_redirects = True)
 
 def test_home_endpoint(client):
     ''''Test the home endpoint'''
@@ -36,14 +56,21 @@ def test_create_profile_1(client):
     username = tu.createRandomString()
     password = tu.createRandomString()
     email = tu.createRandomEmail()
-    rv = createProfile(client, username, email, password)
+    rv = create_profile(client, username, email, password)
     assert b'Your profile was created!' in rv.data
 
 def test_health_endpoint(client):
     ''''Testing the endpoint is defined'''
     rv = client.get("/health", follow_redirects=True)
     assert rv.status_code == 200
+
 def test_login_endpoint(client):
     '''Testing the login endpoint exists and is reachable'''
     rv = client.get("/auth/login")
     assert rv.status_code == 200
+
+def test_login(client,create_user):
+    '''Test a user can login'''
+    rv = login(client,create_user['email'],create_user['password'])
+    assert rv.status_code == 200
+    assert b"You are logged in." in rv.data

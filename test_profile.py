@@ -35,3 +35,17 @@ def test_add_user():
     prof = ProfileHandling()
     user_id = prof.add_user(username,password,email)
     assert isinstance(user_id,str)
+
+def test_check_password():
+    '''Test methods behind a user login'''
+    tu = TestUtils()
+    username = tu.createRandomString()
+    password = tu.createRandomString()
+    email = tu.createRandomEmail()
+    prof = ProfileHandling()
+    user_id = prof.add_user(username,password,email)
+    assert isinstance(user_id,str)
+    # Now check the methods behind the user login
+    prof = ProfileHandling()
+    logged_in = prof.check_credentials(email,password)    
+    assert logged_in == True
