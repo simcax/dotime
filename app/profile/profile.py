@@ -73,8 +73,11 @@ class ProfileHandling:
                 sql = f"SELECT u.username, u.email, p.passwordhash FROM soc.users u \
                     INNER JOIN soc.userpasswords p ON u.usersid = p.usersid WHERE u.email = '{email}'"
                 cur.execute(sql)
-                row = cur.fetchone()
-                validated = self.validate_password(row[2],password)
+                if cur.rowcount >= 1:
+                    row = cur.fetchone()
+                    validated = self.validate_password(row[2],password)
+                else:
+                    validated = False
         except DatabaseError as error:
             print(f"Problem performing sql: {sql} - Error: {error}")
         finally:
