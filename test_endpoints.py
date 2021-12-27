@@ -74,3 +74,9 @@ def test_login(client,create_user):
     rv = login(client,create_user['email'],create_user['password'])
     assert rv.status_code == 200
     assert b"You are logged in." in rv.data
+
+def test_login_fails(client,create_user):
+    tu = TestUtils()
+    random_string = tu.createRandomString()
+    rv = login(client, create_user['email'],random_string)
+    assert b"Error logging you in." in rv.data
