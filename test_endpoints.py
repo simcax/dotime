@@ -57,7 +57,18 @@ def test_create_profile_1(client):
     password = tu.createRandomString()
     email = tu.createRandomEmail()
     rv = create_profile(client, username, email, password)
-    assert b'Your profile was created!' in rv.data
+    assert b'Your profile was created.' in rv.data
+
+def test_create_profile_2(client):
+    '''Testing the profile creation fails, if the user already exists'''
+    tu = TestUtils()
+    username = tu.createRandomString()
+    password = tu.createRandomString()
+    email = tu.createRandomEmail()
+    rv = create_profile(client, username, email, password)
+    assert b'Your profile was created.' in rv.data
+    rv = create_profile(client,username, email, password)
+    assert b"Sorry, we couldn't create your profile." in rv.data
 
 def test_health_endpoint(client):
     ''''Testing the endpoint is defined'''
@@ -80,3 +91,11 @@ def test_login_fails(client,create_user):
     random_string = tu.createRandomString()
     rv = login(client, create_user['email'],random_string)
     assert b"Error logging you in." in rv.data
+
+def test_hello_jpg(client):
+    rv = client.get("/images/hello.jpg")
+    assert rv.status_code == 200
+
+def test_oops_jpg(client):
+    rv = client.get("/images/oops.jpg")
+    assert rv.status_code == 200

@@ -13,11 +13,11 @@ def create_profile():
         email = request.form['profileEmail']
         password = request.form['profilePassword']
         prof = ProfileHandling()
-        userid = prof.add_user(username,password,email)
-        if userid:
-            return_value = "Your profile was created!"
+        user = prof.add_user(username,password,email)
+        if user:
+            return_value = render_template('profile_created.html', user = user)
         else:
-            return_value = "Profile creation failed."
+            return_value = render_template("profile_creation_failed.html")
     else:
         return_value = render_template('create_profile.html')
     return return_value

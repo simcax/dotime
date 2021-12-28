@@ -32,7 +32,8 @@ class ProfileHandling:
                     password_added = self.add_user_password(conn,users_id, hashed_password)
                     if password_added:
                         print(f"User got {users_id}")
-                        return_value = users_id
+                        user = { 'users_id': users_id, 'username': username, 'email': email}
+                        return_value = user
                         conn.commit()
                     else:
                         print(f"User {users_id} 's password failed to be added.\

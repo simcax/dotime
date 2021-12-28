@@ -1,0 +1,16 @@
+{% extends "header.html" %}
+{% block profile %}
+<div class="container-sm align-items-center">
+    <div class="card" style="width: 18rem;">
+        <img src="/images/hello.jpg" class="card-img-top" alt="hello and Welcome">
+        <div class="card-body">
+        <h5 class="card-title">Welcome {{ user.username }}</h5>
+        <p class="card-text">Nice you wanted to try out DoTime! Your profile was created.<br>Here some explenation will come as the site progresses. Right now we only have login and profile creation up and running.</p>
+        <a href="#" class="btn btn-primary">Go back to the frontpage.</a>
+        </div>
+    </div>
+</div>
+{% endblock %} 
+
+
+  
