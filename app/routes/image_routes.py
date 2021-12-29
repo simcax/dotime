@@ -13,3 +13,8 @@ def hello_jpg():
 def oops_jpg():
     '''Serve oops.jph'''
     return send_from_directory('static/images','oops.jpg',mimetype='image/jpg')
+
+@bp1.route("/welcome.jpg")
+def welcome_jpg():
+    '''Serve welcome.jpg'''
+    return send_from_directory('static/images','welcome.jpg',mimetype='image/jpg')

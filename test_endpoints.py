@@ -99,3 +99,7 @@ def test_hello_jpg(client):
 def test_oops_jpg(client):
     rv = client.get("/images/oops.jpg")
     assert rv.status_code == 200
+
+def test_welcome_jpg(client):
+    rv = client.get("/images/welcome.jpg")
+    assert rv.status_code == 200
