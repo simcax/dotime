@@ -8,5 +8,6 @@ export DB_SSL=false
 export DB_ROOT_CERT_PATH=$HOME/.postgresql/root.crt
 cd database
 flyway info
+flyway repair
 flyway migrate
 flyway info
