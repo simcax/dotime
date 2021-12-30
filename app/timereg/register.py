@@ -26,3 +26,32 @@ class TimeRegistration:
             # Close connection
             conn.close()
         return activity_uuid
+
+    def add_timeregistration(self,activity_uuid, timefrom, timeto):
+        '''Adds a row to the time registration table with a link record to an activity uuid'''
+        timereg_added = False
+        try:
+            db = database.Database()
+            conn = db.connect()
+            with conn.cursor() as cur:
+                
+                
+                sql = f"INSERT INTO soc.timedmeetgo (timefrom, timeto, usersId) \
+                    VALUES ('{timefrom}','{timeto}','{self.userid}') RETURNING timedmeetgouuid"
+                cur.execute(sql)
+                timed_meet_go_uuid = cur.fetchone()[0]
+
+                sql = f"INSERT INTO soc.ln_timemeetgo (timedmeetgouuid,activitesuuid) \
+                    VALUES ('{timed_meet_go_uuid}','{activity_uuid}')"
+                cur.execute(sql)
+                if cur.rowcount == 1:
+                    conn.commit()
+                    timereg_added = True
+                else:
+                    timereg_added = False
+        except DatabaseError as error:
+            print(f"Error with sql {sql} - {error}")
+        finally:
+            conn.close()
+        return timereg_added
+

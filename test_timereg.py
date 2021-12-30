@@ -1,4 +1,5 @@
 '''Test time registration methods'''
+import datetime
 import pytest
 from app.timereg.register import TimeRegistration
 from app.profile.profile import ProfileHandling
@@ -22,3 +23,15 @@ def test_add_activity(create_user):
     activity_name_str = tu.createRandomString()
     activity_uuid = time_reg.add_activity(activity_name_str)
     assert isinstance(activity_uuid, str)
+
+def test_add_timereg_row(create_user):
+    '''Test adding a time registration row'''
+    time_reg = TimeRegistration(create_user['users_id'])
+    tu = TestUtils()
+    activity_name_str = tu.createRandomString()
+    activity_uuid = time_reg.add_activity(activity_name_str)
+    timefrom = datetime.datetime.now()
+    timeto = timefrom + datetime.timedelta(minutes=2)
+    assert isinstance(activity_uuid, str)
+    timereg_added = time_reg.add_timeregistration(activity_uuid, timefrom, timeto)
+    assert timereg_added == True
