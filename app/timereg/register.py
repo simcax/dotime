@@ -28,34 +28,57 @@ class TimeRegistration:
             conn.close()
         return activity_uuid
 
-    def add_timeregistration(self,activity_uuid, timefrom, timeto):
+    def add_timeregistration(self, activity_uuid, timefrom, timeto):
         '''Adds a row to the time registration table with a link record to an activity uuid'''
         timereg_added = False
         if isinstance(timefrom,datetime) and isinstance(timeto,datetime) and timefrom < timeto:
-            try:
-                db = database.Database()
-                conn = db.connect()
-                with conn.cursor() as cur:
-                    
-                    
-                    sql = f"INSERT INTO soc.timedmeetgo (timefrom, timeto, usersId) \
-                        VALUES ('{timefrom}','{timeto}','{self.userid}') RETURNING timedmeetgouuid"
-                    cur.execute(sql)
-                    timed_meet_go_uuid = cur.fetchone()[0]
+            if self.timestamp_is_not_registered(timefrom) and self.timestamp_is_not_registered(timeto):
+                try:
+                    db = database.Database()
+                    conn = db.connect()
+                    with conn.cursor() as cur:
+                        
+                        
+                        sql = f"INSERT INTO soc.timedmeetgo (timefrom, timeto, usersId) \
+                            VALUES ('{timefrom}','{timeto}','{self.userid}') RETURNING timedmeetgouuid"
+                        cur.execute(sql)
+                        timed_meet_go_uuid = cur.fetchone()[0]
 
-                    sql = f"INSERT INTO soc.ln_timemeetgo (timedmeetgouuid,activitesuuid) \
-                        VALUES ('{timed_meet_go_uuid}','{activity_uuid}')"
-                    cur.execute(sql)
-                    if cur.rowcount == 1:
-                        conn.commit()
-                        timereg_added = True
-                    else:
-                        timereg_added = False
-            except DatabaseError as error:
-                print(f"Error with sql {sql} - {error}")
-            finally:
-                conn.close()
+                        sql = f"INSERT INTO soc.ln_timemeetgo (timedmeetgouuid,activitesuuid) \
+                            VALUES ('{timed_meet_go_uuid}','{activity_uuid}')"
+                        cur.execute(sql)
+                        if cur.rowcount == 1:
+                            conn.commit()
+                            timereg_added = True
+                        else:
+                            timereg_added = False
+                except DatabaseError as error:
+                    print(f"Error with sql {sql} - {error}")
+                finally:
+                    conn.close()
+            else:
+                timereg_added = False
         else:
             timereg_added = False
         return timereg_added
 
+    def timestamp_is_not_registered(self, timestamp):
+        '''
+            Check if an existing registration exists, 
+            where the timeperiod would overlap with the given one
+            Returns TRUE if the timestamp given does not exist for the user uuid
+        '''
+        try:
+            timestamp_is_not_here = True
+            db = database.Database()
+            conn = db.connect()
+            sql = f"SELECT 1 FROM soc.timedmeetgo WHERE timefrom <= '{timestamp}' \
+                AND timeto >= '{timestamp}' AND usersid = '{self.userid}'"
+            with conn.cursor() as cur:
+                cur.execute(sql)
+                timestamp_is_not_here = bool(cur.rowcount==0)
+        except DatabaseError as error:
+            print(f"Error executing SQL {sql} - {error}")
+        finally:
+            conn.close()
+        return timestamp_is_not_here

@@ -59,3 +59,20 @@ def test_add_timereg_correct_timestamps(create_user):
     assert isinstance(activity_uuid, str)
     timereg_added = time_reg.add_timeregistration(activity_uuid, timefrom, timeto)
     assert timereg_added == False
+
+def test_add_timereg_overlapping_registrations(create_user):
+    '''Tests an error will occour if a timeregistration overlaps another timeregistration'''
+    time_reg = TimeRegistration(create_user['users_id'])
+    tu = TestUtils()
+    activity_name_str = tu.createRandomString()
+    activity_uuid = time_reg.add_activity(activity_name_str)
+    timefrom1 = datetime.datetime.now()
+    timeto1 = timefrom1 + datetime.timedelta(minutes=2)
+    timefrom2 = timefrom1 + datetime.timedelta(minutes=1)
+    timeto2 = timefrom2 + datetime.timedelta(minutes=10)
+    assert isinstance(activity_uuid, str)
+    timereg_added_1 = time_reg.add_timeregistration(activity_uuid, timefrom1, timeto1)
+    timereg_added_2 = time_reg.add_timeregistration(activity_uuid, timefrom2, timeto2)
+    assert timereg_added_1 == True
+    # Since the second timereg row overlaps with the first, insertion should fail.
+    assert timereg_added_2 == False
