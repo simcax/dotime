@@ -103,3 +103,20 @@ def test_oops_jpg(client):
 def test_welcome_jpg(client):
     rv = client.get("/images/welcome.jpg")
     assert rv.status_code == 200
+
+def test_set_session_value(client):
+    '''Test the set session value endpoint exists and can take a value parameter'''
+    tu = TestUtils()
+    set_value = tu.createRandomString()
+    rv = client.get(f"/session/set?value={set_value}")
+    assert rv.status_code == 200
+    return_string = f"Session value set to: {set_value}"
+    assert bytes(return_string,'utf-8') in rv.data
+
+def test_get_session_value(client):
+    '''Test the set session value endpoint exists and it sets a session variable'''
+    tu = TestUtils()
+    set_value = tu.createRandomString()
+    rv = client.get(f'/session/set?value={set_value}')
+    with client.session_transaction() as sess:
+        assert sess['test-value'] == set_value
