@@ -13,8 +13,8 @@ class TimeRegistration:
         '''Adds an activity to the activity table'''
         activity_uuid = False
         try:
-            db = database.Database()
-            conn = db.connect()
+            db_obj = database.Database()
+            conn = db_obj.connect()
             with conn.cursor() as cur:
                 sql = f"INSERT INTO soc.activites (usersId,activityname) \
                 VALUES ('{self.userid}','{activity_name}') RETURNING activitesuuid"
@@ -32,15 +32,15 @@ class TimeRegistration:
         '''Adds a row to the time registration table with a link record to an activity uuid'''
         timereg_added = False
         if isinstance(timefrom,datetime) and isinstance(timeto,datetime) and timefrom < timeto:
-            if self.timestamp_is_not_registered(timefrom) and self.timestamp_is_not_registered(timeto):
+            if self.timestamp_is_not_registered(timefrom) and \
+                self.timestamp_is_not_registered(timeto):
                 try:
-                    db = database.Database()
-                    conn = db.connect()
+                    db_obj = database.Database()
+                    conn = db_obj.connect()
                     with conn.cursor() as cur:
-                        
-                        
                         sql = f"INSERT INTO soc.timedmeetgo (timefrom, timeto, usersId) \
-                            VALUES ('{timefrom}','{timeto}','{self.userid}') RETURNING timedmeetgouuid"
+                            VALUES ('{timefrom}','{timeto}','{self.userid}') \
+                                RETURNING timedmeetgouuid"
                         cur.execute(sql)
                         timed_meet_go_uuid = cur.fetchone()[0]
 
@@ -64,14 +64,14 @@ class TimeRegistration:
 
     def timestamp_is_not_registered(self, timestamp):
         '''
-            Check if an existing registration exists, 
+            Check if an existing registration exists,
             where the timeperiod would overlap with the given one
             Returns TRUE if the timestamp given does not exist for the user uuid
         '''
         try:
             timestamp_is_not_here = True
-            db = database.Database()
-            conn = db.connect()
+            db_obj = database.Database()
+            conn = db_obj.connect()
             sql = f"SELECT 1 FROM soc.timedmeetgo WHERE timefrom <= '{timestamp}' \
                 AND timeto >= '{timestamp}' AND usersid = '{self.userid}'"
             with conn.cursor() as cur:

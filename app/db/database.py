@@ -1,7 +1,6 @@
 '''Database connectivity'''
 from os import environ
 import psycopg2
-from flask import current_app
 
 class Database:
     '''Class to handle database connectivity'''
@@ -25,9 +24,7 @@ class Database:
     def connect(self):
         '''Get a new connection to the database'''
         try:
-            current_app.logger.info('Connecting to the database')
             conn = psycopg2.connect(self.db_connection_string)
         except psycopg2.DatabaseError as error:
-            current_app.logger.info(f"Couldn't connect: {error}")
             conn = False
         return conn
