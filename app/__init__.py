@@ -1,16 +1,16 @@
 '''Do Time Flask App'''
 from os import environ, urandom
+import logging
 from flask import Flask, render_template, send_from_directory
 
 def create_app(test_config=None):
     '''App factory'''
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
-        SECRET_KEY=environ.get('SECRET_KEY',urandom(12).hex())
+        SECRET_KEY=environ.get('SECRET_KEY',urandom(12).hex())       
     )
-
     if test_config:
-        print("Test config is set")
+        app.logger.info("Test config is set")
 
     with app.app_context():
         from app.routes import profile_routes, health_routes, auth_routes, image_routes, session_routes
@@ -25,4 +25,5 @@ def create_app(test_config=None):
         @app.route("/background.css")
         def background_css():
             return send_from_directory('static/css','background.css',mimetype='text/css')
+        app.logger.info("App routes loaded")
         return app

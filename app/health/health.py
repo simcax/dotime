@@ -1,6 +1,7 @@
 '''Implements health checking of the app'''
 from psycopg2 import DatabaseError
 from app.db.database import Database
+from flask import current_app
 
 class Health:
     '''yeilds methods to check the health of the app'''
@@ -37,11 +38,9 @@ class Health:
             if conn:
                 with conn.cursor() as cursor:
                     sql = "SELECT COUNT(*) FROM soc.users"
-                    print(sql)
                     cursor.execute(sql)
-                    print(f"SQL {sql}")
                     user_count = cursor.fetchone()[0]
-                    print(f"UserCount: {user_count}")
+                    current_app.logger.info(f"UserCount: {user_count}")
                     return_value = user_count
             else:
                 return_value = "Database connection failed"
