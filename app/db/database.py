@@ -28,3 +28,16 @@ class Database:
         except psycopg2.DatabaseError as error:
             conn = False
         return conn
+
+    def execute_select_sql(self,sql):
+        try:
+            row = False
+            conn = self.connect()
+            with conn.cursor() as cur:
+                cur.execute(sql)
+                row = cur.fetchone()
+        except psycopg2.DatabaseError as error:
+            print(f"We had an error {error}")
+        finally:
+            conn.close()
+        return row
