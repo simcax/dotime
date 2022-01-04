@@ -14,3 +14,8 @@ def set_session_value():
     else:
         return_str = "No session value set"
     return return_str
+
+@bp.route("/getTest")
+def get_session_value():
+    '''Retrieve test session value'''
+    return f"Session var is: {session['test-value']}"
