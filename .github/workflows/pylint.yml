@@ -14,6 +14,7 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.10"]
+        redis-version: ["6.2"]
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -50,6 +51,10 @@ jobs:
         flyway info
         flyway migrate 
         flyway info
+    - name: Start Redis v${{ matrix.redis-version }}
+      uses: superchargejs/redis-github-action@1.2.0
+      with:
+        redis-version: ${{ matrix.redis-version }}
     - name: Testing the code with pytest
       run: |
         ls app
