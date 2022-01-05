@@ -1,4 +1,5 @@
 '''Test the app endpoints'''
+from datetime import date
 import os
 import pytest
 from app import create_app
@@ -24,11 +25,6 @@ def create_user():
     prof = ProfileHandling()
     user_details['user_id'] = prof.add_user(user_details['username'],user_details['password'],user_details['email'])
     return user_details
-
-@pytest.fixture
-def enter_time_form(client):
-    '''Utliity to get the time entry form for registration of time'''
-    return client.get("/time/enter")
 
 def create_profile(client,username,email,password):
     '''Helper function to call the createprofile endpoint with POST data'''
@@ -148,19 +144,3 @@ def test_cookie_flags_2(client, create_user):
     cookie_headers = rv.headers['set-cookie']
     # Make sure a cookie with the name DoTime is in the header
     assert 'Secure' in cookie_headers
-
-def test_enter_time_endpoint_exists(client,enter_time_form):
-    '''Test there is an endpoint which is called /time/enter'''
-    rv = enter_time_form
-    assert rv.status_code == 200
-
-def test_enter_time_form(client, enter_time_form):
-    '''Test a form exists on the endpoint for time registration entry'''
-    rv = enter_time_form
-    assert b"<form" in rv.data
-
-def test_enter_time_form_endpoint(client,enter_time_form):
-    '''Test the enter time form points to the correct endpoint'''
-    rv = enter_time_form
-    assert b'action="/time/register"' in rv.data
-
