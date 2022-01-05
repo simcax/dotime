@@ -2,6 +2,7 @@
 import datetime
 import pytest
 from app import create_app
+from app.utils import date_utils
 
 @pytest.fixture
 def client():
@@ -38,3 +39,39 @@ def test_enter_time_form_today_exists(client, enter_time_form):
     today = datetime.datetime.now()
     year, weeknumber, weekday  = today.isocalendar()
     assert bytes(str(weeknumber), 'utf-8') in rv.data
+    assert bytes(str(year), 'utf-8') in rv.data
+
+def test_daynumber_to_dayname():
+    '''Test conversion of daynumbers to daynames'''
+    dotime_date_help = date_utils.DoTimeDataHelp()
+    assert "Monday" == dotime_date_help.day_name('en',0)
+
+def test_daynumber_to_dayname_unsupported():
+    '''Test conversion of daynumbers to daynames for unsupported language'''
+    dotime_date_help = date_utils.DoTimeDataHelp()
+    assert "Language not supported" == dotime_date_help.day_name('us',0)
+
+def test_daynumber_to_dayname_out_of_range():
+    '''Test we get a sensible error when supplying a wrong daynumber'''
+    dotime_date_help = date_utils.DoTimeDataHelp()
+    assert "Daynumber out of range" == dotime_date_help.day_name('en',8)
+
+def test_get_daynames():
+    '''Test we get a list of daynames'''
+    dotime_date_help = date_utils.DoTimeDataHelp()
+    alldays = dotime_date_help.all_days('en')
+    assert "Monday" in alldays
+    assert "Tuesday" in alldays
+    assert "Wednesday" in alldays
+    assert "Thursday" in alldays
+    assert "Friday" in alldays
+    assert "Saturday" in alldays
+    assert "Sunday" in alldays
+
+def test_enter_time_form_weekday_exists(client, enter_time_form):
+    rv = enter_time_form
+    today = datetime.datetime.now()
+    daynumber = today.isoweekday()
+    dotime_date_help = date_utils.DoTimeDataHelp()
+    dayname = dotime_date_help.day_name('en',daynumber)
+    assert bytes(str(dayname),'utf-8') in rv.data

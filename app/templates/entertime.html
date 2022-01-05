@@ -3,12 +3,15 @@
 <div class="container-sm align-items-center">
     <div class="card" style="width: 18rem;">
         <div class="card-body">
-        <h5 class="card-title">Current week: {{ date_info.weeknumber }}</h5>
+        <h5 class="card-title">Current week: {{ date_info.weeknumber }} {{ date_info.year }}</h5>
         <div class="d-flex justify-content-center form_container">
             <form  method="POST" action="/time/register">
+                {% for day in days %}
+                    {{ day }}
+                {% endfor %}
             </form>
 
-        </p>
+        </div>
         <a href="#" class="btn btn-primary">Go back to the frontpage.</a>
         </div>
     </div>
