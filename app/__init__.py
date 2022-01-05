@@ -25,13 +25,14 @@ def create_app(test_config=None):
     with app.app_context():
         sess.init_app(app)
         from app.routes import (
-            profile_routes, health_routes, auth_routes, image_routes, session_routes
+            profile_routes, health_routes, auth_routes, image_routes, session_routes, time_routes
         )
         app.register_blueprint(image_routes.bp1)
         app.register_blueprint(profile_routes.bp)
         app.register_blueprint(health_routes.bp1)
         app.register_blueprint(auth_routes.bp1)
         app.register_blueprint(session_routes.bp)
+        app.register_blueprint(time_routes.bp)
         @app.route("/")
         def home():
             return render_template('home.html')
