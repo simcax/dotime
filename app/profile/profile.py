@@ -72,7 +72,8 @@ class ProfileHandling:
             validated = False
             with conn.cursor() as cur:
                 sql = f"SELECT u.username, u.email, p.passwordhash FROM soc.users u \
-                    INNER JOIN soc.userpasswords p ON u.usersid = p.usersid WHERE u.email = '{email}'"
+                    INNER JOIN soc.userpasswords p ON u.usersid = p.usersid \
+                    WHERE u.email = '{email}'"
                 cur.execute(sql)
                 if cur.rowcount >= 1:
                     row = cur.fetchone()

@@ -30,6 +30,7 @@ class Database:
         return conn
 
     def execute_select_sql(self,sql):
+        '''Method to wrap database specific select clause'''
         try:
             row = False
             conn = self.connect()

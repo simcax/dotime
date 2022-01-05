@@ -6,12 +6,12 @@ import redis
 
 def create_app(test_config=None):
     '''App factory'''
-    REDIS_HOST = environ.get('REDIS_HOST','localhost')
+    redis_host = environ.get('REDIS_HOST','localhost')
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY=environ.get('SECRET_KEY',urandom(12).hex()),
         SESSION_TYPE = 'redis',
-        SESSION_REDIS = redis.from_url(f"redis://{REDIS_HOST}:6379"),
+        SESSION_REDIS = redis.from_url(f"redis://{redis_host}:6379"),
         SESSION_PERMANENT = True,
         SESSION_USE_SIGNER = True,
         SESSION_COOKIE_SECURE = True,
