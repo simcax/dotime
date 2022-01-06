@@ -8,19 +8,13 @@
                 <form  method="POST" action="/time/register">
                     <div class="form-row">
                         <div class="text-primary col">Time Code</div>
-                        {% for day in days %}
-                            <div class="text-primary col">{{ day }}</div>
-                        {% endfor %}
+                        <div class="col">Start time</div>
+                        <div class="col">End time</div>
                     </div>
                     <div class="form-row">
                         <div class="col"><input name="timecode"></div>
-                        <div class="col"><input name="monday"></div>
-                        <div class="col"><input name="tuesday"></div>
-                        <div class="col"><input name="wednesday"></div>
-                        <div class="col"><input name="thursday"></div>
-                        <div class="col"><input name="friday"></div>
-                        <div class="col"><input name="saturday"></div>
-                        <div class="col"><input name="sunday"></div>
+                        <div class="col"><input name="start"></div>
+                        <div class="col"><input name="end"></div>
                     </div>
                     
                 </form>

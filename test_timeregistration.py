@@ -78,4 +78,4 @@ def test_enter_time_form_weekday_exists(client, enter_time_form):
 
 def test_enter_time_form_input_field_for_day_exists(enter_time_form):
     rv = enter_time_form
-    assert b'Monday <input' in rv.data
+    assert b'<input name="start"' in rv.data
