@@ -68,14 +68,6 @@ def test_get_daynames():
     assert "Saturday" in alldays
     assert "Sunday" in alldays
 
-def test_enter_time_form_weekday_exists(client, enter_time_form):
-    rv = enter_time_form
-    today = datetime.datetime.now()
-    daynumber = today.isoweekday()
-    dotime_date_help = date_utils.DoTimeDataHelp()
-    dayname = dotime_date_help.day_name('en',daynumber)
-    assert bytes(str(dayname),'utf-8') in rv.data
-
 def test_enter_time_form_input_field_for_day_exists(enter_time_form):
     rv = enter_time_form
     assert b'<input name="start"' in rv.data
