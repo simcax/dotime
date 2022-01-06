@@ -75,3 +75,7 @@ def test_enter_time_form_weekday_exists(client, enter_time_form):
     dotime_date_help = date_utils.DoTimeDataHelp()
     dayname = dotime_date_help.day_name('en',daynumber)
     assert bytes(str(dayname),'utf-8') in rv.data
+
+def test_enter_time_form_input_field_for_day_exists(enter_time_form):
+    rv = enter_time_form
+    assert b'Monday <input' in rv.data
