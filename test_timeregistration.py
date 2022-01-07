@@ -71,3 +71,8 @@ def test_get_daynames():
 def test_enter_time_form_input_field_for_day_exists(enter_time_form):
     rv = enter_time_form
     assert b'<input name="start"' in rv.data
+
+def test_enter_time_form_input_field_properties(enter_time_form):
+    rv = enter_time_form
+    assert b'<input name="start" size="5"' in rv.data
+    assert b'<input name="end" size="5"' in rv.data
