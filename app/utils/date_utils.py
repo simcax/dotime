@@ -4,13 +4,15 @@ class DoTimeDataHelp:
     language = "en"
 
     def all_days(self,language):
-        days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
+        '''A list of all days in english'''
+        if language == 'en':
+            days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
         return days
 
     def day_name(self,language,day_number):
         '''
             Returns the day name for the language given
-            Currently supports: en, da        
+            Currently supports: en, da
         '''
         if self.daynumber_within_range(day_number):
             if language == 'en':
@@ -25,9 +27,11 @@ class DoTimeDataHelp:
         '''Return the dayname for a daynumber'''
         days = self.all_days(language)
         return days[day_number]
-    
+
     def daynumber_within_range(self,day_number):
+        '''control method to make sure the values are within range'''
         if day_number >= 0 and day_number <= 7:
-            return True
+            range_ok = True
         else:
-            return False
+            range_ok = False
+        return range_ok
