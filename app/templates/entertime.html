@@ -3,24 +3,36 @@
 <div class="container-sm align-items-center">
     <div class="card">
         <div class="card-body">
-        <h5 class="card-title">Current week: {{ date_info.weeknumber }} {{ date_info.year }}</h5>
-            <div class="d-flex justify-content-center form_container">
+            <fieldset class="card-title">
+                <legend>Current week: {{ date_info.weeknumber }} {{ date_info.year }}</legend>
+            
                 <form  method="POST" action="/time/register">
                     <div class="form-row">
-                        <div class="text-primary col">Time Code</div>
-                        <div class="col">Start time</div>
-                        <div class="col">End time</div>
-                    </div>
-                    <div class="form-row">
-                        <div class="col"><input name="timecode"></div>
-                        <div class="col"><input name="start" size="5"></div>
-                        <div class="col"><input name="end" size="5"></div>
+                        <div class="form-group col-xs-4 col-md-4">
+                            <label for="timecode" class="form-label">Activity</label>
+                            <div>
+                                <input name="timecode" id="timecode">
+                            </div>
+                        </div>
+                        <div class="form-group col-xs-4 col-md-4">
+                            <label for="start" class="form-label">Start Time</label>
+                            <div>
+                                <input name="start" size="5">
+                            </div>
+                        </div>
+                        <div class="form-group col-xs-4 col-md-4">
+                            <label for="end" class="form-label">End time</label>
+                            <div>
+                                <input name="end" size="5">
+                            </div>
+                        </div>
                     </div>
                     
                 </form>
 
-            </div>
-        <a href="#" class="btn btn-primary">Go back to the frontpage.</a>
+            
+                <input type="submit" class="btn btn-primary" value="Submit time for the day">
+            </fieldset>
         </div>
     </div>
 </div>
