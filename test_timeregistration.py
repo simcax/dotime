@@ -1,6 +1,7 @@
 '''Test the time registration page'''
 import datetime
 import pytest
+import test_utils
 from app import create_app
 from app.utils import date_utils
 
@@ -17,6 +18,22 @@ def enter_time_form(client):
     '''Utliity to get the time entry form for registration of time'''
     return client.get("/time/enter")
 
+@pytest.fixture
+def register_time_record_random(client):
+    tu = test_utils.TestUtils()
+    activity = tu.createRandomString()
+    time_start = datetime.datetime.now()
+    time_end = datetime.timedelta(minutes=1)
+    return register_time_record(client,activity,time_start,time_end)
+
+def register_time_record(client,activity,time_start,time_end):
+    '''Utility method to send a time registration record to the endpoint'''
+    return client.post("/time/register", data=dict(
+        activity = activity,
+        time_start = time_start,
+        time_end = time_end
+        ), follow_redirects=True    
+    )
 
 def test_enter_time_endpoint_exists(client,enter_time_form):
     '''Test there is an endpoint which is called /time/enter'''
@@ -76,3 +93,11 @@ def test_enter_time_form_input_field_properties(enter_time_form):
     rv = enter_time_form
     assert b'<input name="start" size="5"' in rv.data
     assert b'<input name="end" size="5"' in rv.data
+
+def test_time_register_endpoint_exists(client):
+    rv = client.get("/time/register")
+    assert rv.status_code == 200
+
+def test_time_register_entry(client,register_time_record_random):
+    rv = register_time_record_random
+    assert b"Time registration registered" in rv.data
