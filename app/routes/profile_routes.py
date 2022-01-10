@@ -21,3 +21,8 @@ def create_profile():
     else:
         return_value = render_template('create_profile.html')
     return return_value
+
+@bp.route("/info")
+def profile_info():
+    '''Endpoint to inform about user info'''
+    return "This is the profile info endpoint"

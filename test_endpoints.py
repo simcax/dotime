@@ -86,6 +86,16 @@ def test_login(client,create_user):
     assert rv.status_code == 200
     assert b"You are logged in." in rv.data
 
+def test_loggedin_user_info_endpoint(client):
+    '''Test the user info endpoint exists'''
+    rv = client.get("/profile/info")
+    assert rv.status_code == 200
+
+def test_login_session_var_set(client, create_user):
+    '''Test a user is logged in and session variables are set accordingly'''
+    rv = login(client,create_user['email'],create_user['password'])
+    assert client.get("/user/info")
+
 def test_login_fails(client,create_user):
     tu = TestUtils()
     random_string = tu.createRandomString()

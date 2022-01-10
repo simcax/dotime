@@ -1,5 +1,5 @@
 '''Routes for auth/login to the application'''
-from flask import Blueprint, render_template, request, flash
+from flask import Blueprint, render_template, request, flash, session
 from app.profile.profile import ProfileHandling
 bp1 = Blueprint('auth_blueprint', __name__, url_prefix='/auth')
 
