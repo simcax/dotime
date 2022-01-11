@@ -1,5 +1,6 @@
 '''Do Time Flask App'''
 from os import environ, urandom
+from socket import gethostname
 from flask import Flask, render_template, send_from_directory, session
 from flask_session import Session
 import redis
@@ -35,7 +36,9 @@ def create_app(test_config=None):
         app.register_blueprint(time_routes.bp)
         @app.route("/")
         def home():
-            return render_template('home.html')
+            version = environ.get("VERSION")
+            hostname = gethostname()
+            return render_template('home.html', hostname=hostname, version=version)
         @app.route("/background.css")
         def background_css():
             return send_from_directory('static/css','background.css',mimetype='text/css')
