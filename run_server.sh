@@ -30,4 +30,5 @@ export REDIS_HOST=localhost
 export FLASK_APP=app
 export FLASK_ENV=DEVELOPMENT
 export FLASK_DEBUG=TRUE
+export VERSION=x.x.x
 flask run --host 0.0.0.0 --port 25000

@@ -21,6 +21,7 @@ def register_time():
         activity = request.form['activity']
         time_start = request.form['time_start']
         time_end = request.form['time_end']
-        return "Time registration registered"
+        return_string =  "Time registration registered"
     else:
-        return "GET not allowed"
+        return_string = "GET not allowed"
+    return return_string
