@@ -1,6 +1,8 @@
 '''Routes for auth/login to the application'''
 import functools
-from flask import Blueprint, render_template, request, flash, session, g, redirect, url_for, current_app
+from flask import (
+    Blueprint, render_template, request, flash, session, g, redirect, url_for, current_app
+)
 from app.profile.profile import ProfileHandling
 
 from app.auth.authentication import Authentication
@@ -49,7 +51,6 @@ def unauthorized():
 def load_logged_in_user():
     '''Method checking if the user has a session'''
     user_id = session.get('user_id')
-    
     current_app.logger.debug("load_logged_in_user user_id is currently: %s", user_id)
     if user_id is None:
         g.user = None

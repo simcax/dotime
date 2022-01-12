@@ -1,7 +1,7 @@
 '''Class for authentication'''
 from psycopg2 import DatabaseError
-from app.db import database
 from flask import current_app
+from app.db import database
 
 class Authentication:
     '''Class for handling authentication'''

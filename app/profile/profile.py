@@ -78,7 +78,7 @@ class ProfileHandling:
                 if cur.rowcount >= 1:
                     row = cur.fetchone()
                     if self.validate_password(row[1],password):
-                       users_id = row[0]
+                        users_id = row[0]
         except DatabaseError as error:
             print(f"Problem performing sql: {sql} - Error: {error}")
         finally:
