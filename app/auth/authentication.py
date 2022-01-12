@@ -1,6 +1,7 @@
 '''Class for authentication'''
 from psycopg2 import DatabaseError
 from app.db import database
+from flask import current_app
 
 class Authentication:
     '''Class for handling authentication'''
@@ -13,7 +14,7 @@ class Authentication:
             try:
                 sql = f"SELECT username, email FROM soc.users \
                     WHERE usersid = '{uuid}'"
-                #logger.info("select_user sql: %s",sql)
+                current_app.logger.info("select_user sql: %s",sql)
                 cursor.execute(sql)
                 if cursor.rowcount != 0:
                     user_data = cursor.fetchone()
@@ -21,12 +22,13 @@ class Authentication:
                     user['usersid'] = uuid
                     user['username'] = user_data[0]
                     user['email'] = user_data[1]
-                    #logger.info("select_user found username: %s",user['username'])
-
+                    current_app.logger.info("select_user found username: %s",user['username'])
+                else:
+                    current_app.logger.info("No user found.")
                 #logger.info(sql)
             except DatabaseError as error:
                 #logger.error(error)
-                print(error)
+                current_app.logger.error(error)
             finally:
                 conn.close()
         return user

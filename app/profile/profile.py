@@ -69,19 +69,18 @@ class ProfileHandling:
         try:
             db_obj = Database()
             conn = db_obj.connect()
-            validated = False
+            users_id = None
             with conn.cursor() as cur:
-                sql = f"SELECT u.username, u.email, p.passwordhash FROM soc.users u \
+                sql = f"SELECT u.usersid, p.passwordHash FROM soc.users u \
                     INNER JOIN soc.userpasswords p ON u.usersid = p.usersid \
                     WHERE u.email = '{email}'"
                 cur.execute(sql)
                 if cur.rowcount >= 1:
                     row = cur.fetchone()
-                    validated = self.validate_password(row[2],password)
-                else:
-                    validated = False
+                    if self.validate_password(row[1],password):
+                       users_id = row[0]
         except DatabaseError as error:
             print(f"Problem performing sql: {sql} - Error: {error}")
         finally:
             conn.close()
-        return validated
+        return users_id

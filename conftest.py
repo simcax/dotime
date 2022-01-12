@@ -11,6 +11,11 @@ def client():
         yield client
 
 @pytest.fixture
+def app_test_context():
+    app = create_app()
+    return app.app_context()
+
+@pytest.fixture
 def create_user():
     '''Provide a test user'''
     tu = TestUtils()

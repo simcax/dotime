@@ -1,7 +1,8 @@
 '''Routes for auth/login to the application'''
 import functools
-from flask import Blueprint, render_template, request, flash, session, g, redirect, url_for
+from flask import Blueprint, render_template, request, flash, session, g, redirect, url_for, current_app
 from app.profile.profile import ProfileHandling
+
 from app.auth.authentication import Authentication
 bp1 = Blueprint('auth_blueprint', __name__, url_prefix='/auth')
 
@@ -13,8 +14,10 @@ def login():
         email = request.form['email']
         password = request.form['password']
         prof = ProfileHandling()
-        authenticated = prof.check_credentials(email,password)
-        if authenticated:
+        user_id = prof.check_credentials(email,password)
+        if user_id:
+            session['user_id'] = user_id
+            current_app.logger.info("User is authenticated")
             return_is = render_template('loggedin.html')
         else:
             flash("Error logging you in.")
@@ -46,7 +49,8 @@ def unauthorized():
 def load_logged_in_user():
     '''Method checking if the user has a session'''
     user_id = session.get('user_id')
-    #logger.debug("load_logged_in_user user_id is currently: %s", user_id)
+    
+    current_app.logger.debug("load_logged_in_user user_id is currently: %s", user_id)
     if user_id is None:
         g.user = None
     else:

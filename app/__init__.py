@@ -1,6 +1,7 @@
 '''Do Time Flask App'''
 from os import environ, urandom
 from socket import gethostname
+import logging
 from flask import Flask, render_template, send_from_directory, session
 from flask_session import Session
 import redis

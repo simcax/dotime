@@ -1,21 +1,21 @@
 ''''Test authentication methods'''
 import pytest
+from conftest import app_test_context
 from test_utils import TestUtils
 from app.profile.profile import ProfileHandling
 from app.auth import authentication
 
-
-
-def test_get_user_by_uuid():
-    '''Test getting user data by uuid'''
-    tu = TestUtils()
-    username = tu.createRandomString()
-    password = tu.createRandomString()
-    email = tu.createRandomEmail()
-    prof = ProfileHandling()
-    user_id = prof.add_user(username,password,email)
-    auth = authentication.Authentication()
-    user_data = auth.get_user_data(user_id['users_id'])
+def test_get_user_by_uuid(app_test_context):
+    '''Test getting user data by uuid'''    
+    with app_test_context:
+        tu = TestUtils()
+        username = tu.createRandomString()
+        password = tu.createRandomString()
+        email = tu.createRandomEmail()
+        prof = ProfileHandling()
+        user_id = prof.add_user(username,password,email)
+        auth = authentication.Authentication()
+        user_data = auth.get_user_data(user_id['users_id'])
     assert user_data['username'] == username
     assert user_data['email'] == email
 

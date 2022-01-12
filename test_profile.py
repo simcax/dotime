@@ -44,5 +44,5 @@ def test_check_password():
     assert isinstance(user_id,dict)
     # Now check the methods behind the user login
     prof = ProfileHandling()
-    logged_in = prof.check_credentials(email,password)    
-    assert logged_in == True
+    user_id = prof.check_credentials(email,password)    
+    assert user_id != None
