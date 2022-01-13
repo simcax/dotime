@@ -1,4 +1,4 @@
-FROM python:3.10.0b2
+FROM python:3.11.0a3-slim-bullseye
 LABEL maintainer="carsten@skov.codes"
 RUN apt update
 RUN apt install -y gunicorn3
