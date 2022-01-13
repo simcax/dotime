@@ -40,12 +40,10 @@ def login_required(view):
 
     return wrapped_view
 
-
 @bp1.route("/unauthorized")
 @login_required
 def unauthorized():
     '''Endpoint to test for redirection to login due to unatuhorized access'''
-
 
 @bp1.before_app_request
 def load_logged_in_user():
