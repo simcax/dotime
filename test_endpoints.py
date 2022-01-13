@@ -157,4 +157,13 @@ def test_cookie_flags_2(client, create_user):
 
 def test_profile_endpoint(client):
     rv = client.get("/profile/me")
-    assert rv.status_code == 200
+    assert rv.status_code == 302
+
+def test_profile_endpoint_not_logged_in(client):
+    '''
+        Test we are being redirected to login when accessing the profile/me endpoint
+        when we are not logged in
+    '''
+    rv = client.get("/profile/me")
+    assert rv.location.endswith("/auth/login")
+

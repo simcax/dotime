@@ -1,6 +1,7 @@
 '''Class to handle new users'''
 from werkzeug.security import check_password_hash, generate_password_hash
 from psycopg2 import DatabaseError
+from flask import current_app
 from app.db.database import Database
 class ProfileHandling:
     '''Profile handling'''
@@ -84,3 +85,24 @@ class ProfileHandling:
         finally:
             conn.close()
         return users_id
+
+    def get_user_data(self,user_id):
+        '''Retrieves a users profile data'''
+        return_value = False
+        try:
+            db_obj = Database()
+            conn = db_obj.connect()
+            with conn.cursor() as cur:
+                sql = f"SELECT username, email FROM soc.users \
+                        WHERE usersid = '{user_id}'\
+                    "
+                cur.execute(sql)
+                if cur.rowcount >= 1:
+                    row = cur.fetchone()
+                    userdata = { 'username': row[0], 'email': row[1]}
+                    return_value = userdata
+        except DatabaseError as error:
+            current_app.logger.error("Problem running sql %s, error: %s", sql, error)
+        finally:
+            conn.close()
+        return return_value

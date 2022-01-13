@@ -1,8 +1,8 @@
 '''Routes for profile creation'''
 
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request,session
 from app.profile.profile import ProfileHandling
-
+from app.auth.authentication import login_required
 bp = Blueprint('profile_blueprint', __name__, url_prefix='/profile')
 
 @bp.route("/create", methods=["GET", "POST"])
@@ -28,6 +28,10 @@ def profile_info():
     return "This is the profile info endpoint"
 
 @bp.route("/me")
+@login_required
 def profile():
     '''Endpoint to show information about your own profile'''
-    return "Profile info"
+    prof = ProfileHandling()
+    users_id = session['user_id']
+    userdata = prof.get_user_data(users_id)
+    return render_template("profile_me.html", userdata=userdata)

@@ -46,3 +46,16 @@ def test_check_password():
     prof = ProfileHandling()
     user_id = prof.check_credentials(email,password)    
     assert user_id != None
+
+def test_retrieve_profile_data():
+    '''Test getting profile data'''
+    prof = ProfileHandling()
+    tu = TestUtils()
+    username = tu.createRandomString()
+    password = tu.createRandomString()
+    email = tu.createRandomEmail()
+    prof = ProfileHandling()
+    user_id = prof.add_user(username,password,email)
+    userdata = prof.get_user_data(user_id.get('users_id'))
+    assert username == userdata['username']
+    assert email == userdata['email']

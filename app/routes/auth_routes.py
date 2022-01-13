@@ -1,11 +1,12 @@
 '''Routes for auth/login to the application'''
-import functools
 from flask import (
-    Blueprint, render_template, request, flash, session, g, redirect, url_for, current_app
+    Blueprint, render_template, request, flash, session, g, current_app
 )
 from app.profile.profile import ProfileHandling
 
-from app.auth.authentication import Authentication
+from app.auth.authentication import Authentication, login_required
+
+
 bp1 = Blueprint('auth_blueprint', __name__, url_prefix='/auth')
 
 @bp1.route("/login", methods=["GET", "POST"])
@@ -29,16 +30,6 @@ def login():
 
     return return_is
 
-def login_required(view):
-    '''Force login for endpoints, which require it'''
-    @functools.wraps(view)
-    def wrapped_view(**kwargs):
-        if g.user is None:
-            return redirect(url_for('auth_blueprint.login'))
-
-        return view(**kwargs)
-
-    return wrapped_view
 
 @bp1.route("/unauthorized")
 @login_required
