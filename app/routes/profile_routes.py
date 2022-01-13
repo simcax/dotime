@@ -26,3 +26,8 @@ def create_profile():
 def profile_info():
     '''Endpoint to inform about user info'''
     return "This is the profile info endpoint"
+
+@bp.route("/me")
+def profile():
+    '''Endpoint to show information about your own profile'''
+    return "Profile info"

@@ -154,3 +154,7 @@ def test_cookie_flags_2(client, create_user):
     cookie_headers = rv.headers['set-cookie']
     # Make sure a cookie with the name DoTime is in the header
     assert 'Secure' in cookie_headers
+
+def test_profile_endpoint(client):
+    rv = client.get("/profile/me")
+    assert rv.status_code == 200
