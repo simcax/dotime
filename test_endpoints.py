@@ -167,3 +167,15 @@ def test_profile_endpoint_not_logged_in(client):
     rv = client.get("/profile/me")
     assert rv.location.endswith("/auth/login")
 
+# def test_profile_endpoint_update_profile_exists(client):
+#     '''Test the update profile endpoint exists'''
+#     rv = client.post("/profile/update")
+#     assert rv.status_code == 200
+
+# def test_profile_endpoint_update_profile_1(client,create_user):
+#     '''Tests updating the email address on a profile'''
+#     login(client,create_user['email'],create_user['password'])
+#     tu = TestUtils()
+#     new_email = tu.createRandomEmail()
+#     rv = client.post("/profile/update", data=dict( new_email = new_email))
+#     assert b"Profile updated" in rv.data

@@ -119,7 +119,11 @@ class ProfileHandling:
                     WHERE usersid = '{users_id}'"
                 cur.execute(sql)
                 updated = bool( cur.rowcount == 1)
-                conn.commit()
+                if updated:
+                    current_app.logger.info("userid %s updated", users_id)
+                    conn.commit()
+                else:
+                    current_app.logger.warning("userid %s was not updated", users_id)
         except DatabaseError as error:
             current_app.logger.error("Problem running sql %s, error: %s", sql, error)
         finally:

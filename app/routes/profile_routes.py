@@ -1,6 +1,6 @@
 '''Routes for profile creation'''
 
-from flask import Blueprint, render_template, request,session
+from flask import Blueprint, render_template, request,session, flash
 from app.profile.profile import ProfileHandling
 from app.auth.authentication import login_required
 bp = Blueprint('profile_blueprint', __name__, url_prefix='/profile')
@@ -35,3 +35,18 @@ def profile():
     users_id = session['user_id']
     userdata = prof.get_user_data(users_id)
     return render_template("profile_me.html", userdata=userdata)
+
+@bp.route("/update", methods=["POST"])
+def update_profile():
+    '''Endpoint for updating a profile'''
+    # Mock userdata for now
+    prof = ProfileHandling()
+    users_id = session['user_id']
+    userdata = prof.get_user_data(users_id)
+    #userdata = {'email': "", 'username': ""}
+    new_email = request.form['profileEmail']
+    if prof.update_profile(users_id,new_email):
+        flash("Profile updated")
+    else:
+        flash("Profile update failed")
+    return render_template("profile_me.html", userdata = userdata)

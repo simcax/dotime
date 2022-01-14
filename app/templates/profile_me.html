@@ -5,7 +5,7 @@
     <div class="card" style="width: 50rem;">
         <div class="card-body">
             <h5 class="card-title">Profile Information</h5>
-            <form action="/profile/edit" method="POST"> 
+            <form action="/profile/update" method="POST"> 
                 <div class="form-group">
                     <label for="username">Username</label>
                     <input type="text" class="form-control" id="username" placeholder="Username" name="profileUsername" value="{{ userdata['username'] }}" readonly>
@@ -20,6 +20,15 @@
                     <div class="col">
 
                     </div>
+                    {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                    <div class="form-group alert alert-danger" role="alert">
+                        {% for message in messages %}
+                        {{ message }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% endwith %}
                     <div class="col">
                         <button type="submit" class="btn btn-success float-right" >Update Profile</button>    
                     </div>
