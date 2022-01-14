@@ -59,3 +59,18 @@ def test_retrieve_profile_data():
     userdata = prof.get_user_data(user_id.get('users_id'))
     assert username == userdata['username']
     assert email == userdata['email']
+
+def test_edit_profile_data():
+    '''Test email address can be changed on a profile'''
+    prof = ProfileHandling
+    tu = TestUtils()
+    username = tu.createRandomString()
+    password = tu.createRandomString()
+    email = tu.createRandomEmail()
+    prof = ProfileHandling()
+    user_id = prof.add_user(username,password,email)
+    new_email = tu.createRandomEmail()
+    update_succeeded = prof.update_profile(users_id=user_id.get('users_id'), email=new_email)
+    assert update_succeeded == True
+    userdata = prof.get_user_data(user_id.get('users_id'))
+    assert userdata['email'] == new_email

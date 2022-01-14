@@ -106,3 +106,22 @@ class ProfileHandling:
         finally:
             conn.close()
         return return_value
+
+    def update_profile(self,users_id, email):
+        '''Updates the email address on a profile by uuid'''
+        updated = False
+        try:
+            db_obj = Database()
+            conn = db_obj.connect()
+            with conn.cursor() as cur:
+                sql = f"UPDATE soc.users \
+                    SET email = '{email}' \
+                    WHERE usersid = '{users_id}'"
+                cur.execute(sql)
+                updated = bool( cur.rowcount == 1)
+                conn.commit()
+        except DatabaseError as error:
+            current_app.logger.error("Problem running sql %s, error: %s", sql, error)
+        finally:
+            conn.close()
+        return updated
