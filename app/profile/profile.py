@@ -1,7 +1,8 @@
 '''Class to handle new users'''
+from typing import final
 from werkzeug.security import check_password_hash, generate_password_hash
 from psycopg2 import DatabaseError
-from flask import current_app
+from flask import current_app, flash
 from app.db.database import Database
 class ProfileHandling:
     '''Profile handling'''
@@ -129,3 +130,31 @@ class ProfileHandling:
         finally:
             conn.close()
         return updated
+
+    def change_password(self,users_id, new_password):
+        password_changed = False
+        try:
+            password_hash = self.create_password(new_password)
+            db_obj = Database()
+            conn = db_obj.connect()
+            with conn.cursor() as cur:
+                sql = f"UPDATE soc.userPasswords SET passwordHash = '{password_hash}' WHERE usersid = '{users_id}'"
+                cur.execute(sql)
+                password_changed = bool(cur.rowcount == 1)
+                conn.commit()
+        except DatabaseError as error:
+            current_app.logger.error("Error during sql execution. Error: %s", error)
+        finally:
+            conn.close()
+        return password_changed
+
+    def update_password(self,users_id, email, current_password, new_password):
+        '''Method to change password on a user'''
+        if self.check_credentials(email,current_password) == users_id:
+            password_changed = self.change_password(users_id, new_password)
+        else:
+            flash("Current password not correct")
+            current_app.logger.warning("Users current password did not match")
+            password_changed = False
+        return password_changed
+        

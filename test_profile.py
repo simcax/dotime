@@ -75,3 +75,16 @@ def test_edit_profile_data(app_test_context):
         assert update_succeeded == True
         userdata = prof.get_user_data(user_id.get('users_id'))
         assert userdata['email'] == new_email
+
+def test_update_password(create_user):
+    tu = TestUtils()
+    prof = ProfileHandling()
+    new_password = tu.createRandomString()
+    username = tu.createRandomString()
+    password = tu.createRandomString()
+    email = tu.createRandomEmail()
+    prof = ProfileHandling()
+    user_info = prof.add_user(username,password,email)
+
+    password_updated = prof.update_password(user_info['users_id'], user_info['email'], password,new_password)
+    assert password_updated == True
