@@ -50,3 +50,9 @@ def update_profile():
     else:
         flash("Profile update failed")
     return render_template("profile_me.html", userdata = userdata)
+
+@bp.route("/changePassword")
+@login_required
+def change_password():
+    '''Endpoint for the change password form'''
+    return render_template("change_password.html")

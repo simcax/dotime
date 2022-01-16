@@ -179,3 +179,14 @@ def test_profile_endpoint_not_logged_in(client):
 #     new_email = tu.createRandomEmail()
 #     rv = client.post("/profile/update", data=dict( new_email = new_email))
 #     assert b"Profile updated" in rv.data
+
+def test_profile_change_password_form_exists(client):
+    '''Test an endpoint exist for the update password form'''
+    rv = client.get("/profile/changePassword")
+    assert rv.status_code == 302
+
+def test_profile_change_password_form_exists(client,create_user):
+    '''Test an endpoint exist for the update password form'''
+    login(client,create_user['email'],create_user['password'])
+    rv = client.get("/profile/changePassword")
+    assert rv.status_code == 302
