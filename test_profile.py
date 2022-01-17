@@ -88,3 +88,10 @@ def test_update_password(create_user):
 
     password_updated = prof.update_password(user_info['users_id'], user_info['email'], password,new_password)
     assert password_updated == True
+
+def test_get_email_by_uuid(create_user):
+    '''Look up a users email addresse by uuid'''
+    user_id = create_user['user_id']
+    prof = ProfileHandling()
+    email = prof.get_email_by_uuid(user_id['users_id'])
+    assert email == create_user['email']

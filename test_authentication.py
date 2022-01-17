@@ -23,3 +23,15 @@ def test_redirect_to_login_on_unauthorized_endpoint(client):
     rv = client.get("/auth/unauthorized")
     assert rv.status_code == 302
     assert rv.location.endswith('/auth/login')
+
+def login(client,email,password):
+    ''''Helper function to login a user'''
+    return client.post('/auth/login', data=dict(
+    email = email,
+    password = password 
+    ), follow_redirects = True)
+
+# def test_authorized_endpoint_after_login(client, create_user):
+#     login(client, create_user['email'], create_user['password'])
+#     rv = client.get("/auth/unauthorized")
+#     assert rv.status_code == 200

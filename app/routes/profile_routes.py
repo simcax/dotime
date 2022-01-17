@@ -1,6 +1,6 @@
 '''Routes for profile creation'''
 
-from flask import Blueprint, render_template, request,session, flash
+from flask import Blueprint, render_template, request,session, flash, g
 from app.profile.profile import ProfileHandling
 from app.auth.authentication import login_required
 bp = Blueprint('profile_blueprint', __name__, url_prefix='/profile')
@@ -51,8 +51,22 @@ def update_profile():
         flash("Profile update failed")
     return render_template("profile_me.html", userdata = userdata)
 
-@bp.route("/changePassword")
+@bp.route("/changePassword", methods=['GET','POST'])
 @login_required
 def change_password():
     '''Endpoint for the change password form'''
-    return render_template("change_password.html")
+    if request.method == 'GET':
+        return_is = render_template("change_password.html")
+    else:
+        if request.form['new_password_1'] == request.form['new_password_2']:
+            new_password = request.form['new_password_1']
+            users_id = session['user_id']
+            prof = ProfileHandling()
+            email = prof.get_email_by_uuid(users_id)
+            if prof.update_password(users_id,email,request.form['current_password'],new_password):
+                flash("Password changed")
+                return_is = render_template("change_password.html")
+        else:
+            flash("Passwords don't match")
+            return_is = render_template("change_password.html")
+    return return_is

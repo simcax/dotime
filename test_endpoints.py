@@ -187,6 +187,6 @@ def test_profile_change_password_form_exists(client):
 
 def test_profile_change_password_form_exists(client,create_user):
     '''Test an endpoint exist for the update password form'''
-    login(client,create_user['email'],create_user['password'])
+    rv = login(client,create_user['email'],create_user['password'])
     rv = client.get("/profile/changePassword")
     assert rv.status_code == 302

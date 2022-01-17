@@ -1,6 +1,6 @@
 '''Routes for auth/login to the application'''
 from flask import (
-    Blueprint, render_template, request, flash, session, g, current_app
+    Blueprint, render_template, request, flash, session, g, current_app, redirect, url_for
 )
 from app.profile.profile import ProfileHandling
 
@@ -30,6 +30,12 @@ def login():
 
     return return_is
 
+@bp1.route("/logout")
+def logout():
+    '''Log out user'''
+    session.clear()
+    flash("Logged out")
+    return redirect(url_for('home'))
 
 @bp1.route("/unauthorized")
 @login_required

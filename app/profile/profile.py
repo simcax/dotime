@@ -158,3 +158,21 @@ class ProfileHandling:
             password_changed = False
         return password_changed
         
+    def get_email_by_uuid(self, user_id):
+        '''Method to get email by supplying uuid'''
+        email = False
+        try:
+            db_obj = Database()
+            conn = db_obj.connect()
+            with conn.cursor() as cur:
+                sql = f"SELECT email FROM soc.users WHERE usersid = '{user_id}'"
+                cur.execute(sql)
+                if cur.rowcount == 1:
+                    email = cur.fetchone()[0]
+        except DatabaseError as error:
+            current_app.logger.error("Error performing sql query. SQL %s - error %s", sql, error)
+        finally:
+            conn.close()
+        return email
+
+            
