@@ -17,6 +17,7 @@ def create_app(test_config=None):
         SESSION_PERMANENT = True,
         SESSION_USE_SIGNER = True,
         SESSION_COOKIE_SECURE = True,
+        SESSION_COOKIE_SAMESITE = 'Strict',
         SESSION_COOKIE_DOMAIN = environ.get('SESSION_COOKIE_DOMAIN','127.0.0.1'),
         SESSION_COOKIE_NAME = environ.get('SESSION_COOKIE_NAME','DoTime')
     )
