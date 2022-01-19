@@ -23,3 +23,21 @@ class SettingsHandling:
         finally:
             conn.close()
         return setting_added
+
+    def get_settings(self, user_id):
+        '''Retrieve all settings for a user'''
+        settings = {}
+        try:
+            db_obj = Database()
+            conn = db_obj.connect()
+            with conn.cursor() as cur:
+                sql = f"SELECT settingName, settingValue FROM soc.userSettings\
+                    WHERE usersId = '{user_id}'"
+                cur.execute(sql)
+                if cur.rowcount >= 1:
+                    settings = cur.fetchall()
+        except DatabaseError as error:
+            current_app.logger.error("Error executing sql: %s, error: %s", sql, error)
+        finally:
+            conn.close()
+        return settings
