@@ -35,4 +35,15 @@ def test_get_settings_endpoint(client):
     '''Test the settings endpoint exists'''
     rv = client.get("/profile/settings")
     assert rv.status_code == 302
+
+def test_set_defaults_on_no_settings(create_user):
+    '''Tests adding sane default settings to a user, if there are no settings'''
+    settings = SettingsHandling()
+    userdata = create_user['user_id']
+    user_id = userdata['users_id']
+    user_settings = settings.get_settings(user_id)
+    assert len(user_settings) == 0
+    settings.add_defaults(user_id)
+    user_settings_2 = settings.get_settings(user_id)
+    assert len(user_settings_2) == 10
     

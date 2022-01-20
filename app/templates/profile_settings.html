@@ -5,16 +5,11 @@
     <div class="card" style="width: 50rem;">
         <div class="card-body">
             <h5 class="card-title">Profile Information</h5>
-            <form action="/profile/update" method="POST"> 
+            <form action="/profile/settings" method="POST"> 
                 <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" class="form-control" id="username" placeholder="Username" name="profileUsername" value="{{ userdata['username'] }}" readonly>
-                </div>
-                <div class="form-row">
-                    <div class="col">
-                        <label for="email">Email address</label>
-                        <input type="text" class="form-control" id="email" placeholder="Email" name="profileEmail" value="{{ userdata['email'] }}">
-                    </div>
+                    <label for="workdayLengthHours">Workday length</label>
+                    <input type="number" minlength="1" maxlength="2" size="2" class="form-control" id="workdayLengthHours" placeholder="08" name="workdayLengthHours" value="{{ settings['workdayLengthHours'] }}">
+                    <input type="number" minlength="2" maxlength="2" class="form-control" id="workdayLengthMinutes" placeholder="00" name="workdayLengthMinutes" value="{{ settings['workdayLengthMinutes'] }}">
                 </div>
                 <div class="form-row">
                     <div class="col">
@@ -30,7 +25,7 @@
                     {% endif %}
                     {% endwith %}
                     <div class="col">
-                        <button type="submit" class="btn btn-success float-right" >Update Profile</button>    
+                        <button type="submit" class="btn btn-success float-right" >Update Settings</button>    
                     </div>
                 </div>
             </form>

@@ -41,3 +41,30 @@ class SettingsHandling:
         finally:
             conn.close()
         return settings
+
+    def add_defaults(self,user_id):
+        '''Add sane defaults to users profile'''
+        standard_workday_hours = 7
+        standard_workday_minutes = 30
+        # By default we consider a normal working week to be monday to friday
+        default_settings_added = False
+        for i in range(1,6):
+            # Define the standard hour count for a day
+            settings_name = f"workdayLength{i}Hour"
+            settings_value = standard_workday_hours
+            # Add standard hours for the day
+            hour_setting_added = self.add_setting(user_id,settings_name, settings_value)
+
+
+            # Define the standard minutes count for a day
+            settings_name = f"workdayLength{i}Minutes"
+            settings_value = standard_workday_minutes
+            # Add standard minutes count to the settings table for the day
+            minutes_setting_added = self.add_setting(user_id,settings_name,settings_value)
+            if minutes_setting_added and hour_setting_added:
+                default_settings_added = True
+                continue
+            else:
+                break
+        return default_settings_added
+            
