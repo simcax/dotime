@@ -12,7 +12,7 @@ def client():
 
 @pytest.fixture
 def app_test_context():
-    app = create_app()
+    app = create_app('Testing')
     return app.app_context()
 
 @pytest.fixture
@@ -41,3 +41,6 @@ def login(client,email,password):
     email = email,
     password = password 
     ), follow_redirects = True)
+
+def logout(client):
+    return client.get('/auth/logout', follow_redirects=True)
