@@ -1,5 +1,14 @@
 {% extends "header.html" %}
 {% block body %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div class="form-group alert alert-success" role="alert">
+    {% for message in messages %}
+    {{ message }}
+    {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
 Welcome to doTime! It will be awesome!!
 {% endblock %} 
 

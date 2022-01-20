@@ -70,3 +70,9 @@ def change_password():
             flash("Passwords don't match")
             return_is = render_template("change_password.html")
     return return_is
+
+@bp.route("/settings")
+@login_required
+def settings():
+    '''Endpoint for a user to edit settings'''
+    return "Settings"

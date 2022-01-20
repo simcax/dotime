@@ -1,7 +1,11 @@
+
 '''Test handling of settings for the users'''
+from venv import create
+import pytest
+from conftest import login, logout
 from app.profile.settings import SettingsHandling
 from test_utils import TestUtils
-import pytest
+
 
 def test_insert_data_to_setttings_table(create_user, app_test_context):
     with app_test_context:
@@ -26,3 +30,9 @@ def test_get_settings_for_user(create_user, app_test_context):
         assert value_added == True
         user_settings = settings.get_settings(user_id)
         assert len(user_settings) == 1
+
+def test_get_settings_endpoint(client):
+    '''Test the settings endpoint exists'''
+    rv = client.get("/profile/settings")
+    assert rv.status_code == 302
+    
