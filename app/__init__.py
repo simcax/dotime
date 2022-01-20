@@ -2,9 +2,10 @@
 from os import environ, urandom
 from socket import gethostname
 import logging
+import redis
 from flask import Flask, render_template, send_from_directory, session
 from flask_session import Session
-import redis
+
 
 def create_app(test_config=None):
     '''App factory'''

@@ -1,12 +1,11 @@
 '''Handling of settings for users'''
 from psycopg2 import DatabaseError
-from psycopg2.extras import RealDictCursor
 from flask import current_app
 from app.db.database import Database
 
 class SettingsHandling:
     '''Class for handling sessions for users'''
-    def add_setting(self, user_id, settingName, settingValue):
+    def add_setting(self, user_id, setting_name, setting_value):
         '''Add a setting to the settings table'''
         setting_added = False
         try:
@@ -14,7 +13,7 @@ class SettingsHandling:
             conn = db_obj.connect()
             with conn.cursor() as cur:
                 sql = f"INSERT INTO soc.userSettings (usersId, settingName, settingValue) \
-                    VALUES ('{user_id}','{settingName}','{settingValue}')"
+                    VALUES ('{user_id}','{setting_name}','{setting_value}')"
                 cur.execute(sql)
                 if cur.rowcount == 1:
                     conn.commit()
@@ -63,14 +62,14 @@ class SettingsHandling:
                 minutes = 0
             # Define the standard hour count for a day
             settings_name = f"workdayLength{i}Hour"
-            settings_value = standard_workday_hours
+            settings_value = hours
             # Add standard hours for the day
             hour_setting_added = self.add_setting(user_id,settings_name, settings_value)
 
 
             # Define the standard minutes count for a day
             settings_name = f"workdayLength{i}Minutes"
-            settings_value = standard_workday_minutes
+            settings_value = minutes
             # Add standard minutes count to the settings table for the day
             minutes_setting_added = self.add_setting(user_id,settings_name,settings_value)
             if minutes_setting_added and hour_setting_added:
@@ -79,8 +78,9 @@ class SettingsHandling:
             else:
                 break
         return default_settings_added
-            
+
     def get_workweek_day_lengths(self,user_id):
+        '''Get the profiles settings for the workweek'''
         settings = self.get_settings(user_id)
         workweek_day_lengths = {k: v for k, v in settings.items() if k.startswith('workdayLength')}
         return workweek_day_lengths

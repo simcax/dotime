@@ -1,6 +1,6 @@
 '''Routes for profile creation'''
 
-from flask import Blueprint, render_template, request,session, flash, g, current_app
+from flask import Blueprint, render_template, request,session, flash
 from app.profile.profile import ProfileHandling
 from app.profile.settings import SettingsHandling
 from app.auth.authentication import login_required
@@ -74,7 +74,7 @@ def change_password():
 
 @bp.route("/settings")
 @login_required
-def settings():
+def profile_settings():
     '''Endpoint for a user to edit settings'''
     settings_obj = SettingsHandling()
     settings = settings_obj.get_settings(session['user_id'])

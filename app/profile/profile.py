@@ -132,6 +132,7 @@ class ProfileHandling:
         return updated
 
     def change_password(self,users_id, new_password):
+        '''Method to change password for a user'''
         password_changed = False
         try:
             password_hash = self.create_password(new_password)
@@ -157,7 +158,7 @@ class ProfileHandling:
             current_app.logger.warning("Users current password did not match")
             password_changed = False
         return password_changed
-        
+
     def get_email_by_uuid(self, user_id):
         '''Method to get email by supplying uuid'''
         email = False
@@ -174,5 +175,3 @@ class ProfileHandling:
         finally:
             conn.close()
         return email
-
-            
