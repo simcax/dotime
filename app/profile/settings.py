@@ -1,5 +1,6 @@
 '''Handling of settings for users'''
 from psycopg2 import DatabaseError
+from psycopg2.extras import RealDictCursor
 from flask import current_app
 from app.db.database import Database
 
@@ -35,7 +36,10 @@ class SettingsHandling:
                     WHERE usersId = '{user_id}'"
                 cur.execute(sql)
                 if cur.rowcount >= 1:
-                    settings = cur.fetchall()
+                    rows = cur.fetchall()
+                    for row in rows:
+                        this_setting = { row[0]: row[1]}
+                        settings.update(this_setting)
         except DatabaseError as error:
             current_app.logger.error("Error executing sql: %s, error: %s", sql, error)
         finally:
@@ -48,7 +52,15 @@ class SettingsHandling:
         standard_workday_minutes = 30
         # By default we consider a normal working week to be monday to friday
         default_settings_added = False
-        for i in range(1,6):
+        for i in range(1,8):
+            # Let's add Monday to Friday with default hours
+            # And weekends as zero hours
+            if i < 6:
+                hours = standard_workday_hours
+                minutes = standard_workday_minutes
+            else:
+                hours = 0
+                minutes = 0
             # Define the standard hour count for a day
             settings_name = f"workdayLength{i}Hour"
             settings_value = standard_workday_hours
@@ -68,3 +80,7 @@ class SettingsHandling:
                 break
         return default_settings_added
             
+    def get_workweek_day_lengths(self,user_id):
+        settings = self.get_settings(user_id)
+        workweek_day_lengths = {k: v for k, v in settings.items() if k.startswith('workdayLength')}
+        return workweek_day_lengths
