@@ -80,4 +80,6 @@ def profile_settings():
     settings = settings_obj.get_settings(session['user_id'])
     if len(settings) == 0:
         settings_obj.add_defaults(session['user_id'])
-    return render_template("profile_settings.html", settings = settings)
+        settings = settings_obj.get_settings(session['user_id'])
+    workweek_day_lengths = settings_obj.get_workweek_day_lengths(session['user_id'])
+    return render_template("profile_settings.html", settings = settings, workday_lengths = workweek_day_lengths)
