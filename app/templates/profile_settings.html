@@ -12,11 +12,26 @@
                     <label for="workdayLengthHours">Workday length</label>
                     {% for i in range(1,8) %}
                     {% set istr = i | string() %}
-                    {% set minutes_key = 'workdayLength'+istr %}
+                    {% set minutes_key = 'workdayLength'+istr+'Minutes' %}
                     {% set minutes = workday_lengths[minutes_key] %}
-                    
-                    <input type="number" minlength="1" maxlength="2" size="2" class="form-control" id="workdayLength{{ i }}Hours" name="workdayLength{{ i }}Hours" value="{{ workday_lengths['workdayLength{{ i }}Hours'] }}">
-                    <input type="number" minlength="1" maxlength="2" size="2" class="form-control" id="workdayLength{{ i }}Minutes" name="workdayLength{{ i }}Minutes" value="{{ minutes_key }}">
+                    {% set hours_key = 'workdayLength'+istr+'Hour' %}
+                    {% set hours = workday_lengths[hours_key] %}
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-2">
+                                <label for="{{ hours_key }}">{{ workday_lengths['workdayName'+istr] }}</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                
+                                <input type="number" minlength="1" maxlength="2" size="2" class="form-control" id="{{ hours_key }}" name="{{ hours_key }}" value="{{ hours }}">
+                            </div>
+                            <div class="col">
+                                <input type="number" minlength="1" maxlength="2" size="2" class="form-control" id="{{ minutes_key }}" name="{{ minutes_key }}" value="{{ minutes }}">
+                            </div>
+                        </div>
+                    </div>
                     {% endfor %}
                 </div>
                 <div class="form-row">
@@ -33,7 +48,7 @@
                     {% endif %}
                     {% endwith %}
                     <div class="col">
-                        <button type="submit" class="btn btn-success float-right" >Update Settings</button>    
+                        <!-- <button type="submit" class="btn btn-success float-right" >Update Settings</button>    -->
                     </div>
                 </div>
             </form>

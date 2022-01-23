@@ -83,4 +83,13 @@ class SettingsHandling:
         '''Get the profiles settings for the workweek'''
         settings = self.get_settings(user_id)
         workweek_day_lengths = {k: v for k, v in settings.items() if k.startswith('workdayLength')}
+        # Add workday names to the mix
+        from app.utils import date_utils
+        datahelp = date_utils.DoTimeDataHelp()
+        all_days = datahelp.all_days('en')
+        i=0
+        for day in all_days:
+            workweek_day_lengths[f'workdayName{i+1}'] = all_days[i]
+            i+=1
+            current_app.logger.debug(workweek_day_lengths)
         return workweek_day_lengths
