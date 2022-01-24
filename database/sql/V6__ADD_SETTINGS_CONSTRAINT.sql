@@ -1,0 +1,1 @@
+ALTER TABLE soc.usersettings ADD CONSTRAINT one_setting_per_user UNIQUE (usersid,settingname,settingvalue);

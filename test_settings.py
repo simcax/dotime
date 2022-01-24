@@ -4,8 +4,8 @@ from venv import create
 import pytest
 from conftest import login, logout
 from app.profile.settings import SettingsHandling
+from app.db import database
 from test_utils import TestUtils
-
 
 def test_insert_data_to_setttings_table(create_user, app_test_context):
     with app_test_context:
@@ -63,3 +63,21 @@ def test_get_workday_defaults(create_user, app_test_context):
         for i in range(1,8):
             assert workweek_day_lengths.get(f"workdayLength{i}Hour", 'empty') != 'empty'
             assert workweek_day_lengths.get(f"workdayLength{i}Minutes", 'empty') != 'empty'
+
+def test_inserting_duplicate_settings_for_user(create_user,app_test_context):
+    '''Test a setting will be updated when adding a setting already in the settings table'''
+    with app_test_context:
+        tu = TestUtils()
+        setting_name = tu.createRandomString()
+        setting_value = tu.createRandomString()
+        settings = SettingsHandling()
+        userdata = create_user['user_id']
+        user_id = userdata['users_id']
+        # Add setting to user
+        settings_added = settings.add_setting(user_id,setting_name,setting_value)
+        # Add setting again
+        settings_added_2 = settings.add_setting(user_id,setting_name,setting_value)
+        # Retrieve settings
+        user_settings = settings.get_settings(user_id,as_dict=False)
+        # We should only have 1 setting
+        assert len(user_settings) == 1

@@ -13,7 +13,9 @@ class SettingsHandling:
             conn = db_obj.connect()
             with conn.cursor() as cur:
                 sql = f"INSERT INTO soc.userSettings (usersId, settingName, settingValue) \
-                    VALUES ('{user_id}','{setting_name}','{setting_value}')"
+                    VALUES ('{user_id}','{setting_name}','{setting_value}') \
+                    ON CONFLICT (usersid,settingname,settingvalue)    \
+                    DO UPDATE SET(settingname,settingvalue) = ('{setting_name}','{setting_value}')    "
                 cur.execute(sql)
                 if cur.rowcount == 1:
                     conn.commit()
@@ -24,8 +26,11 @@ class SettingsHandling:
             conn.close()
         return setting_added
 
-    def get_settings(self, user_id):
-        '''Retrieve all settings for a user'''
+    def get_settings(self, user_id, as_dict=True):
+        '''
+            Retrieve all settings for a user
+            If as_dict, will return a dictionary with the settings
+        '''
         settings = {}
         try:
             db_obj = Database()
@@ -36,13 +41,20 @@ class SettingsHandling:
                 cur.execute(sql)
                 if cur.rowcount >= 1:
                     rows = cur.fetchall()
-                    for row in rows:
-                        this_setting = { row[0]: row[1]}
-                        settings.update(this_setting)
+                    if as_dict:
+                        settings = self.settings_to_dict(settings, rows)
+                    else:
+                        settings = rows
         except DatabaseError as error:
             current_app.logger.error("Error executing sql: %s, error: %s", sql, error)
         finally:
             conn.close()
+        return settings
+
+    def settings_to_dict(self, settings, rows):
+        for row in rows:
+            this_setting = { row[0]: row[1]}
+            settings.update(this_setting)
         return settings
 
     def add_defaults(self,user_id):
