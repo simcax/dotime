@@ -1,6 +1,8 @@
 '''Routes for profile creation'''
 
-from flask import Blueprint, render_template, request,session, flash
+from crypt import methods
+from importlib.metadata import requires
+from flask import Blueprint, render_template, request,session, flash, current_app
 from app.profile.profile import ProfileHandling
 from app.profile.settings import SettingsHandling
 from app.auth.authentication import login_required
@@ -72,14 +74,37 @@ def change_password():
             return_is = render_template("change_password.html")
     return return_is
 
-@bp.route("/settings")
+@bp.route("/settings", methods=['GET','POST'])
 @login_required
 def profile_settings():
     '''Endpoint for a user to edit settings'''
     settings_obj = SettingsHandling()
     settings = settings_obj.get_settings(session['user_id'])
-    if len(settings) == 0:
-        settings_obj.add_defaults(session['user_id'])
+    if request.method == 'POST':
+        for i in range(1,8):
+            current_key = f'workdayLength{i}Hour'
+            current_value = request.form[current_key]
+            updated = check_and_update(settings_obj, settings, current_key, current_value)
+            if updated:
+                current_app.logger.debug(f"{current_key} updated to {current_value}")
+            current_key = f'workdayLength{i}Minutes'
+            current_value = request.form[current_key]
+            updated = check_and_update(settings_obj, settings, current_key, current_value)
+            if updated:
+                current_app.logger.debug(f"{current_key} updated to {current_value}")
+    else:
+        if len(settings) == 0:
+            settings_obj.add_defaults(session['user_id'])
         settings = settings_obj.get_settings(session['user_id'])
     workweek_day_lengths = settings_obj.get_workweek_day_lengths(session['user_id'])
     return render_template("profile_settings.html", settings = settings, workday_lengths = workweek_day_lengths)
+
+def check_and_update(settings_obj, settings, current_key, current_value):
+    '''Checks if the value was updated and needs to be comitted to the database'''
+    updated = False
+    if current_value != settings.get(current_key):
+        updated = settings_obj.add_setting(session['user_id'],current_key,current_value)
+    elif current_value == 0:
+        # Handle if the value is zero
+        updated = settings_obj.add_setting(session['user_id'],current_key,current_value)
+    return updated

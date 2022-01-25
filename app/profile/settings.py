@@ -103,5 +103,4 @@ class SettingsHandling:
         for day in all_days:
             workweek_day_lengths[f'workdayName{i+1}'] = all_days[i]
             i+=1
-            current_app.logger.debug(workweek_day_lengths)
         return workweek_day_lengths

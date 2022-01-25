@@ -81,3 +81,19 @@ def test_inserting_duplicate_settings_for_user(create_user,app_test_context):
         user_settings = settings.get_settings(user_id,as_dict=False)
         # We should only have 1 setting
         assert len(user_settings) == 1
+
+def test_updating_value_to_zero(create_user,app_test_context):
+    '''Test a setting will be updated when adding a setting already in the settings table'''
+    with app_test_context:
+        tu = TestUtils()
+        setting_name = tu.createRandomString()
+        setting_value = "0"
+        settings = SettingsHandling()
+        userdata = create_user['user_id']
+        user_id = userdata['users_id']
+        # Add setting to user with value 0
+        settings_added = settings.add_setting(user_id,setting_name,setting_value)
+        # Retrieve settings
+        user_settings = settings.get_settings(user_id,as_dict=True)
+        # The value of the setting should be 0
+        assert user_settings.get(setting_name) == setting_value
