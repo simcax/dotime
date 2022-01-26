@@ -199,3 +199,11 @@ def test_profile_settings_endpoint_is_protected(client):
 def test_frontpage_welcome_image(client):
     rv = client.get("/images/frontpage_welcome.jpg")
     assert rv.status_code == 200
+
+def test_logo_image(client):
+    rv = client.get("/images/dotime_logo.png")
+    assert rv.status_code == 200
+
+def test_favicon(client):
+    rv = client.get("/favicon.ico")
+    assert rv.status_code == 200

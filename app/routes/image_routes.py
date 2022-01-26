@@ -23,3 +23,13 @@ def welcome_jpg():
 def frontpage_welcome_jpg():
     '''Serve frontpage_welcome.jpg'''
     return send_from_directory('static/images','annie-spratt-QckxruozjRg-unsplash.jpg',mimetype='image/jpg')
+
+@bp1.route("/dotime_logo.png")
+def dotime_logo_png():
+    '''Serve dotime_logo.png'''
+    return send_from_directory('static/images','dotime_logo.png',mimetype='image/jpg')
+
+@bp1.route("/dotime_logo_only.png")
+def dotime_logo_only_png():
+    '''Serve dotime_logo_only.png'''
+    return send_from_directory('static/images','dotime_logo_only.png',mimetype='image/jpg')
