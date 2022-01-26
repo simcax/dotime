@@ -21,17 +21,19 @@
         </ul>
         <ul class="navbar-nav ml-auto">
         {% if g.user %}
+        <h5>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="usernav" role="button" data-toggle="dropdown" aria-haspopup="true" aria-label="Toggle Navigation">
             <span class="badge bg-info text-dark navbar-text"><i class="bi-person"></i>{{ g.user.email }}</span>
           </a>
           <div class="dropdown-menu" aria-labelledby="usernav">
-            <a class="dropdown-item" href="{{ url_for('auth_blueprint.logout') }}">Log ud</a>
+            <a class="dropdown-item" href="{{ url_for('auth_blueprint.logout') }}">Log out</a>
             <a class="dropdown-item" href="{{ url_for('profile_blueprint.profile') }}">Profile</a>
             <a class="dropdown-item" href="{{ url_for('profile_blueprint.profile_settings') }}">Settings</a>
             <a class="dropdown-item" href="/profile/changePassword">Change Password</a>
           </div>
         </li>
+      </h5>
         {% else %}
           {% include 'login.html' %}
         {% endif %}
