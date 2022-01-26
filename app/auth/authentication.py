@@ -1,7 +1,7 @@
 '''Class for authentication'''
 import functools
 from psycopg2 import DatabaseError
-from flask import current_app, redirect, url_for, g
+from flask import current_app, redirect, url_for, g, request
 from app.db import database
 
 class Authentication:
@@ -39,7 +39,7 @@ def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
-            return redirect(url_for('auth_blueprint.login'))
+            return redirect(url_for('auth_blueprint.login', next=request.url))
 
         return view(**kwargs)
 

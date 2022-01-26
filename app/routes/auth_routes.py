@@ -14,14 +14,19 @@ def login():
     '''Login endpoint - shows the login page or checks credentials'''
     if request.method == 'POST':
         # Log in user
-        email = request.form['email']
-        password = request.form['password']
+        email = request.form.get('email')
+        password = request.form.get('password')
+        next_url = request.form.get('next')
         prof = ProfileHandling()
         user_id = prof.check_credentials(email,password)
         if user_id:
             session['user_id'] = user_id
             current_app.logger.info("User is authenticated")
-            return_is = render_template('loggedin.html')
+            if next_url:
+                current_app.logger.info("Next url was set to %s",next_url)
+                return_is = redirect(next_url)
+            else:
+                return_is = render_template('loggedin.html')
         else:
             flash("Error logging you in.")
             return_is = render_template('loginonly.html')

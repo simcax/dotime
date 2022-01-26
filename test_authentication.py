@@ -22,7 +22,7 @@ def test_get_user_by_uuid(app_test_context):
 def test_redirect_to_login_on_unauthorized_endpoint(client):
     rv = client.get("/auth/unauthorized")
     assert rv.status_code == 302
-    assert rv.location.endswith('/auth/login')
+    assert "/auth/login" in rv.location
 
 def login(client,email,password):
     ''''Helper function to login a user'''

@@ -165,7 +165,7 @@ def test_profile_endpoint_not_logged_in(client):
         when we are not logged in
     '''
     rv = client.get("/profile/me")
-    assert rv.location.endswith("/auth/login")
+    assert "/auth/login" in rv.location
 
 # def test_profile_endpoint_update_profile_exists(client):
 #     '''Test the update profile endpoint exists'''
