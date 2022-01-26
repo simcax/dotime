@@ -195,3 +195,7 @@ def test_profile_settings_endpoint_is_protected(client):
     '''Test the /profile/settings endpoint exists and is protected'''
     rv = client.get("/profile/settings")
     assert rv.status_code == 302
+
+def test_frontpage_welcome_image(client):
+    rv = client.get("/images/frontpage_welcome.jpg")
+    assert rv.status_code == 200
