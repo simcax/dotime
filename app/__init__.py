@@ -29,9 +29,10 @@ def create_app(test_config=None):
     with app.app_context():
         sess.init_app(app)
         from app.routes import (
-            profile_routes, health_routes, auth_routes, image_routes, session_routes, time_routes
+            profile_routes, health_routes, auth_routes, image_routes, session_routes, time_routes, general_routes
         )
         app.register_blueprint(image_routes.bp1)
+        app.register_blueprint(general_routes.bp)
         app.register_blueprint(profile_routes.bp)
         app.register_blueprint(health_routes.bp1)
         app.register_blueprint(auth_routes.bp1)
