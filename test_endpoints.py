@@ -190,3 +190,8 @@ def test_profile_change_password_form_exists(client,create_user):
     rv = login(client,create_user['email'],create_user['password'])
     rv = client.get("/profile/changePassword")
     assert rv.status_code == 302
+
+def test_profile_settings_endpoint_is_protected(client):
+    '''Test the /profile/settings endpoint exists and is protected'''
+    rv = client.get("/profile/settings")
+    assert rv.status_code == 302

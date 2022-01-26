@@ -14,12 +14,13 @@ class SettingsHandling:
             with conn.cursor() as cur:
                 sql = f"INSERT INTO soc.userSettings (usersId, settingName, settingValue) \
                     VALUES ('{user_id}','{setting_name}','{setting_value}') \
-                    ON CONFLICT (usersid,settingname,settingvalue)    \
+                    ON CONFLICT (usersid,settingname)    \
                     DO UPDATE SET(settingname,settingvalue) = ('{setting_name}','{setting_value}')    "
                 cur.execute(sql)
                 if cur.rowcount == 1:
                     conn.commit()
                     setting_added = True
+                    current_app.logger.error("Settings updated with sql: %s", sql)
         except DatabaseError as error:
             current_app.logger.error("Error executing sql: %s, error: %s", sql, error)
         finally:

@@ -36,16 +36,17 @@ def test_get_settings_endpoint(client):
     rv = client.get("/profile/settings")
     assert rv.status_code == 302
 
-def test_set_defaults_on_no_settings(create_user):
+def test_set_defaults_on_no_settings(create_user, app_test_context):
     '''Tests adding sane default settings to a user, if there are no settings'''
-    settings = SettingsHandling()
-    userdata = create_user['user_id']
-    user_id = userdata['users_id']
-    user_settings = settings.get_settings(user_id)
-    assert len(user_settings) == 0
-    settings.add_defaults(user_id)
-    user_settings_2 = settings.get_settings(user_id)
-    assert len(user_settings_2) == 14
+    with app_test_context:
+        settings = SettingsHandling()
+        userdata = create_user['user_id']
+        user_id = userdata['users_id']
+        user_settings = settings.get_settings(user_id)
+        assert len(user_settings) == 0
+        settings.add_defaults(user_id)
+        user_settings_2 = settings.get_settings(user_id)
+        assert len(user_settings_2) == 14
     
 def test_get_workday_defaults(create_user, app_test_context):
     '''Test retrieving settings about the defaults for a work week'''
