@@ -1,5 +1,7 @@
 '''Module handling time registration'''
 from datetime import datetime
+from flask import current_app
+from h11 import Data
 from psycopg2 import DatabaseError
 from app.db import database
 
@@ -27,6 +29,25 @@ class TimeRegistration:
             # Close connection
             conn.close()
         return activity_uuid
+    
+    def get_activites(self):
+        '''Gets a list of unique activites from the database for the current user'''
+        activities = {}
+        try:
+            db_obj = database.Database()
+            conn = db_obj.connect()
+            with conn.cursor() as cur:
+                sql = f"SELECT activitesuuid, activityname FROM soc.activites \
+                        WHERE usersId = '{self.userid}'"
+                cur.execute(sql)
+                if cur.rowcount:
+                    activities = cur.fetchall()
+        except DatabaseError as error:
+            current_app.logger.error("Error executing sql: %s - error: %s", sql, error)
+        finally:
+            conn.close()
+        return activities
+
 
     def add_timeregistration(self, activity_uuid, timefrom, timeto):
         '''Adds a row to the time registration table with a link record to an activity uuid'''

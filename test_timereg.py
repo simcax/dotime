@@ -1,5 +1,6 @@
 '''Test time registration methods'''
 import datetime
+from venv import create
 import pytest
 from app.timereg.register import TimeRegistration
 from app.profile.profile import ProfileHandling
@@ -76,3 +77,13 @@ def test_add_timereg_overlapping_registrations(create_user):
     assert timereg_added_1 == True
     # Since the second timereg row overlaps with the first, insertion should fail.
     assert timereg_added_2 == False
+
+def test_get_activities(create_user):
+    tu = TestUtils()
+    time_reg = TimeRegistration(create_user['users_id'])
+    activity_name_str = tu.createRandomString()
+    activity_uuid = time_reg.add_activity(activity_name_str)
+    activity_name_str = tu.createRandomString()
+    activity_uuid = time_reg.add_activity(activity_name_str)
+    activites = time_reg.get_activites()
+    assert len(activites) == 2
