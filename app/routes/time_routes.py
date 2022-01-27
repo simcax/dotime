@@ -1,5 +1,5 @@
 '''Routes for time registration'''
-from datetime import datetime
+from datetime import datetime, date
 from flask import Blueprint, render_template, request
 from app.utils import date_utils
 
@@ -9,7 +9,9 @@ bp = Blueprint('time_blueprint', __name__, url_prefix='/time')
 def enter_time():
     '''Endpoint for time registration'''
     year, weeknumber, daynumber = datetime.isocalendar(datetime.now())
-    date_info = { 'year': year, 'weeknumber': weeknumber, 'daynumber': daynumber}
+    today = date.today().isoformat()
+    today = datetime.today().strftime('%A - %d %B %Y')
+    date_info = { 'year': year, 'weeknumber': weeknumber, 'daynumber': daynumber, 'today': today}
     dotime_date_help = date_utils.DoTimeDataHelp()
     days = dotime_date_help.all_days('en')
     return render_template('entertime.html', date_info=date_info, days=days)
