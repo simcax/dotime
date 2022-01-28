@@ -15,15 +15,18 @@ The list here is a start of what I'd like to end up with CI/CD, and how far I am
 * Do test coverage --> Done with "coverage"
 * Database migration --> Done with Flyway
 * Build docker image --> Done with Github Actions
+* Test Session management in redis
 
 ### Completed - CD (ArgoCD)
 * Do Continuous Deployment --> Done with ArgoCD
 
-
 ### Future - CI
-* Test Session management in redis
+* Selenium tests
 
 ### Future - CD
 * Automatic promotion from DEV --> TEST
 * Automatic promotion from TEST --> PROD
 
+### Database layout 
+The database layout is now available in the code, thanks to [DbSchema](https://dbschema.com)
+![layout](https://github.com/simcax/dotime/blob/master/database/layout/MainLayout.svg "Database relations")
