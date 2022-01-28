@@ -1,7 +1,6 @@
 '''Module handling time registration'''
 from datetime import datetime
 from flask import current_app
-from h11 import Data
 from psycopg2 import DatabaseError
 from app.db import database
 
