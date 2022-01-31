@@ -5,17 +5,7 @@ import pytest
 from app.timereg.register import TimeRegistration
 from app.profile.profile import ProfileHandling
 from test_utils import TestUtils
-
-@pytest.fixture
-def create_user():
-    '''Provide a test user'''
-    tu = TestUtils()
-    username = tu.createRandomString()
-    password = tu.createRandomString()
-    email = tu.createRandomEmail()
-    prof = ProfileHandling()
-    user_details = prof.add_user(username,password,email)
-    return user_details
+from conftest import login, logout
 
 def test_add_activity(create_user):
     '''Test an activity can be added to the activity table'''
@@ -87,3 +77,9 @@ def test_get_activities(create_user):
     activity_uuid = time_reg.add_activity(activity_name_str)
     activites = time_reg.get_activites()
     assert len(activites) == 2
+
+def test_get_timecodes_endpoint(client, create_user):
+    login(client,create_user['email'], create_user['password'])
+    rv = client.get("/time/activities")
+    assert rv.status_code == 200
+

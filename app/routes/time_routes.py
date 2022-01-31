@@ -1,7 +1,10 @@
 '''Routes for time registration'''
 from datetime import datetime, date
-from flask import Blueprint, render_template, request
+from flask import Blueprint, jsonify, render_template, request, session
+from app import timereg
 from app.utils import date_utils
+from app.timereg import register
+from app.auth.authentication import login_required
 
 bp = Blueprint('time_blueprint', __name__, url_prefix='/time')
 
@@ -27,3 +30,15 @@ def register_time():
     else:
         return_string = "GET not allowed"
     return return_string
+
+@bp.route("/activities")
+#@login_required
+def activities():
+    '''Endpoint for getting activities for a user'''
+    if session.get('user_id'):
+        do_register = register.TimeRegistration(session['user_id'])
+        #do_register.add_activity("test2")
+        data = do_register.get_activites()
+        
+        return str(data)
+    return "No User"
