@@ -2,6 +2,7 @@
 from datetime import datetime
 from flask import current_app
 from psycopg2 import DatabaseError
+from psycopg2.extras import DictCursor
 from app.db import database
 
 class TimeRegistration:
@@ -35,7 +36,7 @@ class TimeRegistration:
         try:
             db_obj = database.Database()
             conn = db_obj.connect()
-            with conn.cursor() as cur:
+            with conn.cursor(cursor_factory=DictCursor) as cur:
                 sql = f"SELECT activitesuuid, activityname FROM soc.activites \
                         WHERE usersId = '{self.userid}'"
                 cur.execute(sql)
@@ -47,6 +48,18 @@ class TimeRegistration:
             conn.close()
         return activities
 
+    def create_select2_data_structure_for_ajax_call(self,data):
+        '''Creates the correct data structure for the select2 dropdown ajax call'''
+        item_list = {}
+        results = []
+        results_dict = {}
+        for uuid,activity_name in data:
+            results_dict['id'] = uuid
+            results_dict['text'] = activity_name
+            results.append(results_dict)
+        
+        item_list['results'] = results
+        return item_list
 
     def add_timeregistration(self, activity_uuid, timefrom, timeto):
         '''Adds a row to the time registration table with a link record to an activity uuid'''

@@ -1,6 +1,8 @@
 '''Routes for time registration'''
 from datetime import datetime, date
-from flask import Blueprint, jsonify, render_template, request, session
+import json
+from unittest import result
+from flask import Blueprint, jsonify, render_template, request, session, jsonify
 from app import timereg
 from app.utils import date_utils
 from app.timereg import register
@@ -39,6 +41,6 @@ def activities():
         do_register = register.TimeRegistration(session['user_id'])
         #do_register.add_activity("test2")
         data = do_register.get_activites()
-        
-        return str(data)
+        item_list = do_register.create_select2_data_structure_for_ajax_call(data)
+        return jsonify(item_list)
     return "No User"

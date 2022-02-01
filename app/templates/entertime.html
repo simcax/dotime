@@ -4,7 +4,12 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script lang="javascript">
     $(document).ready(function() {
-        $('.timecode').select2();
+        $('.timecode').select2({
+            ajax: {
+                url: '/time/activities',
+                dataType: 'json'
+            }
+        });
     });
 </script>
 
@@ -19,11 +24,7 @@
                         <div class="form-group col-xs-4 col-md-4">
                             <label for="timecode" class="form-label">Activity</label>
                             <div>
-                                <select class="timecode" name="timecode">
-                                    <option value="activity1">Activity 1</option>
-                                    <option value="activity2">Activity 2</option>
-                                    <option value="activity3">Activity 3</option>
-                                </select>
+                                <select class="timecode  h-100 w-100" name="timecode"></select>
                             </div>
                         </div>
                         <div class="form-group col-xs-4 col-md-4">
