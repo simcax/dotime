@@ -24,7 +24,7 @@ def create_user():
     user_details['password'] = tu.createRandomString()
     user_details['email'] = tu.createRandomEmail()
     prof = ProfileHandling()
-    user_details['user_id'] = prof.add_user(user_details['username'],user_details['password'],user_details['email'])
+    user_details['info'] = prof.add_user(user_details['username'],user_details['password'],user_details['email'])
     return user_details
 
 def create_profile(client,username,email,password):

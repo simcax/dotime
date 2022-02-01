@@ -9,7 +9,9 @@ from conftest import login, logout
 
 def test_add_activity(create_user):
     '''Test an activity can be added to the activity table'''
-    time_reg = TimeRegistration(create_user['users_id'])
+    userdata = create_user['info']
+    user_id = userdata['users_id']
+    time_reg = TimeRegistration(user_id)
     tu = TestUtils()
     activity_name_str = tu.createRandomString()
     activity_uuid = time_reg.add_activity(activity_name_str)
@@ -17,7 +19,9 @@ def test_add_activity(create_user):
 
 def test_add_timereg_row(create_user):
     '''Test adding a time registration row'''
-    time_reg = TimeRegistration(create_user['users_id'])
+    userdata = create_user['info']
+    user_id = userdata['users_id']
+    time_reg = TimeRegistration(user_id)
     tu = TestUtils()
     activity_name_str = tu.createRandomString()
     activity_uuid = time_reg.add_activity(activity_name_str)
@@ -29,7 +33,9 @@ def test_add_timereg_row(create_user):
 
 def test_add_timereg_wrong_order(create_user):
     '''Test getting an error when adding a time reg record with to before from timestamp'''
-    time_reg = TimeRegistration(create_user['users_id'])
+    userdata = create_user['info']
+    user_id = userdata['users_id']
+    time_reg = TimeRegistration(user_id)
     tu = TestUtils()
     activity_name_str = tu.createRandomString()
     activity_uuid = time_reg.add_activity(activity_name_str)
@@ -41,7 +47,9 @@ def test_add_timereg_wrong_order(create_user):
 
 def test_add_timereg_correct_timestamps(create_user):
     '''Test a timestamp check is carried out when submitting a timereg entry'''
-    time_reg = TimeRegistration(create_user['users_id'])
+    userdata = create_user['info']
+    user_id = userdata['users_id']
+    time_reg = TimeRegistration(user_id)
     tu = TestUtils()
     activity_name_str = tu.createRandomString()
     activity_uuid = time_reg.add_activity(activity_name_str)
@@ -53,7 +61,9 @@ def test_add_timereg_correct_timestamps(create_user):
 
 def test_add_timereg_overlapping_registrations(create_user):
     '''Tests an error will occour if a timeregistration overlaps another timeregistration'''
-    time_reg = TimeRegistration(create_user['users_id'])
+    userdata = create_user['info']
+    user_id = userdata['users_id']
+    time_reg = TimeRegistration(user_id)
     tu = TestUtils()
     activity_name_str = tu.createRandomString()
     activity_uuid = time_reg.add_activity(activity_name_str)
@@ -69,8 +79,10 @@ def test_add_timereg_overlapping_registrations(create_user):
     assert timereg_added_2 == False
 
 def test_get_activities(create_user):
+    userdata = create_user['info']
+    user_id = userdata['users_id']
     tu = TestUtils()
-    time_reg = TimeRegistration(create_user['users_id'])
+    time_reg = TimeRegistration(user_id)
     activity_name_str = tu.createRandomString()
     activity_uuid = time_reg.add_activity(activity_name_str)
     activity_name_str = tu.createRandomString()

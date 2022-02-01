@@ -13,7 +13,7 @@ def test_insert_data_to_setttings_table(create_user, app_test_context):
         tu = TestUtils
         settingName = tu.createRandomString()
         settingValue = tu.createRandomString()
-        userdata = create_user['user_id']
+        userdata = create_user['info']
         user_id = userdata['users_id']
         value_added = settings.add_setting(user_id,settingName, settingValue)
         assert value_added == True
@@ -24,7 +24,7 @@ def test_get_settings_for_user(create_user, app_test_context):
         tu = TestUtils
         settingName = tu.createRandomString()
         settingValue = tu.createRandomString()
-        userdata = create_user['user_id']
+        userdata = create_user['info']
         user_id = userdata['users_id']
         value_added = settings.add_setting(user_id,settingName, settingValue)
         assert value_added == True
@@ -40,7 +40,7 @@ def test_set_defaults_on_no_settings(create_user, app_test_context):
     '''Tests adding sane default settings to a user, if there are no settings'''
     with app_test_context:
         settings = SettingsHandling()
-        userdata = create_user['user_id']
+        userdata = create_user['info']
         user_id = userdata['users_id']
         user_settings = settings.get_settings(user_id)
         assert len(user_settings) == 0
@@ -52,7 +52,7 @@ def test_get_workday_defaults(create_user, app_test_context):
     '''Test retrieving settings about the defaults for a work week'''
     with app_test_context:
         settings = SettingsHandling()
-        userdata = create_user['user_id']
+        userdata = create_user['info']
         user_id = userdata['users_id']
         # Make sure we have added default workday lengths to the users profile
         settings.add_defaults(user_id)
@@ -72,7 +72,7 @@ def test_inserting_duplicate_settings_for_user(create_user,app_test_context):
         setting_name = tu.createRandomString()
         setting_value = tu.createRandomString()
         settings = SettingsHandling()
-        userdata = create_user['user_id']
+        userdata = create_user['info']
         user_id = userdata['users_id']
         # Add setting to user
         settings_added = settings.add_setting(user_id,setting_name,setting_value)
@@ -90,7 +90,7 @@ def test_updating_value_to_zero(create_user,app_test_context):
         setting_name = tu.createRandomString()
         setting_value = "0"
         settings = SettingsHandling()
-        userdata = create_user['user_id']
+        userdata = create_user['info']
         user_id = userdata['users_id']
         # Add setting to user with value 0
         settings_added = settings.add_setting(user_id,setting_name,setting_value)

@@ -14,18 +14,6 @@ def client():
     with app.test_client() as client:
         yield client
 
-@pytest.fixture
-def create_user():
-    '''Provide a test user'''
-    tu = TestUtils()
-    user_details = {}
-    user_details['username'] = tu.createRandomString()
-    user_details['password'] = tu.createRandomString()
-    user_details['email'] = tu.createRandomEmail()
-    prof = ProfileHandling()
-    user_details['user_id'] = prof.add_user(user_details['username'],user_details['password'],user_details['email'])
-    return user_details
-
 def create_profile(client,username,email,password):
     '''Helper function to call the createprofile endpoint with POST data'''
     return client.post('/profile/create',data=dict(

@@ -91,7 +91,7 @@ def test_update_password(create_user):
 
 def test_get_email_by_uuid(create_user):
     '''Look up a users email addresse by uuid'''
-    user_id = create_user['user_id']
+    user_id = create_user['info']
     prof = ProfileHandling()
     email = prof.get_email_by_uuid(user_id['users_id'])
     assert email == create_user['email']
