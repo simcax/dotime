@@ -91,8 +91,8 @@ def test_enter_time_form_input_field_for_day_exists(enter_time_form):
 
 def test_enter_time_form_input_field_properties(enter_time_form):
     rv = enter_time_form
-    assert b'<input name="start" size="5"' in rv.data
-    assert b'<input name="end" size="5"' in rv.data
+    assert b'<input name="startTime" size="5"' in rv.data
+    assert b'<input name="endTime" size="5"' in rv.data
 
 def test_time_register_endpoint_exists(client):
     rv = client.get("/time/register")
