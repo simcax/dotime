@@ -29,7 +29,7 @@ def register_time_record_random(client):
 def register_time_record(client,activity,time_start,time_end):
     '''Utility method to send a time registration record to the endpoint'''
     return client.post("/time/register", data=dict(
-        activity = activity,
+        timecode = activity,
         time_start = time_start,
         time_end = time_end
         ), follow_redirects=True    
@@ -87,12 +87,12 @@ def test_get_daynames():
 
 def test_enter_time_form_input_field_for_day_exists(enter_time_form):
     rv = enter_time_form
-    assert b'<input name="start"' in rv.data
+    assert b'<input name="time_start"' in rv.data
 
 def test_enter_time_form_input_field_properties(enter_time_form):
     rv = enter_time_form
-    assert b'<input name="startTime" size="5"' in rv.data
-    assert b'<input name="endTime" size="5"' in rv.data
+    assert b'<input name="time_start"' in rv.data
+    assert b'<input name="time_end"' in rv.data
 
 def test_time_register_endpoint_exists(client):
     rv = client.get("/time/register")

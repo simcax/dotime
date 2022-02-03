@@ -25,10 +25,14 @@ def enter_time():
 def register_time():
     '''Endpoint for receiving time registration records'''
     if request.method == 'POST':
-        activity = request.form['activity']
-        time_start = request.form['time_start']
-        time_end = request.form['time_end']
-        return_string =  "Time registration registered"
+        activity = request.form.get('timecode')
+        time_start = request.form.get('time_start')
+        time_end = request.form.get('time_end')
+        time_reg = register.TimeRegistration(session['user_id'])
+        if time_reg.add_timeregistration(activity,time_start, time_end):
+            return_string =  "Time registration registered"
+        else:
+            return_string = "Time registration failed"
     else:
         return_string = "GET not allowed"
     return return_string
