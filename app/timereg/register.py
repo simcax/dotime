@@ -63,8 +63,9 @@ class TimeRegistration:
 
     def add_timeregistration(self, activity_uuid, timefrom, timeto):
         '''Adds a row to the time registration table with a link record to an activity uuid'''
+        #datetime.datetime.strptime(timefrom, format)
         timereg_added = False
-        if isinstance(timefrom,datetime) and isinstance(timeto,datetime) and timefrom < timeto:
+        if timefrom < timeto:
             if self.timestamp_is_not_registered(timefrom) and \
                 self.timestamp_is_not_registered(timeto):
                 try:

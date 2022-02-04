@@ -19,19 +19,21 @@ def enter_time_form(client):
     return client.get("/time/enter")
 
 @pytest.fixture
-def register_time_record_random(client):
+def register_time_record_random(client, create_user):
     tu = test_utils.TestUtils()
     activity = tu.createRandomString()
     time_start = datetime.datetime.now()
-    time_end = datetime.timedelta(minutes=1)
-    return register_time_record(client,activity,time_start,time_end)
+    time_end = time_start + datetime.timedelta(minutes=1)
+    user_data = create_user['info']
+    return register_time_record(client,activity,time_start,time_end,user_data['users_id'])
 
-def register_time_record(client,activity,time_start,time_end):
+def register_time_record(client,activity,time_start,time_end,user_id):
     '''Utility method to send a time registration record to the endpoint'''
     return client.post("/time/register", data=dict(
         timecode = activity,
         time_start = time_start,
-        time_end = time_end
+        time_end = time_end,
+        user_id = user_id
         ), follow_redirects=True    
     )
 
@@ -98,6 +100,9 @@ def test_time_register_endpoint_exists(client):
     rv = client.get("/time/register")
     assert rv.status_code == 200
 
-def test_time_register_entry(client,register_time_record_random):
+def test_time_register_entry(client,register_time_record_random,create_user):
+    from flask import session
+    userdata = create_user['info']
+    session['user_id'] = userdata.get('users_id')
     rv = register_time_record_random
     assert b"Time registration registered" in rv.data

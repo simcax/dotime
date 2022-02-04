@@ -28,8 +28,13 @@ def register_time():
         activity = request.form.get('timecode')
         time_start = request.form.get('time_start')
         time_end = request.form.get('time_end')
-        time_reg = register.TimeRegistration(session['user_id'])
-        if time_reg.add_timeregistration(activity,time_start, time_end):
+        if session.get('user_id'):
+            user_id = session.get('user_id')
+        else:
+            user_id = request.form.get('user_id')
+        time_reg = register.TimeRegistration(user_id)
+        activity_uuid = time_reg.add_activity(activity)
+        if time_reg.add_timeregistration(activity_uuid,time_start, time_end):
             return_string =  "Time registration registered"
         else:
             return_string = "Time registration failed"
