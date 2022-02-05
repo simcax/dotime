@@ -3,8 +3,7 @@
 
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/timepicker@1.13.18/jquery.timepicker.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/timepicker@1.13.18/jquery.timepicker.min.js"></script>
+
 <script lang="javascript">
     $(document).ready(function() {
         $('.timecode').select2({
@@ -14,17 +13,37 @@
             },
             tags: true
         });
-    });    
-    $('#timeStart')
-    .timepicker({ 'scrollDefaultNow': true })  
-    .on('changeTime', function() {  
-        var from_time = $("input[name='time_start']").val();  
-        $('#timeEnd').timepicker('option', 'minTime', from_time);
-        if ($('#timeEnd').val() && $('#timeEnd').val() < from_time) {
-            $('#timeEnd').timepicker('setTime', from_time);
-        }
+        $('.time_start').timepicker({
+                timeFormat: 'h:mm p',
+                interval: 5,
+                minTime: '10',
+                maxTime: '6:00pm',
+                defaultTime: '11',
+                startTime: '10:00',
+                dynamic: true,
+                dropdown: true,
+                scrollbar: true
+            })
+            .on('changeTime', function() {  
+                var from_time = $("input[name='time_start']").val();  
+                $('#time_end').timepicker('option', 'minTime', from_time);
+                if ($('#time_end').val() && $('#time_end').val() < from_time) {
+                    $('#time_end').timepicker('setTime', from_time);
+                }
+        });
+        $('.time_end').timepicker({
+            timeFormat: 'h:mm p',
+            interval: 5,
+            minTime: '10',
+            maxTime: '6:00pm',
+            defaultTime: '11',
+            startTime: '10:00',
+            dynamic: true,
+            dropdown: true,
+            scrollbar: true
+        });
     });
-    $('#timeEnd').timepicker({'showDuration': true});
+
 </script>
 
 <div class="container-sm align-items-center">
@@ -44,13 +63,13 @@
                         <div class="form-group col-xs-4 col-md-4">
                             <label for="start" class="form-label">Start Time</label>
                             <div>
-                                <input name="time_start" type="text" id="timeStart" class="form-control ui-timepicker-input" placeholder="Start time" autocomplete="off" required>
+                                <input name="time_start" type="text" id="time_start" class="time_start text-center" placeholder="Start time" autocomplete="off" required jt-timepicker="" time="model.time" time-string="model.timeString" default-time="model.options.defaultTime" time-format="model.options.timeFormat" start-time="model.options.startTime" min-time="model.options.minTime" max-time="model.options.maxTime" interval="model.options.interval" dynamic="model.options.dynamic" scrollbar="model.options.scrollbar" dropdown="model.options.dropdown">
                             </div>
                         </div>
                         <div class="form-group col-xs-4 col-md-4">
                             <label for="timeEnd" class="form-label">End time</label>
                             <div>
-                                <input name="time_end" type="text" id="timeEnd" class="form-control ui-timepicker-input" placeholder="End time" autocomplete="off" required>
+                                <input name="time_end" type="text" id="time_end" class="time_end text-center" placeholder="End time" autocomplete="off" required jt-timepicker="" time="model.time" time-string="model.timeString" default-time="model.options.defaultTime" time-format="model.options.timeFormat" start-time="model.options.startTime" min-time="model.options.minTime" max-time="model.options.maxTime" interval="model.options.interval" dynamic="model.options.dynamic" scrollbar="model.options.scrollbar" dropdown="model.options.dropdown">
                             </div>
                         </div>
                     </div>
