@@ -13,13 +13,18 @@
             },
             tags: true
         });
+        function prettyDate2(time) {
+            var date = new Date(parseInt(time));
+            return date.toLocaleTimeString(navigator.language, {
+                hour: '2-digit',
+                minute:'2-digit'
+            });
+        }
+        var current_time = prettyDate2(Date.now())
         $('.time_start').timepicker({
-                timeFormat: 'h:mm p',
+                timeFormat: 'HH:mm',
                 interval: 5,
-                minTime: '10',
-                maxTime: '6:00pm',
-                defaultTime: '11',
-                startTime: '10:00',
+                defaultTime: current_time,
                 dynamic: true,
                 dropdown: true,
                 scrollbar: true
@@ -32,12 +37,9 @@
                 }
         });
         $('.time_end').timepicker({
-            timeFormat: 'h:mm p',
+            timeFormat: 'HH:mm',
             interval: 5,
-            minTime: '10',
-            maxTime: '6:00pm',
-            defaultTime: '11',
-            startTime: '10:00',
+            defaultTime: current_time,
             dynamic: true,
             dropdown: true,
             scrollbar: true
