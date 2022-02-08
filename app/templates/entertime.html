@@ -65,6 +65,7 @@
                 <legend>{{ date_info.today }}</legend>
             
                 <form  method="POST" action="/time/register">
+                    <input type="hidden" name="time_date" value="{{ date_info.time_date }}">
                     <div class="form-row">
                         <div class="form-group col-xs-4 col-md-4">
                             <label for="timecode" class="form-label">Activity</label>

@@ -1,5 +1,7 @@
 '''Test time registration methods'''
 import datetime
+from datetime import time
+from random import randint
 from venv import create
 import pytest
 from app.timereg.register import TimeRegistration
@@ -27,8 +29,11 @@ def test_add_timereg_row(create_user):
     activity_uuid = time_reg.add_activity(activity_name_str)
     timefrom = datetime.datetime.now()
     timeto = timefrom + datetime.timedelta(minutes=2)
+    thisdate = timefrom.strftime('%Y-%m-%d')
+    timefrom = timefrom.strftime('%I:%M')
+    timeto = timeto.strftime('%I:%M')
     assert isinstance(activity_uuid, str)
-    timereg_added = time_reg.add_timeregistration(activity_uuid, timefrom, timeto)
+    timereg_added = time_reg.add_timeregistration(activity_uuid, thisdate, timefrom, timeto)
     assert timereg_added == True
 
 def test_add_timereg_wrong_order(create_user):
@@ -41,8 +46,12 @@ def test_add_timereg_wrong_order(create_user):
     activity_uuid = time_reg.add_activity(activity_name_str)
     timeto = datetime.datetime.now()
     timefrom = timeto + datetime.timedelta(minutes=2)
+    thisdate = timefrom.strftime('%Y-%m-%d')
+    timefrom = timefrom.strftime('%I:%M')
+    timeto = timeto.strftime('%I:%M')
+    
     assert isinstance(activity_uuid, str)
-    timereg_added = time_reg.add_timeregistration(activity_uuid, timefrom, timeto)
+    timereg_added = time_reg.add_timeregistration(activity_uuid, thisdate, timefrom, timeto)
     assert timereg_added == False
 
 # TODO: Need to find a solution for this.
@@ -68,13 +77,21 @@ def test_add_timereg_overlapping_registrations(create_user):
     tu = TestUtils()
     activity_name_str = tu.createRandomString()
     activity_uuid = time_reg.add_activity(activity_name_str)
+
     timefrom1 = datetime.datetime.now()
     timeto1 = timefrom1 + datetime.timedelta(minutes=2)
     timefrom2 = timefrom1 + datetime.timedelta(minutes=1)
     timeto2 = timefrom2 + datetime.timedelta(minutes=10)
+    thisdate = timefrom1.strftime('%Y-%m-%d')
+    timefrom1 = timefrom1.strftime('%I:%M')
+    timeto1 = timeto1.strftime('%I:%M')
+    
+    
+    timefrom2 = timefrom2.strftime('%I:%M')
+    timeto2 = timeto2.strftime('%I:%M')
     assert isinstance(activity_uuid, str)
-    timereg_added_1 = time_reg.add_timeregistration(activity_uuid, timefrom1, timeto1)
-    timereg_added_2 = time_reg.add_timeregistration(activity_uuid, timefrom2, timeto2)
+    timereg_added_1 = time_reg.add_timeregistration(activity_uuid, thisdate, timefrom1, timeto1)
+    timereg_added_2 = time_reg.add_timeregistration(activity_uuid, thisdate, timefrom2, timeto2)
     assert timereg_added_1 == True
     # Since the second timereg row overlaps with the first, insertion should fail.
     assert timereg_added_2 == False

@@ -24,13 +24,17 @@ def register_time_record_random(client, create_user):
     activity = tu.createRandomString()
     time_start = datetime.datetime.now()
     time_end = time_start + datetime.timedelta(minutes=1)
+    time_date = time_start.strftime('%Y-%m-%d')
+    time_start = time_start.strftime("%I:%M")
+    time_end = time_end.strftime("%I:%M")
     user_data = create_user['info']
-    return register_time_record(client,activity,time_start,time_end,user_data['users_id'])
+    return register_time_record(client,activity,time_date,time_start,time_end,user_data['users_id'])
 
-def register_time_record(client,activity,time_start,time_end,user_id):
+def register_time_record(client,activity, time_date,time_start,time_end,user_id):
     '''Utility method to send a time registration record to the endpoint'''
     return client.post("/time/register", data=dict(
         timecode = activity,
+        time_date = time_date,
         time_start = time_start,
         time_end = time_end,
         user_id = user_id

@@ -1,5 +1,6 @@
 '''Module handling time registration'''
 from datetime import datetime
+from time import strftime
 from flask import current_app
 from psycopg2 import DatabaseError
 from psycopg2.extras import DictCursor
@@ -61,19 +62,22 @@ class TimeRegistration:
         item_list['results'] = results
         return item_list
 
-    def add_timeregistration(self, activity_uuid, timefrom, timeto):
+    def add_timeregistration(self, activity_uuid, date, timefrom, timeto):
         '''Adds a row to the time registration table with a link record to an activity uuid'''
         #datetime.datetime.strptime(timefrom, format)
         timereg_added = False
         if timefrom < timeto:
-            if self.timestamp_is_not_registered(timefrom) and \
-                self.timestamp_is_not_registered(timeto):
+            timefrom_full = f"{date} {timefrom}"
+            timeto_full = f"{date} {timeto}"
+
+            if self.timestamp_is_not_registered(timefrom_full) and \
+                self.timestamp_is_not_registered(timeto_full):
                 try:
                     db_obj = database.Database()
                     conn = db_obj.connect()
                     with conn.cursor() as cur:
                         sql = f"INSERT INTO soc.timedmeetgo (timefrom, timeto, usersId) \
-                            VALUES ('{timefrom}','{timeto}','{self.userid}') \
+                            VALUES ('{timefrom_full}','{timeto_full}','{self.userid}') \
                                 RETURNING timedmeetgouuid"
                         cur.execute(sql)
                         timed_meet_go_uuid = cur.fetchone()[0]

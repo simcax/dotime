@@ -16,7 +16,8 @@ def enter_time():
     year, weeknumber, daynumber = datetime.isocalendar(datetime.now())
     today = date.today().isoformat()
     today = datetime.today().strftime('%A - %d %B %Y')
-    date_info = { 'year': year, 'weeknumber': weeknumber, 'daynumber': daynumber, 'today': today}
+    time_date = datetime.today().strftime("%Y-%m-%d")
+    date_info = { 'year': year, 'weeknumber': weeknumber, 'daynumber': daynumber, 'today': today, 'time_date': time_date}
     dotime_date_help = date_utils.DoTimeDataHelp()
     days = dotime_date_help.all_days('en')
     return render_template('entertime.html', date_info=date_info, days=days)
@@ -28,13 +29,14 @@ def register_time():
         activity = request.form.get('timecode')
         time_start = request.form.get('time_start')
         time_end = request.form.get('time_end')
+        time_date = request.form.get('time_date')
         if session.get('user_id'):
             user_id = session.get('user_id')
         else:
             user_id = request.form.get('user_id')
         time_reg = register.TimeRegistration(user_id)
         activity_uuid = time_reg.add_activity(activity)
-        if time_reg.add_timeregistration(activity_uuid,time_start, time_end):
+        if time_reg.add_timeregistration(activity_uuid, time_date,time_start, time_end):
             return_string =  "Time registration registered"
         else:
             return_string = "Time registration failed"
