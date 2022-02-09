@@ -1,13 +1,40 @@
 '''Test time registration methods'''
 import datetime
 from datetime import time
-from random import randint
+from random import randint, choice
 from venv import create
 import pytest
 from app.timereg.register import TimeRegistration
 from app.profile.profile import ProfileHandling
 from test_utils import TestUtils
 from conftest import login, logout
+
+def add_activity_registrations(user_id,number_of_activities,number_of_registrations):
+    '''
+        Creates <number_of_activities> and afterwards registers 
+        <number_of_registrations> registrations
+    '''
+    time_reg = TimeRegistration(user_id)
+    tu = TestUtils()
+    activities = []
+    for i in range(0,number_of_activities):
+        activity_name_str = tu.createRandomString()
+        activity_uuid = time_reg.add_activity(activity_name_str)
+        activities.append(activity_uuid)
+    start_timefrom = datetime.datetime.now()
+    thisdate = start_timefrom.strftime('%Y-%m-%d')
+    for i in range(0, number_of_registrations):
+        if i == 0:
+            timefrom = start_timefrom
+        else:
+            timefrom = timeto_timestamp + datetime.timedelta(minutes=1)
+        timeto_timestamp = timefrom + datetime.timedelta(minutes=2)
+        timefrom = timefrom.strftime('%I:%M')
+        timeto = timeto_timestamp.strftime('%I:%M')
+        this_activity_uuid = choice(activities)
+        timereg_added = time_reg.add_timeregistration(this_activity_uuid, thisdate, timefrom, timeto)
+
+        
 
 def test_add_activity(create_user):
     '''Test an activity can be added to the activity table'''
@@ -112,4 +139,13 @@ def test_get_timecodes_endpoint(client, create_user):
     login(client,create_user['email'], create_user['password'])
     rv = client.get("/time/activities")
     assert rv.status_code == 200
+
+def test_get_registered_time_on_today(create_user):
+    userdata = create_user['info']
+    user_id = userdata['users_id']
+    add_activity_registrations(user_id,2,4)
+    time_reg = TimeRegistration(user_id)
+    registration_date = datetime.datetime.now().strftime('%Y-%m-%d')
+    registrations = time_reg.get_registrations(registration_date)
+    assert len(registrations) == 4
 

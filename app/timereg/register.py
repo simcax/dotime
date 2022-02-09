@@ -120,3 +120,25 @@ class TimeRegistration:
         finally:
             conn.close()
         return timestamp_is_not_here
+
+    def get_registrations(self, registration_date):
+        '''
+            Get all timeregistration for a given date
+        '''
+        try:
+            rows = False
+            db_obj = database.Database()
+            conn = db_obj.connect()
+            with conn.cursor() as cur:
+                sql = f"SELECT t.timefrom, t.timeto, t.usersId, a.activityname \
+                    FROM soc.timedmeetgo t \
+                    INNER JOIN soc.ln_timemeetgo l ON t.timedmeetgouuid = l.timedmeetgouuid \
+                    INNER JOIN soc.activites a ON l.activitesuuid = a.activitesuuid \
+                    WHERE t.usersId = '{self.userid}'"
+                cur.execute(sql)
+                rows = cur.fetchall()
+        except DatabaseError as error:
+            current_app.logger.error(f"Error executing sql: %s, error: %s", sql, error)
+        finally:
+            conn.close()
+        return rows
