@@ -2,7 +2,7 @@
 from datetime import datetime, date
 import json
 from unittest import result
-from flask import Blueprint, jsonify, render_template, request, session, jsonify
+from flask import Blueprint, jsonify, render_template, request, session, jsonify, flash, url_for, redirect
 from app import timereg
 from app.utils import date_utils
 from app.timereg import register
@@ -20,7 +20,9 @@ def enter_time():
     date_info = { 'year': year, 'weeknumber': weeknumber, 'daynumber': daynumber, 'today': today, 'time_date': time_date}
     dotime_date_help = date_utils.DoTimeDataHelp()
     days = dotime_date_help.all_days('en')
-    return render_template('entertime.html', date_info=date_info, days=days)
+    reg = register.TimeRegistration(session.get('user_id'))
+    time_registrations = reg.get_registrations(time_date)
+    return render_template('entertime.html', date_info=date_info, days=days, time_registrations=time_registrations)
 
 @bp.route("/register", methods=["GET","POST"])
 def register_time():
@@ -42,7 +44,8 @@ def register_time():
             return_string = "Time registration failed"
     else:
         return_string = "GET not allowed"
-    return return_string
+    flash(return_string)
+    return redirect(url_for("time_blueprint.enter_time"))
 
 @bp.route("/activities")
 #@login_required
@@ -50,7 +53,6 @@ def activities():
     '''Endpoint for getting activities for a user'''
     if session.get('user_id'):
         do_register = register.TimeRegistration(session['user_id'])
-        #do_register.add_activity("test2")
         data = do_register.get_activites()
         item_list = do_register.create_select2_data_structure_for_ajax_call(data)
         return jsonify(item_list)

@@ -21,6 +21,20 @@
             },
             tags: true
         });
+        {% if time_registrations %}
+        {% for registration in time_registrations %}
+        $('.timecode{{loop.index}}').select2({
+            ajax: {
+                url: '/time/activities',
+                dataType: 'json'
+            },
+            tags: true
+        });
+        $('.timecode{{loop.index}}').val('{{registration.2}}');
+        $('.timecode{{loop.index}}').trigger('change');
+        {% endfor %}
+        {% endif %}
+
         function prettyDate2(time) {
             var date = new Date(parseInt(time));
             return date.toLocaleTimeString(navigator.language, {
@@ -63,10 +77,41 @@
         <div class="card-body">
             <fieldset class="card-title">
                 <legend>{{ date_info.today }}</legend>
-            
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <div class="form-group alert alert-success" role="alert">
+                    {% for message in messages %}
+                    {{ message }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
                 <form  method="POST" action="/time/register">
                     <input type="hidden" name="time_date" value="{{ date_info.time_date }}">
                     <div class="form-row">
+                        {% if time_registrations %}
+                            {% for registration in time_registrations %}
+                                <div class="form-group col-xs-4 col-md-4">
+                                    <label for="timecode{{loop.index}}" class="form-label">Activity</label>
+                                    <div>
+                                        
+                                        <select class="timecode h-100 w-100" name="timecode{{loop.index}}" id="timecode{{loop.index}}"></select>
+                                    </div>
+                                </div>
+                                <div class="form-group col-xs-4 col-md-4">
+                                    <label for="time_start{{loop.index}}" class="form-label">Start Time</label>
+                                    <div>
+                                        <input name="time_start{{loop.index}}" type="text" id="time_start{{loop.index}}" class="time_start text-center" placeholder="Start time" autocomplete="off" required jt-timepicker="" time="model.time" time-string="model.timeString" default-time="model.options.defaultTime" time-format="model.options.timeFormat" start-time="model.options.startTime" min-time="model.options.minTime" max-time="model.options.maxTime" interval="model.options.interval" dynamic="model.options.dynamic" scrollbar="model.options.scrollbar" dropdown="model.options.dropdown">
+                                    </div>
+                                </div>
+                                <div class="form-group col-xs-4 col-md-4">
+                                    <label for="time_end{{loop.index}}" class="form-label">End time</label>
+                                    <div>
+                                        <input name="time_end{{loop.index}}" type="text" id="time_end{{loop.index}}" class="time_end text-center" placeholder="End time" autocomplete="off" required jt-timepicker="" time="model.time" time-string="model.timeString" default-time="model.options.defaultTime" time-format="model.options.timeFormat" start-time="model.options.startTime" min-time="model.options.minTime" max-time="model.options.maxTime" interval="model.options.interval" dynamic="model.options.dynamic" scrollbar="model.options.scrollbar" dropdown="model.options.dropdown">
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
                         <div class="form-group col-xs-4 col-md-4">
                             <label for="timecode" class="form-label">Activity</label>
                             <div>

@@ -53,8 +53,8 @@ class TimeRegistration:
         '''Creates the correct data structure for the select2 dropdown ajax call'''
         item_list = {}
         results = []
-        results_dict = {}
         for uuid,activity_name in data:
+            results_dict = {}
             results_dict['id'] = uuid
             results_dict['text'] = activity_name
             results.append(results_dict)
