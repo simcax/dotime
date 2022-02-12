@@ -93,20 +93,4 @@ jobs:
         with:
           push: true
           tags: simcax/dotime:${{ secrets.MAJOR_VERSION }}.${{ secrets.FEATURE_VERSION }}.${{ github.run_number}}
-  updateDeployRepo:
-    needs: docker
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        repository: simcax/deploy-dotime.me
-        token: ${{ secrets.DEPLOY_DOTIME_TOKEN }}
-    - name: Update image tag in deploy 
-      run: |
-        python3 update-yaml-version.py dotime-me/values-dev.yaml ${{ secrets.MAJOR_VERSION }}.${{ secrets.FEATURE_VERSION }}.${{ github.run_number}}
-        git config --global user.name "Carsten Skov"
-        git config --global user.email "carsten@simcax.dk"
-        git commit -am "Bump image tag to ${{ secrets.MAJOR_VERSION }}.${{ secrets.FEATURE_VERSION }}.${{ github.run_number}}"
-        git push
-
     
