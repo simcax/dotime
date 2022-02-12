@@ -8,6 +8,7 @@ on:
       - '.github/workflows/pylint.yml'
       - 'requirements.txt'
       - 'Dockerfile'
+      - 'test_*.py'
 
 jobs:
   pylint:
