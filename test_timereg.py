@@ -148,7 +148,7 @@ def test_get_activity(create_user,app_test_context):
         activity_name_str = tu.createRandomString()
         activity_uuid2 = time_reg.add_activity(activity_name_str)
         activites = time_reg.get_activites(activity_uuid=activity_uuid1)
-        assert len(activites) == 2
+        assert len(activites) == 1
 
 def test_get_timecodes_endpoint(client, create_user):
     login(client,create_user['email'], create_user['password'])
