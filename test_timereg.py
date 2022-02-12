@@ -136,18 +136,19 @@ def test_get_activities(create_user,app_test_context):
         activites = time_reg.get_activites()
         assert len(activites) == 2
 
-def test_get_activity(create_user):
+def test_get_activity(create_user,app_test_context):
     '''Test getting a specific activity by uuid'''
-    userdata = create_user['info']
-    user_id = userdata['users_id']
-    tu = TestUtils()
-    time_reg = TimeRegistration(user_id)
-    activity_name_str = tu.createRandomString()
-    activity_uuid1 = time_reg.add_activity(activity_name_str)
-    activity_name_str = tu.createRandomString()
-    activity_uuid2 = time_reg.add_activity(activity_name_str)
-    activites = time_reg.get_activites(activity_uuid=activity_uuid1)
-    assert len(activites) == 2
+    with app_test_context:
+        userdata = create_user['info']
+        user_id = userdata['users_id']
+        tu = TestUtils()
+        time_reg = TimeRegistration(user_id)
+        activity_name_str = tu.createRandomString()
+        activity_uuid1 = time_reg.add_activity(activity_name_str)
+        activity_name_str = tu.createRandomString()
+        activity_uuid2 = time_reg.add_activity(activity_name_str)
+        activites = time_reg.get_activites(activity_uuid=activity_uuid1)
+        assert len(activites) == 2
 
 def test_get_timecodes_endpoint(client, create_user):
     login(client,create_user['email'], create_user['password'])
