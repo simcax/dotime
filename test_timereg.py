@@ -123,16 +123,30 @@ def test_add_timereg_overlapping_registrations(create_user):
     # Since the second timereg row overlaps with the first, insertion should fail.
     assert timereg_added_2 == False
 
-def test_get_activities(create_user):
+def test_get_activities(create_user,app_test_context):
+    with app_test_context:
+        userdata = create_user['info']
+        user_id = userdata['users_id']
+        tu = TestUtils()
+        time_reg = TimeRegistration(user_id)
+        activity_name_str = tu.createRandomString()
+        activity_uuid = time_reg.add_activity(activity_name_str)
+        activity_name_str = tu.createRandomString()
+        activity_uuid = time_reg.add_activity(activity_name_str)
+        activites = time_reg.get_activites()
+        assert len(activites) == 2
+
+def test_get_activity(create_user):
+    '''Test getting a specific activity by uuid'''
     userdata = create_user['info']
     user_id = userdata['users_id']
     tu = TestUtils()
     time_reg = TimeRegistration(user_id)
     activity_name_str = tu.createRandomString()
-    activity_uuid = time_reg.add_activity(activity_name_str)
+    activity_uuid1 = time_reg.add_activity(activity_name_str)
     activity_name_str = tu.createRandomString()
-    activity_uuid = time_reg.add_activity(activity_name_str)
-    activites = time_reg.get_activites()
+    activity_uuid2 = time_reg.add_activity(activity_name_str)
+    activites = time_reg.get_activites(activity_uuid=activity_uuid1)
     assert len(activites) == 2
 
 def test_get_timecodes_endpoint(client, create_user):

@@ -57,3 +57,11 @@ def activities():
         item_list = do_register.create_select2_data_structure_for_ajax_call(data)
         return jsonify(item_list)
     return "No User"
+
+@bp.route("/activity/<activityuuid>")
+def activityuuid(activityuuid):
+    '''Endpoint for getting a specific activity'''
+    do_register = register.TimeRegistration(session['user_id'])
+    data = do_register.get_activites(activity_uuid=activityuuid)
+    item_list = do_register.create_select2_data_structure_for_ajax_call(data)
+    return jsonify(item_list)

@@ -23,15 +23,56 @@
         });
         {% if time_registrations %}
         {% for registration in time_registrations %}
-        $('.timecode{{loop.index}}').select2({
+        $('#timecode{{loop.index}}').select2({
             ajax: {
                 url: '/time/activities',
                 dataType: 'json'
-            },
-            tags: true
+            }
         });
-        $('.timecode{{loop.index}}').val('{{registration.2}}');
-        $('.timecode{{loop.index}}').trigger('change');
+        var activitySelection{{loop.index}} = $('#timecode{{loop.index}}');
+        $.ajax({
+            type: 'GET',
+            url: '/time/activity/{{registration.2}}',
+            dataType: 'json'
+        }).then(function (data) {
+            // create the option and append to Select2
+            var option = new Option(data.text, data.id, true, true);
+            console.log(option)
+            activitySelection{{loop.index}}.append(option).trigger('change');
+
+            // manually trigger the `select2:select` event
+            activitySelection{{loop.index}}.trigger({
+                type: 'select2:select',
+                params: {
+                    data: data
+                }
+            });
+        });
+        $('#time_start{{loop.index}}').timepicker({
+                timeFormat: 'HH:mm',
+                interval: 5,
+                defaultTime: '{{ registration.0 }}',
+                dynamic: true,
+                dropdown: true,
+                scrollbar: true,
+                change: function(time) {
+                    // the input field
+                    var from_time = $("input[name='time_start{{loop.index}}']").val();
+                    console.log("From time:"+from_time);
+                    $('#time_end{{loop.index}}').timepicker('option', 'minTime', from_time);
+                    if ($('#time_end{{loop.index}}').val() && $('#time_end{{loop.index}}').val() < from_time) {
+                        $('#time_end{{loop.index}}').timepicker('setTime', from_time);
+                }
+            }
+        });
+        $('#time_end{{loop.index}}').timepicker({
+            timeFormat: 'HH:mm',
+            interval: 5,
+            defaultTime: '{{ registration.1 }}',
+            dynamic: true,
+            dropdown: true,
+            scrollbar: true
+        });
         {% endfor %}
         {% endif %}
 
@@ -101,13 +142,13 @@
                                 <div class="form-group col-xs-4 col-md-4">
                                     <label for="time_start{{loop.index}}" class="form-label">Start Time</label>
                                     <div>
-                                        <input name="time_start{{loop.index}}" type="text" id="time_start{{loop.index}}" class="time_start text-center" placeholder="Start time" autocomplete="off" required jt-timepicker="" time="model.time" time-string="model.timeString" default-time="model.options.defaultTime" time-format="model.options.timeFormat" start-time="model.options.startTime" min-time="model.options.minTime" max-time="model.options.maxTime" interval="model.options.interval" dynamic="model.options.dynamic" scrollbar="model.options.scrollbar" dropdown="model.options.dropdown">
+                                        <input name="time_start{{loop.index}}" type="text" id="time_start{{loop.index}}" class="time_start time_start{{loop.index}} text-center" placeholder="Start time" autocomplete="off" required jt-timepicker="" time="model.time" time-string="model.timeString" default-time="model.options.defaultTime" time-format="model.options.timeFormat" start-time="model.options.startTime" min-time="model.options.minTime" max-time="model.options.maxTime" interval="model.options.interval" dynamic="model.options.dynamic" scrollbar="model.options.scrollbar" dropdown="model.options.dropdown">
                                     </div>
                                 </div>
                                 <div class="form-group col-xs-4 col-md-4">
                                     <label for="time_end{{loop.index}}" class="form-label">End time</label>
                                     <div>
-                                        <input name="time_end{{loop.index}}" type="text" id="time_end{{loop.index}}" class="time_end text-center" placeholder="End time" autocomplete="off" required jt-timepicker="" time="model.time" time-string="model.timeString" default-time="model.options.defaultTime" time-format="model.options.timeFormat" start-time="model.options.startTime" min-time="model.options.minTime" max-time="model.options.maxTime" interval="model.options.interval" dynamic="model.options.dynamic" scrollbar="model.options.scrollbar" dropdown="model.options.dropdown">
+                                        <input name="time_end{{loop.index}}" type="text" id="time_end{{loop.index}}" class="time_end time_end{{loop.index}} text-center" placeholder="End time" autocomplete="off" required jt-timepicker="" time="model.time" time-string="model.timeString" default-time="model.options.defaultTime" time-format="model.options.timeFormat" start-time="model.options.startTime" min-time="model.options.minTime" max-time="model.options.maxTime" interval="model.options.interval" dynamic="model.options.dynamic" scrollbar="model.options.scrollbar" dropdown="model.options.dropdown">
                                     </div>
                                 </div>
                             {% endfor %}

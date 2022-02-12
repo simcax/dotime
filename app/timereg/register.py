@@ -31,15 +31,19 @@ class TimeRegistration:
             conn.close()
         return activity_uuid
     
-    def get_activites(self):
+    def get_activites(self, activity_uuid=None):
         '''Gets a list of unique activites from the database for the current user'''
         activities = {}
+        and_activity_uuid = ""
+        if activity_uuid:
+            and_activity_uuid = f"and activitesuuid = '{activity_uuid}'"
         try:
             db_obj = database.Database()
             conn = db_obj.connect()
             with conn.cursor(cursor_factory=DictCursor) as cur:
                 sql = f"SELECT activitesuuid, activityname FROM soc.activites \
-                        WHERE usersId = '{self.userid}'"
+                        WHERE usersId = '{self.userid}' {and_activity_uuid}"
+                current_app.logger.debug("%s",sql)
                 cur.execute(sql)
                 if cur.rowcount:
                     activities = cur.fetchall()
@@ -53,13 +57,17 @@ class TimeRegistration:
         '''Creates the correct data structure for the select2 dropdown ajax call'''
         item_list = {}
         results = []
-        for uuid,activity_name in data:
-            results_dict = {}
-            results_dict['id'] = uuid
-            results_dict['text'] = activity_name
-            results.append(results_dict)
+        if len(data) == 1:
+            print(data)
+            item_list = { 'id': data[0][0], 'text': data[0][1]}
+        else:
+            for uuid,activity_name in data:
+                results_dict = {}
+                results_dict['id'] = uuid
+                results_dict['text'] = activity_name
+                results.append(results_dict)
         
-        item_list['results'] = results
+            item_list['results'] = results
         return item_list
 
     def add_timeregistration(self, activity_uuid, date, timefrom, timeto):
@@ -130,7 +138,7 @@ class TimeRegistration:
             db_obj = database.Database()
             conn = db_obj.connect()
             with conn.cursor() as cur:
-                sql = f"SELECT t.timefrom, t.timeto, t.usersId, a.activityname \
+                sql = f"SELECT experimental_strftime( t.timefrom,'%H:%m') as timefrom, experimental_strftime(t.timeto,'%H:%m') as timeto, a.activitesuuid, a.activityname \
                     FROM soc.timedmeetgo t \
                     INNER JOIN soc.ln_timemeetgo l ON t.timedmeetgouuid = l.timedmeetgouuid \
                     INNER JOIN soc.activites a ON l.activitesuuid = a.activitesuuid \
