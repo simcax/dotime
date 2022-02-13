@@ -1,3 +1,16 @@
+{% set navigation_bar_all = [
+  ('/', 'Home')
+] -%}
+{% set navigation_bar_loggedin = [
+  ('/time/enter', 'Time Registration'),
+  ('/auth/logout', 'Logout')
+] -%}
+
+{% set navigation_bar_not_loggedin = [
+  ('/profile/create', 'Create Profile')
+] -%}
+
+
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="#"><img src="/images/dotime_logo.png" width="80" height="80"></a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -6,20 +19,19 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-              <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+              {% for url, title in navigation_bar_all %}
+              <a class="nav-link {% if request.path == url %}active{% endif %}" href="{{ url }}">{{ title }}</a>
+              {% endfor %} 
             </li>
             {% if g.user %}
-            <li class="nav-item">
-              <a class="nav-link" href="/time/enter">Time registration</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/auth/logout">Log Out </a>
-            </li>
+              {% for url, title in navigation_bar_loggedin %}
+              <a class="nav-link {% if request.path == url %}active{% endif %}" href="{{ url }}">{{ title }}</a>
+              {% endfor %} 
             {% endif %}
             {% if not g.user %}
-            <li class="nav-item">
-              <a class="nav-link" href="/profile/create">Create Profile</a>
-            </li>
+              {% for url, title in navigation_bar_not_loggedin %}
+              <a class="nav-link {% if request.path == url %}active{% endif %}" href="{{ url }}">{{ title }}</a>
+              {% endfor %} 
             {% endif %}
         </ul>
         <ul class="navbar-nav ml-auto">
