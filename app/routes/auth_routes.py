@@ -26,7 +26,7 @@ def login():
                 current_app.logger.info("Next url was set to %s",next_url)
                 return_is = redirect(next_url)
             else:
-                return_is = render_template('loggedin.html')
+                return_is = redirect(url_for('time_blueprint.enter_time'))
         else:
             flash("Error logging you in.")
             return_is = render_template('loginonly.html')
