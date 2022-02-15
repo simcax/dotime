@@ -26,6 +26,10 @@ def login():
                 current_app.logger.info("Next url was set to %s",next_url)
                 return_is = redirect(next_url)
             else:
+                # The user logged in on the home page, and should be redirected 
+                # to the time registration page - as for now that's where the 
+                # music is
+                flash("You are logged in.")
                 return_is = redirect(url_for('time_blueprint.enter_time'))
         else:
             flash("Error logging you in.")
