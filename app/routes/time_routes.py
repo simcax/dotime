@@ -1,9 +1,8 @@
 '''Routes for time registration'''
-from datetime import datetime, date, timedelta
-import json
-from unittest import result
-from flask import Blueprint, current_app, jsonify, render_template, request, session, jsonify, flash, url_for, redirect
-from app import timereg
+from datetime import datetime, timedelta
+from flask import (
+    Blueprint, current_app, jsonify, render_template, request, session, flash, url_for, redirect
+)
 from app.utils import date_utils
 from app.timereg import register
 from app.auth.authentication import login_required
@@ -14,9 +13,8 @@ bp = Blueprint('time_blueprint', __name__, url_prefix='/time')
 def enter_time():
     '''Endpoint for time registration'''
     year, weeknumber, daynumber = datetime.isocalendar(datetime.now())
-    
     if request.args.get('showDate') == None:
-        today = datetime.now()  
+        today = datetime.now()
     else:
         today = datetime.strptime(request.args.get('showDate'),'%Y-%m-%d')
         current_app.logger.debug("Setting today to: %s", today)
@@ -26,12 +24,17 @@ def enter_time():
     tomorrow = tomorrow.strftime('%Y-%m-%d')
     today = today.strftime('%A - %d %B %Y')
     time_date = datetime.today().strftime("%Y-%m-%d")
-    date_info = { 'year': year, 'weeknumber': weeknumber, 'daynumber': daynumber, 'today': today, 'time_date': time_date, 'tomorrow': tomorrow, 'yesterday': yesterday}
+    date_info = { 
+        'year': year, 'weeknumber': weeknumber, 'daynumber': daynumber, 'today': today,
+        'time_date': time_date, 'tomorrow': tomorrow, 'yesterday': yesterday}
     dotime_date_help = date_utils.DoTimeDataHelp()
     days = dotime_date_help.all_days('en')
     reg = register.TimeRegistration(session.get('user_id'))
     time_registrations = reg.get_registrations(time_date)
-    return render_template('entertime.html', date_info=date_info, days=days, time_registrations=time_registrations)
+    return render_template(
+        'entertime.html', date_info=date_info, days=days,
+        time_registrations=time_registrations
+        )
 
 @bp.route("/register", methods=["GET","POST"])
 def register_time():

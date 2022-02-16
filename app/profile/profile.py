@@ -1,5 +1,4 @@
 '''Class to handle new users'''
-from typing import final
 from werkzeug.security import check_password_hash, generate_password_hash
 from psycopg2 import DatabaseError
 from flask import current_app, flash
@@ -87,7 +86,8 @@ class ProfileHandling:
             conn.close()
         return users_id
 
-    def get_user_data(self,user_id):
+    @classmethod
+    def get_user_data(cls,user_id):
         '''Retrieves a users profile data'''
         return_value = False
         try:
@@ -108,7 +108,8 @@ class ProfileHandling:
             conn.close()
         return return_value
 
-    def update_profile(self,users_id, email):
+    @classmethod
+    def update_profile(cls,users_id, email):
         '''Updates the email address on a profile by uuid'''
         updated = False
         try:
@@ -139,7 +140,8 @@ class ProfileHandling:
             db_obj = Database()
             conn = db_obj.connect()
             with conn.cursor() as cur:
-                sql = f"UPDATE soc.userPasswords SET passwordHash = '{password_hash}' WHERE usersid = '{users_id}'"
+                sql = f"UPDATE soc.userPasswords SET passwordHash = '{password_hash}' \
+                        WHERE usersid = '{users_id}'"
                 cur.execute(sql)
                 password_changed = bool(cur.rowcount == 1)
                 conn.commit()
@@ -159,7 +161,8 @@ class ProfileHandling:
             password_changed = False
         return password_changed
 
-    def get_email_by_uuid(self, user_id):
+    @classmethod
+    def get_email_by_uuid(cls, user_id):
         '''Method to get email by supplying uuid'''
         email = False
         try:

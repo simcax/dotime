@@ -5,7 +5,9 @@ from app.db.database import Database
 
 class SettingsHandling:
     '''Class for handling sessions for users'''
-    def add_setting(self, user_id, setting_name, setting_value):
+
+    @classmethod
+    def add_setting(cls, user_id, setting_name, setting_value):
         '''Add a setting to the settings table'''
         setting_added = False
         try:
@@ -15,7 +17,7 @@ class SettingsHandling:
                 sql = f"INSERT INTO soc.userSettings (usersId, settingName, settingValue) \
                     VALUES ('{user_id}','{setting_name}','{setting_value}') \
                     ON CONFLICT (usersid,settingname)    \
-                    DO UPDATE SET(settingname,settingvalue) = ('{setting_name}','{setting_value}')    "
+                    DO UPDATE SET(settingname,settingvalue) = ('{setting_name}','{setting_value}')"
                 cur.execute(sql)
                 if cur.rowcount == 1:
                     conn.commit()
@@ -52,7 +54,11 @@ class SettingsHandling:
             conn.close()
         return settings
 
-    def settings_to_dict(self, settings, rows):
+    @classmethod
+    def settings_to_dict(cls, settings, rows):
+        '''
+            Converts rows list to dictionary
+        '''
         for row in rows:
             this_setting = { row[0]: row[1]}
             settings.update(this_setting)
