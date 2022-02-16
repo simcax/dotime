@@ -142,7 +142,8 @@ class TimeRegistration:
                     FROM soc.timedmeetgo t \
                     INNER JOIN soc.ln_timemeetgo l ON t.timedmeetgouuid = l.timedmeetgouuid \
                     INNER JOIN soc.activites a ON l.activitesuuid = a.activitesuuid \
-                    WHERE t.usersId = '{self.userid}'"
+                    WHERE t.usersId = '{self.userid}' \
+                    AND t.timefrom BETWEEN '{registration_date} 00:00:00' AND '{registration_date} 23:59:59'"
                 cur.execute(sql)
                 rows = cur.fetchall()
         except DatabaseError as error:

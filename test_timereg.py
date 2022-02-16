@@ -1,6 +1,6 @@
 '''Test time registration methods'''
 import datetime
-from datetime import time
+from datetime import date, time
 from random import randint, choice
 from venv import create
 import pytest
@@ -9,7 +9,7 @@ from app.profile.profile import ProfileHandling
 from test_utils import TestUtils
 from conftest import login, logout
 
-def add_activity_registrations(user_id,number_of_activities,number_of_registrations):
+def add_activity_registrations(user_id,number_of_activities,number_of_registrations, date_of_registrations=None):
     '''
         Creates <number_of_activities> and afterwards registers 
         <number_of_registrations> registrations
@@ -22,7 +22,10 @@ def add_activity_registrations(user_id,number_of_activities,number_of_registrati
         activity_uuid = time_reg.add_activity(activity_name_str)
         activities.append(activity_uuid)
     start_timefrom = datetime.datetime.now()
-    thisdate = start_timefrom.strftime('%Y-%m-%d')
+    if date_of_registrations == None:
+        thisdate = start_timefrom.strftime('%Y-%m-%d')
+    else:
+        thisdate = date_of_registrations
     for i in range(0, number_of_registrations):
         if i == 0:
             timefrom = start_timefrom
@@ -164,3 +167,18 @@ def test_get_registered_time_on_today(create_user):
     registrations = time_reg.get_registrations(registration_date)
     assert len(registrations) == 4
 
+def test_add_activity_on_yesterday(create_user):
+    userdata = create_user['info']
+    user_id = userdata['users_id']
+    date_of_registrations = datetime.datetime.now()
+    date_of_registrations = date_of_registrations + datetime.timedelta(days=-1)
+    yesterday = date_of_registrations.strftime('%Y-%m-%d')
+    add_activity_registrations(user_id,2,4, yesterday)
+    # Change date to today, and add some more registrations
+    today = date_of_registrations + datetime.timedelta(days=1)
+    today = today.strftime('%Y-%m-%d')
+    add_activity_registrations(user_id,2,4, today)
+    time_reg = TimeRegistration(user_id)
+    # Get the registrations from yesterday
+    registrations = time_reg.get_registrations(yesterday)
+    assert len(registrations) == 4
