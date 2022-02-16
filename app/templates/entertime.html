@@ -117,7 +117,15 @@
     <div class="card">
         <div class="card-body">
             <fieldset class="card-title">
-                <legend>{{ date_info.today }}</legend>
+                <legend>
+                    <a href="/time/enter?showDate={{date_info.yesterday}}">
+                        <i class="bi bi-caret-left-fill"></i>
+                    </a>
+                    {{ date_info.today }}
+                    <a href="/time/enter?showDate={{date_info.tomorrow}}">
+                        <i class="bi bi-caret-right-fill"></i>
+                    </a>
+                </legend>
                 {% with messages = get_flashed_messages() %}
                 {% if messages %}
                 <div class="form-group alert alert-success" role="alert">

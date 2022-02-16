@@ -1,8 +1,8 @@
 '''Routes for time registration'''
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import json
 from unittest import result
-from flask import Blueprint, jsonify, render_template, request, session, jsonify, flash, url_for, redirect
+from flask import Blueprint, current_app, jsonify, render_template, request, session, jsonify, flash, url_for, redirect
 from app import timereg
 from app.utils import date_utils
 from app.timereg import register
@@ -14,10 +14,19 @@ bp = Blueprint('time_blueprint', __name__, url_prefix='/time')
 def enter_time():
     '''Endpoint for time registration'''
     year, weeknumber, daynumber = datetime.isocalendar(datetime.now())
-    today = date.today().isoformat()
-    today = datetime.today().strftime('%A - %d %B %Y')
+    
+    if request.args.get('showDate') == None:
+        today = datetime.now()  
+    else:
+        today = datetime.strptime(request.args.get('showDate'),'%Y-%m-%d')
+        current_app.logger.debug("Setting today to: %s", today)
+    yesterday = today + timedelta(days=-1)
+    yesterday = yesterday.strftime('%Y-%m-%d')
+    tomorrow = today + timedelta(days=1)
+    tomorrow = tomorrow.strftime('%Y-%m-%d')
+    today = today.strftime('%A - %d %B %Y')
     time_date = datetime.today().strftime("%Y-%m-%d")
-    date_info = { 'year': year, 'weeknumber': weeknumber, 'daynumber': daynumber, 'today': today, 'time_date': time_date}
+    date_info = { 'year': year, 'weeknumber': weeknumber, 'daynumber': daynumber, 'today': today, 'time_date': time_date, 'tomorrow': tomorrow, 'yesterday': yesterday}
     dotime_date_help = date_utils.DoTimeDataHelp()
     days = dotime_date_help.all_days('en')
     reg = register.TimeRegistration(session.get('user_id'))
