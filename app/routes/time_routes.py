@@ -38,6 +38,7 @@ def enter_time():
         )
 
 @bp.route("/register", methods=["GET","POST"])
+@login_required
 def register_time():
     '''Endpoint for receiving time registration records'''
     if request.method == 'POST':
@@ -55,10 +56,8 @@ def register_time():
             return_string =  "Time registration registered"
         else:
             return_string = "Time registration failed"
-    else:
-        return_string = "GET not allowed"
-    flash(return_string)
-    return redirect(url_for("time_blueprint.enter_time",showDate=time_date))
+        flash(return_string)
+        return redirect(url_for("time_blueprint.enter_time",showDate=time_date))
 
 @bp.route("/activities")
 #@login_required

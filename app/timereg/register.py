@@ -69,7 +69,7 @@ class TimeRegistration:
             item_list['results'] = results
         return item_list
 
-    def add_timeregistration(self, activity_uuid, date, timefrom, timeto):
+    def add_timeregistration(self, activity_uuid, date, timefrom, timeto,testing=False):
         '''Adds a row to the time registration table with a link record to an activity uuid'''
         #datetime.datetime.strptime(timefrom, format)
         timereg_added = False
@@ -102,10 +102,12 @@ class TimeRegistration:
                 finally:
                     conn.close()
             else:
-                flash(f"Time period ({timefrom_full} or {timeto_full}) is already registered.")
+                if not testing:
+                    flash(f"Time period ({timefrom_full} or {timeto_full}) is already registered.")
                 timereg_added = False
         else:
-            flash(f"Time from {timefrom} is after time to {timeto}")
+            if not testing:
+                flash(f"Time from {timefrom} is after time to {timeto}")
             timereg_added = False
         return timereg_added
 

@@ -66,23 +66,24 @@ def test_add_timereg_row(create_user):
     timereg_added = time_reg.add_timeregistration(activity_uuid, thisdate, timefrom, timeto)
     assert timereg_added == True
 
-def test_add_timereg_wrong_order(create_user):
+def test_add_timereg_wrong_order(create_user,app_test_context):
     '''Test getting an error when adding a time reg record with to before from timestamp'''
-    userdata = create_user['info']
-    user_id = userdata['users_id']
-    time_reg = TimeRegistration(user_id)
-    tu = TestUtils()
-    activity_name_str = tu.createRandomString()
-    activity_uuid = time_reg.add_activity(activity_name_str)
-    timeto = datetime.datetime.now()
-    timefrom = timeto + datetime.timedelta(minutes=2)
-    thisdate = timefrom.strftime('%Y-%m-%d')
-    timefrom = timefrom.strftime('%I:%M')
-    timeto = timeto.strftime('%I:%M')
-    
-    assert isinstance(activity_uuid, str)
-    timereg_added = time_reg.add_timeregistration(activity_uuid, thisdate, timefrom, timeto)
-    assert timereg_added == False
+    with app_test_context:
+        userdata = create_user['info']
+        user_id = userdata['users_id']
+        time_reg = TimeRegistration(user_id)
+        tu = TestUtils()
+        activity_name_str = tu.createRandomString()
+        activity_uuid = time_reg.add_activity(activity_name_str)
+        timeto = datetime.datetime.now()
+        timefrom = timeto + datetime.timedelta(minutes=2)
+        thisdate = timefrom.strftime('%Y-%m-%d')
+        timefrom = timefrom.strftime('%I:%M')
+        timeto = timeto.strftime('%I:%M')
+        
+        assert isinstance(activity_uuid, str)
+        timereg_added = time_reg.add_timeregistration(activity_uuid, thisdate, timefrom, timeto,testing=True)
+        assert timereg_added == False
 
 # TODO: Need to find a solution for this.
 # def test_add_timereg_correct_timestamps(create_user):
@@ -99,32 +100,33 @@ def test_add_timereg_wrong_order(create_user):
 #     timereg_added = time_reg.add_timeregistration(activity_uuid, timefrom, timeto)
 #     assert timereg_added == False
 
-def test_add_timereg_overlapping_registrations(create_user):
+def test_add_timereg_overlapping_registrations(create_user,app_test_context):
     '''Tests an error will occour if a timeregistration overlaps another timeregistration'''
-    userdata = create_user['info']
-    user_id = userdata['users_id']
-    time_reg = TimeRegistration(user_id)
-    tu = TestUtils()
-    activity_name_str = tu.createRandomString()
-    activity_uuid = time_reg.add_activity(activity_name_str)
+    with app_test_context:
+        userdata = create_user['info']
+        user_id = userdata['users_id']
+        time_reg = TimeRegistration(user_id)
+        tu = TestUtils()
+        activity_name_str = tu.createRandomString()
+        activity_uuid = time_reg.add_activity(activity_name_str)
 
-    timefrom1 = datetime.datetime.now()
-    timeto1 = timefrom1 + datetime.timedelta(minutes=2)
-    timefrom2 = timefrom1 + datetime.timedelta(minutes=1)
-    timeto2 = timefrom2 + datetime.timedelta(minutes=10)
-    thisdate = timefrom1.strftime('%Y-%m-%d')
-    timefrom1 = timefrom1.strftime('%I:%M')
-    timeto1 = timeto1.strftime('%I:%M')
-    
-    
-    timefrom2 = timefrom2.strftime('%I:%M')
-    timeto2 = timeto2.strftime('%I:%M')
-    assert isinstance(activity_uuid, str)
-    timereg_added_1 = time_reg.add_timeregistration(activity_uuid, thisdate, timefrom1, timeto1)
-    timereg_added_2 = time_reg.add_timeregistration(activity_uuid, thisdate, timefrom2, timeto2)
-    assert timereg_added_1 == True
-    # Since the second timereg row overlaps with the first, insertion should fail.
-    assert timereg_added_2 == False
+        timefrom1 = datetime.datetime.now()
+        timeto1 = timefrom1 + datetime.timedelta(minutes=2)
+        timefrom2 = timefrom1 + datetime.timedelta(minutes=1)
+        timeto2 = timefrom2 + datetime.timedelta(minutes=10)
+        thisdate = timefrom1.strftime('%Y-%m-%d')
+        timefrom1 = timefrom1.strftime('%I:%M')
+        timeto1 = timeto1.strftime('%I:%M')
+        
+        
+        timefrom2 = timefrom2.strftime('%I:%M')
+        timeto2 = timeto2.strftime('%I:%M')
+        assert isinstance(activity_uuid, str)
+        timereg_added_1 = time_reg.add_timeregistration(activity_uuid, thisdate, timefrom1, timeto1,testing=True)
+        timereg_added_2 = time_reg.add_timeregistration(activity_uuid, thisdate, timefrom2, timeto2,testing=True)
+        assert timereg_added_1 == True
+        # Since the second timereg row overlaps with the first, insertion should fail.
+        assert timereg_added_2 == False
 
 def test_get_activities(create_user,app_test_context):
     with app_test_context:
@@ -158,27 +160,29 @@ def test_get_timecodes_endpoint(client, create_user):
     rv = client.get("/time/activities")
     assert rv.status_code == 200
 
-def test_get_registered_time_on_today(create_user):
-    userdata = create_user['info']
-    user_id = userdata['users_id']
-    add_activity_registrations(user_id,2,4)
-    time_reg = TimeRegistration(user_id)
-    registration_date = datetime.datetime.now().strftime('%Y-%m-%d')
-    registrations = time_reg.get_registrations(registration_date)
-    assert len(registrations) == 4
+def test_get_registered_time_on_today(create_user,app_test_context):
+    with app_test_context:
+        userdata = create_user['info']
+        user_id = userdata['users_id']
+        add_activity_registrations(user_id,2,4)
+        time_reg = TimeRegistration(user_id)
+        registration_date = datetime.datetime.now().strftime('%Y-%m-%d')
+        registrations = time_reg.get_registrations(registration_date)
+        assert len(registrations) == 4
 
-def test_add_activity_on_yesterday(create_user):
-    userdata = create_user['info']
-    user_id = userdata['users_id']
-    date_of_registrations = datetime.datetime.now()
-    date_of_registrations = date_of_registrations + datetime.timedelta(days=-1)
-    yesterday = date_of_registrations.strftime('%Y-%m-%d')
-    add_activity_registrations(user_id,2,4, yesterday)
-    # Change date to today, and add some more registrations
-    today = date_of_registrations + datetime.timedelta(days=1)
-    today = today.strftime('%Y-%m-%d')
-    add_activity_registrations(user_id,2,4, today)
-    time_reg = TimeRegistration(user_id)
-    # Get the registrations from yesterday
-    registrations = time_reg.get_registrations(yesterday)
-    assert len(registrations) == 4
+def test_add_activity_on_yesterday(create_user,app_test_context):
+    with app_test_context:
+        userdata = create_user['info']
+        user_id = userdata['users_id']
+        date_of_registrations = datetime.datetime.now()
+        date_of_registrations = date_of_registrations + datetime.timedelta(days=-1)
+        yesterday = date_of_registrations.strftime('%Y-%m-%d')
+        add_activity_registrations(user_id,2,4, yesterday)
+        # Change date to today, and add some more registrations
+        today = date_of_registrations + datetime.timedelta(days=1)
+        today = today.strftime('%Y-%m-%d')
+        add_activity_registrations(user_id,2,4, today)
+        time_reg = TimeRegistration(user_id)
+        # Get the registrations from yesterday
+        registrations = time_reg.get_registrations(yesterday)
+        assert len(registrations) == 4
