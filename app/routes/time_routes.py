@@ -31,6 +31,7 @@ def enter_time():
     days = dotime_date_help.all_days('en')
     reg = register.TimeRegistration(session.get('user_id'))
     time_registrations = reg.get_registrations(time_date)
+    current_app.logger.debug(time_registrations)
     return render_template(
         'entertime.html', date_info=date_info, days=days,
         time_registrations=time_registrations

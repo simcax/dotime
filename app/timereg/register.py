@@ -139,14 +139,15 @@ class TimeRegistration:
             db_obj = database.Database()
             conn = db_obj.connect()
             with conn.cursor() as cur:
-                sql = f"SELECT experimental_strftime( t.timefrom,'%H:%m') as timefrom, \
-                    experimental_strftime(t.timeto,'%H:%m') as timeto, \
+                sql = f"SELECT experimental_strftime( t.timefrom,'%H:%M') as timefrom, \
+                    experimental_strftime(t.timeto,'%H:%M') as timeto, \
                     a.activitesuuid, a.activityname \
                     FROM soc.timedmeetgo t \
                     INNER JOIN soc.ln_timemeetgo l ON t.timedmeetgouuid = l.timedmeetgouuid \
                     INNER JOIN soc.activites a ON l.activitesuuid = a.activitesuuid \
                     WHERE t.usersId = '{self.userid}' \
-                    AND t.timefrom BETWEEN '{registration_date} 00:00:00' AND '{registration_date} 23:59:59'"
+                    AND t.timefrom BETWEEN '{registration_date} 00:00:00' AND '{registration_date} 23:59:59' \
+                    ORDER BY t.timefrom"
                 current_app.logger.debug(sql)
                 cur.execute(sql)
                 rows = cur.fetchall()

@@ -52,7 +52,7 @@
                 timeFormat: 'HH:mm',
                 interval: 5,
                 defaultTime: '{{ registration.0 }}',
-                dynamic: true,
+                dynamic: false,
                 dropdown: true,
                 scrollbar: true,
                 change: function(time) {
@@ -68,8 +68,9 @@
         $('#time_end{{loop.index}}').timepicker({
             timeFormat: 'HH:mm',
             interval: 5,
+            minTime: '00:00',
             defaultTime: '{{ registration.1 }}',
-            dynamic: true,
+            dynamic: false,
             dropdown: true,
             scrollbar: true
         });
@@ -87,8 +88,9 @@
         $('.time_start').timepicker({
                 timeFormat: 'HH:mm',
                 interval: 5,
+                minTime: '00:00',
                 defaultTime: current_time,
-                dynamic: true,
+                dynamic: false,
                 dropdown: true,
                 scrollbar: true,
                 change: function(time) {
@@ -105,7 +107,7 @@
             timeFormat: 'HH:mm',
             interval: 5,
             defaultTime: current_time,
-            dynamic: true,
+            dynamic: false,
             dropdown: true,
             scrollbar: true
         });
