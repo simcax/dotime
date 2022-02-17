@@ -22,10 +22,10 @@ def enter_time():
     yesterday = yesterday.strftime('%Y-%m-%d')
     tomorrow = today + timedelta(days=1)
     tomorrow = tomorrow.strftime('%Y-%m-%d')
-    today = today.strftime('%A - %d %B %Y')
-    time_date = datetime.today().strftime("%Y-%m-%d")
+    today_text = today.strftime('%A - %d %B %Y')
+    time_date = today.strftime("%Y-%m-%d")
     date_info = {
-        'year': year, 'weeknumber': weeknumber, 'daynumber': daynumber, 'today': today,
+        'year': year, 'weeknumber': weeknumber, 'daynumber': daynumber, 'today': today_text,
         'time_date': time_date, 'tomorrow': tomorrow, 'yesterday': yesterday}
     dotime_date_help = date_utils.DoTimeDataHelp()
     days = dotime_date_help.all_days('en')

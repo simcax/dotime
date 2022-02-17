@@ -145,6 +145,7 @@ class TimeRegistration:
                     INNER JOIN soc.activites a ON l.activitesuuid = a.activitesuuid \
                     WHERE t.usersId = '{self.userid}' \
                     AND t.timefrom BETWEEN '{registration_date} 00:00:00' AND '{registration_date} 23:59:59'"
+                current_app.logger.debug(sql)
                 cur.execute(sql)
                 rows = cur.fetchall()
         except DatabaseError as error:
