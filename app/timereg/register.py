@@ -1,5 +1,5 @@
 '''Module handling time registration'''
-from flask import current_app
+from flask import current_app, flash
 from psycopg2 import DatabaseError
 from psycopg2.extras import DictCursor
 from app.db import database
@@ -102,8 +102,10 @@ class TimeRegistration:
                 finally:
                     conn.close()
             else:
+                flash(f"Time period ({timefrom_full} or {timeto_full}) is already registered.")
                 timereg_added = False
         else:
+            flash(f"Time from {timefrom} is after time to {timeto}")
             timereg_added = False
         return timereg_added
 

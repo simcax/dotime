@@ -57,7 +57,7 @@ def register_time():
     else:
         return_string = "GET not allowed"
     flash(return_string)
-    return redirect(url_for("time_blueprint.enter_time"))
+    return redirect(url_for("time_blueprint.enter_time",showDate=time_date))
 
 @bp.route("/activities")
 #@login_required
