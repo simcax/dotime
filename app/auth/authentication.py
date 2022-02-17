@@ -6,7 +6,8 @@ from app.db import database
 
 class Authentication:
     '''Class for handling authentication'''
-    def get_user_data(self,uuid):
+    @classmethod
+    def get_user_data(cls,uuid):
         '''Retrieve user data by UUID'''
         db_obj = database.Database()
         conn = db_obj.connect()

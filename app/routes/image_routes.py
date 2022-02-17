@@ -22,7 +22,11 @@ def welcome_jpg():
 @bp1.route("/frontpage_welcome.jpg")
 def frontpage_welcome_jpg():
     '''Serve frontpage_welcome.jpg'''
-    return send_from_directory('static/images','annie-spratt-QckxruozjRg-unsplash.jpg',mimetype='image/jpg')
+    return send_from_directory(
+        'static/images',
+        'annie-spratt-QckxruozjRg-unsplash.jpg',
+        mimetype='image/jpg'
+    )
 
 @bp1.route("/dotime_logo.png")
 def dotime_logo_png():

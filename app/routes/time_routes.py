@@ -13,7 +13,7 @@ bp = Blueprint('time_blueprint', __name__, url_prefix='/time')
 def enter_time():
     '''Endpoint for time registration'''
     year, weeknumber, daynumber = datetime.isocalendar(datetime.now())
-    if request.args.get('showDate') == None:
+    if request.args.get('showDate') is None:
         today = datetime.now()
     else:
         today = datetime.strptime(request.args.get('showDate'),'%Y-%m-%d')
@@ -24,7 +24,7 @@ def enter_time():
     tomorrow = tomorrow.strftime('%Y-%m-%d')
     today = today.strftime('%A - %d %B %Y')
     time_date = datetime.today().strftime("%Y-%m-%d")
-    date_info = { 
+    date_info = {
         'year': year, 'weeknumber': weeknumber, 'daynumber': daynumber, 'today': today,
         'time_date': time_date, 'tomorrow': tomorrow, 'yesterday': yesterday}
     dotime_date_help = date_utils.DoTimeDataHelp()
@@ -71,7 +71,7 @@ def activities():
     return "No User"
 
 @bp.route("/activity/<activityuuid>")
-def activityuuid(activityuuid):
+def get_activityuuid(activityuuid):
     '''Endpoint for getting a specific activity'''
     do_register = register.TimeRegistration(session['user_id'])
     data = do_register.get_activites(activity_uuid=activityuuid)

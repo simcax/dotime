@@ -1,7 +1,5 @@
 '''Routes for profile creation'''
 
-from crypt import methods
-from importlib.metadata import requires
 from flask import Blueprint, render_template, request,session, flash, current_app
 from app.profile.profile import ProfileHandling
 from app.profile.settings import SettingsHandling
@@ -97,7 +95,11 @@ def profile_settings():
             settings_obj.add_defaults(session['user_id'])
         settings = settings_obj.get_settings(session['user_id'])
     workweek_day_lengths = settings_obj.get_workweek_day_lengths(session['user_id'])
-    return render_template("profile_settings.html", settings = settings, workday_lengths = workweek_day_lengths)
+    return render_template(
+        "profile_settings.html",
+         settings = settings,
+          workday_lengths = workweek_day_lengths
+          )
 
 def check_and_update(settings_obj, settings, current_key, current_value):
     '''Checks if the value was updated and needs to be comitted to the database'''

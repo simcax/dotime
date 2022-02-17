@@ -106,8 +106,6 @@ class SettingsHandling:
         from app.utils import date_utils
         datahelp = date_utils.DoTimeDataHelp()
         all_days = datahelp.all_days('en')
-        i=0
-        for day in all_days:
-            workweek_day_lengths[f'workdayName{i+1}'] = all_days[i]
-            i+=1
+        for i in enumerate(all_days):
+            workweek_day_lengths[f'workdayName{i[0]+1}'] = all_days[i[0]]
         return workweek_day_lengths

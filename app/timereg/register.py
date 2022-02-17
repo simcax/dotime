@@ -1,6 +1,4 @@
 '''Module handling time registration'''
-from datetime import datetime
-from time import strftime
 from flask import current_app
 from psycopg2 import DatabaseError
 from psycopg2.extras import DictCursor
@@ -30,7 +28,7 @@ class TimeRegistration:
             # Close connection
             conn.close()
         return activity_uuid
-    
+
     def get_activites(self, activity_uuid=None):
         '''Gets a list of unique activites from the database for the current user'''
         activities = {}
@@ -53,7 +51,8 @@ class TimeRegistration:
             conn.close()
         return activities
 
-    def create_select2_data_structure_for_ajax_call(self,data):
+    @classmethod
+    def create_select2_data_structure_for_ajax_call(cls,data):
         '''Creates the correct data structure for the select2 dropdown ajax call'''
         item_list = {}
         results = []
@@ -66,7 +65,7 @@ class TimeRegistration:
                 results_dict['id'] = uuid
                 results_dict['text'] = activity_name
                 results.append(results_dict)
-        
+
             item_list['results'] = results
         return item_list
 
@@ -138,7 +137,9 @@ class TimeRegistration:
             db_obj = database.Database()
             conn = db_obj.connect()
             with conn.cursor() as cur:
-                sql = f"SELECT experimental_strftime( t.timefrom,'%H:%m') as timefrom, experimental_strftime(t.timeto,'%H:%m') as timeto, a.activitesuuid, a.activityname \
+                sql = f"SELECT experimental_strftime( t.timefrom,'%H:%m') as timefrom, \
+                    experimental_strftime(t.timeto,'%H:%m') as timeto, \
+                    a.activitesuuid, a.activityname \
                     FROM soc.timedmeetgo t \
                     INNER JOIN soc.ln_timemeetgo l ON t.timedmeetgouuid = l.timedmeetgouuid \
                     INNER JOIN soc.activites a ON l.activitesuuid = a.activitesuuid \
@@ -147,7 +148,7 @@ class TimeRegistration:
                 cur.execute(sql)
                 rows = cur.fetchall()
         except DatabaseError as error:
-            current_app.logger.error(f"Error executing sql: %s, error: %s", sql, error)
+            current_app.logger.error("Error executing sql: %s, error: %s", sql, error)
         finally:
             conn.close()
         return rows
