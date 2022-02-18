@@ -51,7 +51,13 @@ def register_time():
         else:
             user_id = request.form.get('user_id')
         time_reg = register.TimeRegistration(user_id)
-        activity_uuid = time_reg.add_activity(activity)
+        # Due to the way select2 works, an activity uuid will be sent, when a 
+        # pre-existing activity is selected and registered. In that case, it
+        # shouldn't be added - it is already in the database.
+        # So a check is performed to see if it is a uuid already existing.
+        # This might be done smarter at some point...
+        if not time_reg.is_activityuuid(activity):
+            activity_uuid = time_reg.add_activity(activity)
         if time_reg.add_timeregistration(activity_uuid, time_date,time_start, time_end):
             return_string =  "Time registration registered"
         else:
@@ -70,10 +76,18 @@ def activities():
         return jsonify(item_list)
     return "No User"
 
-@bp.route("/activity/<activityuuid>")
-def get_activityuuid(activityuuid):
+@bp.route("/activity/name/<activity_name>")
+def get_activity_by_name(activity_name):
     '''Endpoint for getting a specific activity'''
     do_register = register.TimeRegistration(session['user_id'])
-    data = do_register.get_activites(activity_uuid=activityuuid)
-    item_list = do_register.create_select2_data_structure_for_ajax_call(data)
+    data = do_register.get_activites(activity_name=activity_name)
+    item_list = do_register.create_select2_data_structure_for_ajax_call(data,no_list='true')
+    return jsonify(item_list)
+
+@bp.route("/activity/uuid/<activity_uuid>")
+def get_activity_by_uuid(activity_uuid):
+    '''Endpoint for getting a specific activity'''
+    do_register = register.TimeRegistration(session['user_id'])
+    data = do_register.get_activites(activity_uuid=activity_uuid)
+    item_list = do_register.create_select2_data_structure_for_ajax_call(data,no_list='true')
     return jsonify(item_list)

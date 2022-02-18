@@ -1,4 +1,5 @@
 '''Module handling time registration'''
+from uuid import UUID
 from flask import current_app, flash
 from psycopg2 import DatabaseError
 from psycopg2.extras import DictCursor
@@ -29,10 +30,38 @@ class TimeRegistration:
             conn.close()
         return activity_uuid
 
-    def get_activites(self, activity_uuid=None):
+    def is_activityuuid(self, activity_uuid):
+        '''
+            Takes an activity_uuid and looks it up in the database. If the uuid exists for
+            the user, true is returned, otherwise false
+        '''
+        is_activity_uuid = False
+        try:
+            is_uuid = UUID(activity_uuid)            
+            try:
+                db_obj = database.Database()
+                conn = db_obj.connect()
+                with conn.cursor() as cur:
+                    sql = f"SELECT 1 FROM soc.activites \
+                            WHERE usersid = '{self.userid}' AND activitesuuid = '{activity_uuid}'"
+                    cur.execute(sql)
+                    is_activity_uuid = bool(cur.rowcount)
+            except DatabaseError as error:
+                current_app.logger.error("Error executing sql: %s - error: %s",sql,error)
+            finally:
+                conn.close()
+        except ValueError:
+            is_activity_uuid = False
+
+        return is_activity_uuid
+
+    def get_activites(self, activity_name=None, activity_uuid=None):
         '''Gets a list of unique activites from the database for the current user'''
         activities = {}
+        and_activity_name = ""
         and_activity_uuid = ""
+        if activity_name:
+            and_activity_name = f"and activityname LIKE '%{activity_name}%'"
         if activity_uuid:
             and_activity_uuid = f"and activitesuuid = '{activity_uuid}'"
         try:
@@ -40,7 +69,7 @@ class TimeRegistration:
             conn = db_obj.connect()
             with conn.cursor(cursor_factory=DictCursor) as cur:
                 sql = f"SELECT activitesuuid, activityname FROM soc.activites \
-                        WHERE usersId = '{self.userid}' {and_activity_uuid}"
+                        WHERE usersId = '{self.userid}' {and_activity_name} {and_activity_uuid}"
                 current_app.logger.debug("%s",sql)
                 cur.execute(sql)
                 if cur.rowcount:
@@ -52,12 +81,11 @@ class TimeRegistration:
         return activities
 
     @classmethod
-    def create_select2_data_structure_for_ajax_call(cls,data):
+    def create_select2_data_structure_for_ajax_call(cls,data,no_list=False):
         '''Creates the correct data structure for the select2 dropdown ajax call'''
         item_list = {}
         results = []
-        if len(data) == 1:
-            print(data)
+        if no_list:
             item_list = { 'id': data[0][0], 'text': data[0][1]}
         else:
             for uuid,activity_name in data:

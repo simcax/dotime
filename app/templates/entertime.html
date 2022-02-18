@@ -32,7 +32,7 @@
         var activitySelection{{loop.index}} = $('#timecode{{loop.index}}');
         $.ajax({
             type: 'GET',
-            url: '/time/activity/{{registration.2}}',
+            url: '/time/activity/uuid/{{registration.2}}',
             dataType: 'json'
         }).then(function (data) {
             // create the option and append to Select2

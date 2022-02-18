@@ -3,6 +3,7 @@ import datetime
 from datetime import date, time
 from random import randint, choice
 from venv import create
+import uuid
 import pytest
 from app.timereg.register import TimeRegistration
 from app.profile.profile import ProfileHandling
@@ -186,3 +187,31 @@ def test_add_activity_on_yesterday(create_user,app_test_context):
         # Get the registrations from yesterday
         registrations = time_reg.get_registrations(yesterday)
         assert len(registrations) == 4
+
+def test_seeing_if_uuid_exists(create_user):
+    userdata = create_user['info']
+    user_id = userdata['users_id']
+    tu = TestUtils()
+    time_reg = TimeRegistration(user_id)
+    activity_name_str = tu.createRandomString()
+    activity_uuid = time_reg.add_activity(activity_name_str)
+    is_activity_uuid = time_reg.is_activityuuid(activity_uuid)
+    assert is_activity_uuid == True
+
+def test_seeing_if_uuid_exists_with_non_existing_uuid(create_user):
+    userdata = create_user['info']
+    user_id = userdata['users_id']
+    tu = TestUtils()
+    time_reg = TimeRegistration(user_id)
+    test_uuid = uuid.uuid4()
+    is_activity_uuid = time_reg.is_activityuuid(test_uuid)
+    assert is_activity_uuid == False
+
+def test_seeing_if_uuid_exists_with_string(create_user):
+    userdata = create_user['info']
+    user_id = userdata['users_id']
+    tu = TestUtils()
+    time_reg = TimeRegistration(user_id)
+    test_uuid = 'test'
+    is_uuid = time_reg.is_activityuuid(test_uuid)
+    assert is_uuid == False
