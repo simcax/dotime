@@ -36,22 +36,24 @@ class TimeRegistration:
             the user, true is returned, otherwise false
         '''
         is_activity_uuid = False
-        try:
-            is_uuid = UUID(activity_uuid)            
+        if len(str(activity_uuid)) == 36:
             try:
-                db_obj = database.Database()
-                conn = db_obj.connect()
-                with conn.cursor() as cur:
-                    sql = f"SELECT 1 FROM soc.activites \
-                            WHERE usersid = '{self.userid}' AND activitesuuid = '{activity_uuid}'"
-                    cur.execute(sql)
-                    is_activity_uuid = bool(cur.rowcount)
-            except DatabaseError as error:
-                current_app.logger.error("Error executing sql: %s - error: %s",sql,error)
-            finally:
-                conn.close()
-        except ValueError:
-            is_activity_uuid = False
+                UUID(str(activity_uuid))
+                try:
+                    db_obj = database.Database()
+                    conn = db_obj.connect()
+                    with conn.cursor() as cur:
+                        sql = f"SELECT 1 FROM soc.activites \
+                                WHERE usersid = '{self.userid}' \
+                                AND activitesuuid = '{activity_uuid}'"
+                        cur.execute(sql)
+                        is_activity_uuid = bool(cur.rowcount)
+                except DatabaseError as error:
+                    current_app.logger.error("Error executing sql: %s - error: %s",sql,error)
+                finally:
+                    conn.close()
+            except ValueError:
+                is_activity_uuid = False
 
         return is_activity_uuid
 
@@ -149,11 +151,14 @@ class TimeRegistration:
             timestamp_is_not_here = True
             db_obj = database.Database()
             conn = db_obj.connect()
-            sql = f"SELECT 1 FROM soc.timedmeetgo WHERE timefrom <= '{timestamp}' \
+            sql = f"SELECT 1 FROM soc.timedmeetgo WHERE timefrom <= '{timestamp}'  \
                 AND timeto >= '{timestamp}' AND usersid = '{self.userid}'"
             with conn.cursor() as cur:
                 cur.execute(sql)
                 timestamp_is_not_here = bool(cur.rowcount==0)
+                if not timestamp_is_not_here:
+                    current_app.logger.debug('Rows: %s - Timestamp %s existed already. SQL :%s'
+                    ,cur.rowcount,timestamp, sql)
         except DatabaseError as error:
             print(f"Error executing SQL {sql} - {error}")
         finally:

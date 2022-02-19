@@ -188,15 +188,17 @@ def test_add_activity_on_yesterday(create_user,app_test_context):
         registrations = time_reg.get_registrations(yesterday)
         assert len(registrations) == 4
 
-def test_seeing_if_uuid_exists(create_user):
+def test_seeing_if_uuid_exists(create_user, app_test_context):
     userdata = create_user['info']
     user_id = userdata['users_id']
     tu = TestUtils()
     time_reg = TimeRegistration(user_id)
-    activity_name_str = tu.createRandomString()
-    activity_uuid = time_reg.add_activity(activity_name_str)
-    is_activity_uuid = time_reg.is_activityuuid(activity_uuid)
-    assert is_activity_uuid == True
+    with app_test_context:
+        activity_name_str = tu.createRandomString()
+        activity_uuid = time_reg.add_activity(activity_name_str)
+        length = len(activity_uuid)
+        is_activity_uuid = time_reg.is_activityuuid(activity_uuid)
+        assert is_activity_uuid == True
 
 def test_seeing_if_uuid_exists_with_non_existing_uuid(create_user):
     userdata = create_user['info']

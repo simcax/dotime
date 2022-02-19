@@ -16,7 +16,6 @@ class Authentication:
             try:
                 sql = f"SELECT username, email FROM soc.users \
                     WHERE usersid = '{uuid}'"
-                current_app.logger.info("select_user sql: %s",sql)
                 cursor.execute(sql)
                 if cursor.rowcount != 0:
                     user_data = cursor.fetchone()
@@ -24,7 +23,6 @@ class Authentication:
                     user['usersid'] = uuid
                     user['username'] = user_data[0]
                     user['email'] = user_data[1]
-                    current_app.logger.info("select_user found username: %s",user['username'])
                 else:
                     current_app.logger.info("No user found.")
                 #logger.info(sql)

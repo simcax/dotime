@@ -58,6 +58,9 @@ def register_time():
         # This might be done smarter at some point...
         if not time_reg.is_activityuuid(activity):
             activity_uuid = time_reg.add_activity(activity)
+        else:
+            # The method was given an activity UUID
+            activity_uuid = activity
         if time_reg.add_timeregistration(activity_uuid, time_date,time_start, time_end):
             return_string =  "Time registration registered"
         else:
