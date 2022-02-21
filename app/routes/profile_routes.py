@@ -17,8 +17,8 @@ def create_profile():
         user = prof.add_user(username,password,email)
         # User created, so let's add default settings
         settings_obj = SettingsHandling()
-        settings_obj.add_defaults(user.get('users_id'))
         if user:
+            settings_obj.add_defaults(user.get('users_id'))
             return_value = render_template('profile_created.html', user = user)
         else:
             return_value = render_template("profile_creation_failed.html")
