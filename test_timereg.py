@@ -217,3 +217,30 @@ def test_seeing_if_uuid_exists_with_string(create_user):
     test_uuid = 'test'
     is_uuid = time_reg.is_activityuuid(test_uuid)
     assert is_uuid == False
+
+def test_having_end_time_in_one_registration_be_equal_to_start_time_of_next_registration(create_user,app_test_context):
+    userdata = create_user['info']
+    user_id = userdata['users_id']
+    tu = TestUtils()
+    time_reg = TimeRegistration(user_id)
+    with app_test_context:
+        activity_name_str = tu.createRandomString()
+        activity_uuid = time_reg.add_activity(activity_name_str)
+        start_timefrom = datetime.datetime.now()
+        thisdate = start_timefrom.strftime('%Y-%m-%d')
+        # Base timestamps
+        timefrom_timestamp = start_timefrom
+        timeto_timestamp = timefrom_timestamp + datetime.timedelta(minutes=2)
+        # hour and minute times of first entry
+        timefrom1 = timefrom_timestamp.strftime('%I:%M')
+        timeto1 = timeto_timestamp.strftime('%I:%M')
+        # Timestamps for 2nd entry
+        timefrom2_timestamp = timeto_timestamp
+        timeto2_timestamp = timefrom2_timestamp + datetime.timedelta(minutes=2)
+        # Hour and minute times of 2nd entry
+        timefrom2 = timefrom2_timestamp.strftime('%I:%M')
+        timeto2 = timeto2_timestamp.strftime('%I:%M')
+        time_reg.add_timeregistration(activity_uuid,thisdate,timefrom1,timeto1,testing=True)
+        timefrom2_full = f"{thisdate} {timefrom2}"
+        timestamp_is_not_here = time_reg.timestamp_is_not_registered(timefrom2_full)
+        assert timestamp_is_not_here == True

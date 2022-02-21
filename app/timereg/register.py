@@ -152,7 +152,7 @@ class TimeRegistration:
             db_obj = database.Database()
             conn = db_obj.connect()
             sql = f"SELECT 1 FROM soc.timedmeetgo WHERE timefrom <= '{timestamp}'  \
-                AND timeto >= '{timestamp}' AND usersid = '{self.userid}'"
+                AND timeto > '{timestamp}' AND usersid = '{self.userid}'"
             with conn.cursor() as cur:
                 cur.execute(sql)
                 timestamp_is_not_here = bool(cur.rowcount==0)
