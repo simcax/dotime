@@ -14,13 +14,49 @@
         const roundTo5Minutes = roundTo(1000 * 60 * 5);
         const roundDownTo5Minutes = roundDownTo(1000 * 60 * 5);
         const roundUpTo5Minutes = roundUpTo(1000 * 60 * 5);
-        $('.timecode').select2({
+        $('#timecode').select2({
             ajax: {
                 url: '/time/activities',
                 dataType: 'json'
             },
             tags: true
         });
+        function prettyDate2(time) {
+            var date = new Date(parseInt(time));
+            return date.toLocaleTimeString(navigator.language, {
+                hour: '2-digit',
+                minute:'2-digit'
+            });
+        }
+        var current_time = prettyDate2(roundTo5Minutes(Date.now()))
+        $('#time_start').timepicker({
+                timeFormat: 'HH:mm',
+                interval: 5,
+                minTime: '00:00',
+                defaultTime: current_time,
+                dynamic: false,
+                dropdown: true,
+                scrollbar: true,
+                change: function(time) {
+                    // the input field
+                    var from_time = $("input[name='time_start']").val();
+                    console.log("From time:"+from_time);
+                    $('#time_end').timepicker('option', 'minTime', from_time);
+                    if ($('#time_end').val() && $('#time_end').val() < from_time) {
+                        $('#time_end').timepicker('setTime', from_time);
+                }
+            }
+        });
+        $('#time_end').timepicker({
+            timeFormat: 'HH:mm',
+            interval: 5,
+            defaultTime: current_time,
+            dynamic: false,
+            dropdown: true,
+            scrollbar: true
+        });
+
+
         {% if time_registrations %}
         {% for registration in time_registrations %}
         $('#timecode{{loop.index}}').select2({
@@ -65,6 +101,7 @@
                 }
             }
         });
+        
         $('#time_end{{loop.index}}').timepicker({
             timeFormat: 'HH:mm',
             interval: 5,
@@ -74,43 +111,13 @@
             dropdown: true,
             scrollbar: true
         });
+        {% if loop.last %}
+        $('#time_start').timepicker('setTime', '{{ registration.1 }}');
+        {% endif %}
         {% endfor %}
         {% endif %}
 
-        function prettyDate2(time) {
-            var date = new Date(parseInt(time));
-            return date.toLocaleTimeString(navigator.language, {
-                hour: '2-digit',
-                minute:'2-digit'
-            });
-        }
-        var current_time = prettyDate2(roundTo5Minutes(Date.now()))
-        $('.time_start').timepicker({
-                timeFormat: 'HH:mm',
-                interval: 5,
-                minTime: '00:00',
-                defaultTime: current_time,
-                dynamic: false,
-                dropdown: true,
-                scrollbar: true,
-                change: function(time) {
-                    // the input field
-                    var from_time = $("input[name='time_start']").val();
-                    console.log("From time:"+from_time);
-                    $('#time_end').timepicker('option', 'minTime', from_time);
-                    if ($('#time_end').val() && $('#time_end').val() < from_time) {
-                        $('#time_end').timepicker('setTime', from_time);
-                }
-            }
-        });
-        $('.time_end').timepicker({
-            timeFormat: 'HH:mm',
-            interval: 5,
-            defaultTime: current_time,
-            dynamic: false,
-            dropdown: true,
-            scrollbar: true
-        });
+        
     });
 
 </script>
@@ -137,26 +144,33 @@
                 </div>
                 {% endif %}
                 {% endwith %}
+                <div class="row">
+                    <div class="form-group col-xs-4 col-md-4">
+                        <label for="timecode" class="form-label">Activity</label>
+                    </div>
+                    <div class="form-group col-xs-4 col-md-4">
+                        <label for="start" class="form-label">Start Time</label>
+                    </div>
+                    <div class="form-group col-xs-4 col-md-4">
+                        <label for="timeEnd" class="form-label">End time</label>
+                    </div>
+                </div>
                 <form  method="POST" action="/time/register">
                     <input type="hidden" name="time_date" value="{{ date_info.time_date }}">
                     <div class="form-row">
                         {% if time_registrations %}
                             {% for registration in time_registrations %}
                                 <div class="form-group col-xs-4 col-md-4">
-                                    <label for="timecode{{loop.index}}" class="form-label">Activity</label>
                                     <div>
-                                        
                                         <select class="timecode h-100 w-100" name="timecode{{loop.index}}" id="timecode{{loop.index}}"></select>
                                     </div>
                                 </div>
                                 <div class="form-group col-xs-4 col-md-4">
-                                    <label for="time_start{{loop.index}}" class="form-label">Start Time</label>
                                     <div>
                                         <input name="time_start{{loop.index}}" type="text" id="time_start{{loop.index}}" class="time_start time_start{{loop.index}} text-center" placeholder="Start time" autocomplete="off" required jt-timepicker="" time="model.time" time-string="model.timeString" default-time="model.options.defaultTime" time-format="model.options.timeFormat" start-time="model.options.startTime" min-time="model.options.minTime" max-time="model.options.maxTime" interval="model.options.interval" dynamic="model.options.dynamic" scrollbar="model.options.scrollbar" dropdown="model.options.dropdown">
                                     </div>
                                 </div>
                                 <div class="form-group col-xs-4 col-md-4">
-                                    <label for="time_end{{loop.index}}" class="form-label">End time</label>
                                     <div>
                                         <input name="time_end{{loop.index}}" type="text" id="time_end{{loop.index}}" class="time_end time_end{{loop.index}} text-center" placeholder="End time" autocomplete="off" required jt-timepicker="" time="model.time" time-string="model.timeString" default-time="model.options.defaultTime" time-format="model.options.timeFormat" start-time="model.options.startTime" min-time="model.options.minTime" max-time="model.options.maxTime" interval="model.options.interval" dynamic="model.options.dynamic" scrollbar="model.options.scrollbar" dropdown="model.options.dropdown">
                                     </div>
@@ -164,19 +178,16 @@
                             {% endfor %}
                         {% endif %}
                         <div class="form-group col-xs-4 col-md-4">
-                            <label for="timecode" class="form-label">Activity</label>
                             <div>
                                 <select class="timecode h-100 w-100" name="timecode" id="timecode"></select>
                             </div>
                         </div>
                         <div class="form-group col-xs-4 col-md-4">
-                            <label for="start" class="form-label">Start Time</label>
                             <div>
                                 <input name="time_start" type="text" id="time_start" class="time_start text-center" placeholder="Start time" autocomplete="off" required jt-timepicker="" time="model.time" time-string="model.timeString" default-time="model.options.defaultTime" time-format="model.options.timeFormat" start-time="model.options.startTime" min-time="model.options.minTime" max-time="model.options.maxTime" interval="model.options.interval" dynamic="model.options.dynamic" scrollbar="model.options.scrollbar" dropdown="model.options.dropdown">
                             </div>
                         </div>
                         <div class="form-group col-xs-4 col-md-4">
-                            <label for="timeEnd" class="form-label">End time</label>
                             <div>
                                 <input name="time_end" type="text" id="time_end" class="time_end text-center" placeholder="End time" autocomplete="off" required jt-timepicker="" time="model.time" time-string="model.timeString" default-time="model.options.defaultTime" time-format="model.options.timeFormat" start-time="model.options.startTime" min-time="model.options.minTime" max-time="model.options.maxTime" interval="model.options.interval" dynamic="model.options.dynamic" scrollbar="model.options.scrollbar" dropdown="model.options.dropdown">
                             </div>
