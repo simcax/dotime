@@ -244,3 +244,4 @@ def test_having_end_time_in_one_registration_be_equal_to_start_time_of_next_regi
         timefrom2_full = f"{thisdate} {timefrom2}"
         timestamp_is_not_here = time_reg.timestamp_is_not_registered(timefrom2_full)
         assert timestamp_is_not_here == True
+

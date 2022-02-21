@@ -178,3 +178,21 @@ class ProfileHandling:
         finally:
             conn.close()
         return email
+
+    @classmethod
+    def get_uuid_by_email(cls, email):
+        '''Method to get user uuid by the given email'''
+        uuid = False
+        try:
+            db_obj = Database()
+            conn = db_obj.connect()
+            with conn.cursor() as cur:
+                sql = f"SELECT usersid FROM soc.users WHERE email = '{email}'"
+                cur.execute(sql)
+                if cur.rowcount == 1:
+                    uuid = cur.fetchone()[0]
+        except DatabaseError as error:
+            current_app.logger.error("Error performing sql query. SQL %s - error %s", sql, error)
+        finally:
+            conn.close()
+        return uuid

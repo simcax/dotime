@@ -15,6 +15,9 @@ def create_profile():
         password = request.form['profilePassword']
         prof = ProfileHandling()
         user = prof.add_user(username,password,email)
+        # User created, so let's add default settings
+        settings_obj = SettingsHandling()
+        settings_obj.add_defaults(user.get('users_id'))
         if user:
             return_value = render_template('profile_created.html', user = user)
         else:

@@ -5,7 +5,9 @@ import random
 import string
 from werkzeug.security import check_password_hash
 from app.profile.profile import ProfileHandling
+from app.profile.settings import SettingsHandling
 from test_utils import TestUtils
+from conftest import create_profile
 
 def test_generate_password():
     '''Test a password can be created, and then validated by werkzeug check_password_hash function'''
@@ -95,3 +97,26 @@ def test_get_email_by_uuid(create_user):
     prof = ProfileHandling()
     email = prof.get_email_by_uuid(user_id['users_id'])
     assert email == create_user['email']
+
+def test_get_uuid_by_email(create_user):
+    '''Look up an uuid by providing an email'''
+    userdata = create_user['info']
+    users_id = userdata['users_id']
+    email = userdata['email']
+    prof = ProfileHandling()
+    assert users_id == prof.get_uuid_by_email(email)
+
+def test_defaults_added_when_profile_created(client):
+    '''Test if default settings are added upon profile creation'''
+    tu = TestUtils()
+    email = tu.createRandomEmail()
+    password = tu.createRandomString()
+    username = tu.createRandomString()
+    create_profile(client,username,email,password)
+    settings_obj = SettingsHandling()
+    prof = ProfileHandling()
+    users_id = prof.get_uuid_by_email(email)
+    settings = settings_obj.get_settings(users_id)
+    # 2 settings for each workday should be registered.
+    # As a settings is added for hour and minute count for each workday
+    assert len(settings) == 14
