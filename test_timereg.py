@@ -219,6 +219,12 @@ def test_seeing_if_uuid_exists_with_string(create_user):
     assert is_uuid == False
 
 def test_having_end_time_in_one_registration_be_equal_to_start_time_of_next_registration(create_user,app_test_context):
+    '''
+        A test to make sure the end time of one registration can overlap with the start time of the
+        next registration. I.e. one registration ends on 06:14, and the next should then be able
+        to start at 6:14. This makes the most visual sense in the registration form and each minute
+        will then be possible to register.
+    '''
     userdata = create_user['info']
     user_id = userdata['users_id']
     tu = TestUtils()
@@ -244,4 +250,3 @@ def test_having_end_time_in_one_registration_be_equal_to_start_time_of_next_regi
         timefrom2_full = f"{thisdate} {timefrom2}"
         timestamp_is_not_here = time_reg.timestamp_is_not_registered(timefrom2_full)
         assert timestamp_is_not_here == True
-
