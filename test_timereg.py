@@ -7,6 +7,7 @@ import uuid
 import pytest
 from app.timereg.register import TimeRegistration
 from app.profile.profile import ProfileHandling
+from app.timereg.events import HandleEvents
 from test_utils import TestUtils
 from conftest import login, logout
 
@@ -250,3 +251,113 @@ def test_having_end_time_in_one_registration_be_equal_to_start_time_of_next_regi
         timefrom2_full = f"{thisdate} {timefrom2}"
         timestamp_is_not_here = time_reg.timestamp_is_not_registered(timefrom2_full)
         assert timestamp_is_not_here == True
+
+
+def test_event_type_is_not_registered(create_user):
+    '''
+        Test it is possible to see an event type is not registered in the events table for a user 
+        on a specific date
+    '''
+    # Get a random event type uuid
+    event_type_uuid = get_random_event_type_uuid()
+    # Get the user id
+    userdata = create_user['info']
+    user_id = userdata['users_id']
+    # Set a date
+    this_date = datetime.datetime.now().strftime('%Y-%m-%d')
+
+    event_obj = HandleEvents()
+    # Is the event registered for the user on this date?
+    registered = event_obj.is_event_registered(event_type_uuid,this_date,user_id)
+    assert registered == False
+
+def test_adding_event_type_for_user_on_date(create_user):
+    '''
+        Test adding an event on a specific date for a user
+    '''
+    # Get a random event type uuid
+    event_type_uuid = get_random_event_type_uuid()
+    # Get the user id
+    userdata = create_user['info']
+    user_id = userdata['users_id']
+    # Set a date
+    this_date = datetime.datetime.now().strftime('%Y-%m-%d')
+
+    event_obj = HandleEvents()
+    # Is the event registered for the user on this date?
+    registered = event_obj.add_event(event_type_uuid,this_date,user_id)
+    assert registered == True
+
+def test_deleting_event_type_for_user_on_date(create_user):
+    '''
+        Test removing an event on a specific date for a user
+    '''
+    # Get a random event type uuid
+    event_type_uuid = get_random_event_type_uuid()
+    # Get the user id
+    userdata = create_user['info']
+    user_id = userdata['users_id']
+    # Set a date
+    this_date = datetime.datetime.now().strftime('%Y-%m-%d')
+
+    event_obj = HandleEvents()
+    # Register the event
+    registered = event_obj.add_event(event_type_uuid,this_date,user_id)
+    deleted = event_obj.delete_event(event_type_uuid,this_date,user_id)
+    assert deleted == True
+
+def test_toggling_event_type_on(create_user):
+    '''
+        Test toggling an event on a date. If the event type is not registered on a date, and it is 
+        toggled, then add it it. 
+    '''
+    # Get the user id
+    userdata = create_user['info']
+    user_id = userdata['users_id']
+    
+    event_obj = HandleEvents()
+    # Set the date of the event happening
+    this_date = datetime.datetime.now().strftime('%Y-%m-%d')
+    # Make sure the default event types are registered
+    event_obj.initialize_events()
+    # Get a random event type uuid
+    event_type_uuid = get_random_event_type_uuid()
+    # The event would not have been registered for this user, so we should have it toggled on.
+    # The method can return False (= failure), on (= toggled on) or off (= toggled off)
+    toggle = event_obj.toggle_event(event_type_uuid,this_date,user_id)
+    assert toggle == 'on'
+
+def test_toggling_event_type_off(create_user):
+    '''
+        Test toggling an event on a date. If the event type is not registered on a date, and it is 
+        toggled, then add it it. 
+    '''
+    # Get the user id
+    userdata = create_user['info']
+    user_id = userdata['users_id']
+    
+    event_obj = HandleEvents()
+    # Set the date of the event happening
+    this_date = datetime.datetime.now().strftime('%Y-%m-%d')
+    # Make sure the default event types are registered
+    event_obj.initialize_events()
+    # Get a random event type uuid
+    event_type_uuid = get_random_event_type_uuid()
+    # The event would not have been registered for this user, so we should have it toggled on.
+    # The method can return False (= failure), on (= toggled on) or off (= toggled off)
+    toggle = event_obj.toggle_event(event_type_uuid,this_date,user_id)
+    toggle = event_obj.toggle_event(event_type_uuid,this_date,user_id)
+    assert toggle == 'off'
+
+
+def get_random_event_type_uuid():
+    event_obj = HandleEvents()
+    # Get the even types
+    event_types = event_obj._get_event_types()
+    # Let's choose an event type at random
+    random_element_number = randint(0,len(event_types)-1)
+    random_event_type_name = event_types[random_element_number]
+    # Retrieve the uuid of the event type
+    event_type_uuid = event_obj.get_event_type(random_event_type_name)
+    return event_type_uuid
+

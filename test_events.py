@@ -61,4 +61,3 @@ def test_non_existing_event_type():
     event_obj = HandleEvents()
     event_exists = event_obj.event_type_exists(event_type)
     assert event_exists == False
-

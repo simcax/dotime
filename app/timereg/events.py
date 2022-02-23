@@ -1,6 +1,7 @@
 '''
     Class for handling events
 '''
+from h11 import Data
 from psycopg2 import DatabaseError
 from flask import current_app
 from app.db.database import Database
@@ -88,3 +89,89 @@ class HandleEvents:
         '''
         event_type_exists = bool( self.get_event_type(eventname) is not False)
         return event_type_exists
+
+    def is_event_registered(self, event_type_uuid, the_date, user_id):
+        '''
+            Checks the events table for a record with the event type uuid, date and users id 
+            Returns true or false
+        '''
+        is_registered = False
+        try:
+            db_obj = Database()
+            conn = db_obj.connect()
+            with conn.cursor() as cur:
+                sql = f"SELECT 1 FROM soc.events \
+                    WHERE usersid = '{user_id}' and eventtypeuuid = '{event_type_uuid}' \
+                    and dateofevent = '{the_date}'"
+                cur.execute(sql)
+                is_registered = bool(cur.rowcount)
+        except DatabaseError as error:
+            current_app.logger.error("Error executing sql: %s, error: %s", sql, error)
+        finally:
+            conn.close()
+        return is_registered
+
+    def add_event(self, event_type_uuid, the_date, user_id):
+        '''
+            Adds a record in the events table for a given user id, date and event type
+            Returns True or False as to whether it was added
+        '''
+        event_added = False
+        try:
+            db_obj = Database()
+            conn = db_obj.connect()
+            with conn.cursor() as cur:
+                sql = f"INSERT INTO soc.events (usersid, eventtypeuuid, dateofevent) \
+                    VALUES ('{user_id}','{event_type_uuid}','{the_date}')"
+                cur.execute(sql)
+                event_added = bool(cur.rowcount)
+                conn.commit()
+        except DatabaseError as error:
+            current_app.logger.error("Error executing sql: %s, error: %s", sql, error)
+        finally:
+            conn.close()
+        return event_added
+
+    def delete_event(self, event_type_uuid, the_date, user_id):
+        '''
+            Deletes a record in the events table for a given user id, date and event type
+            Returns True or False as to whether it was added
+        '''
+        event_added = False
+        try:
+            db_obj = Database()
+            conn = db_obj.connect()
+            with conn.cursor() as cur:
+                sql = f"DELETE FROM soc.events \
+                    WHERE usersid = '{user_id}' and eventtypeuuid = '{event_type_uuid}' \
+                    and dateofevent = '{the_date}'"
+                cur.execute(sql)
+                event_added = bool(cur.rowcount)
+        except DatabaseError as error:
+            current_app.logger.error("Error executing sql: %s, error: %s", sql, error)
+        finally:
+            conn.close()
+        return event_added
+
+    def toggle_event(self, event_type_uuid, the_date, user_id):
+        '''
+            Adds or removes an event type to the events table 
+            Takes a user id, an event type uuid and the date of the event 
+            Returns:
+            False = Something went wrong removing or adding the record to the events table
+            on = record was added for the user on the given date
+            off = record existed with the date for the user in the table and was removed
+        '''
+        toggled = False
+        deleted = False
+        added = False
+        if self.is_event_registered(event_type_uuid,the_date,user_id):
+            deleted = self.delete_event(event_type_uuid,the_date,user_id)
+        else:
+            added = self.add_event(event_type_uuid,the_date,user_id)
+        if added:
+            toggled = 'on'
+        elif deleted:
+            toggled = 'off'
+        return toggled
+
