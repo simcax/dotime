@@ -1,7 +1,6 @@
 '''
     Class for handling events
 '''
-from h11 import Data
 from psycopg2 import DatabaseError
 from flask import current_app
 from app.db.database import Database
