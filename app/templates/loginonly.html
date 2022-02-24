@@ -30,11 +30,24 @@
             <div class="d-flex justify-content-center form_container bg-light ">
                 <form  method="POST" action="/auth/login">
                     <input type="hidden" name="next" value="{{ request.args.get('next','') }}">
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% set real_color_class="success" %}
+                            {% if color_class == "danger" %}
+                                {% set real_color_class="danger" %}
+                            {% endif %}
+                        <div class="form-group alert alert-{{ real_color_class }}" role="alert">
+                            {% for message in messages %}
+                            {{ message }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        {% endwith %}
                     <div class="input-group mb-3">
                         <div class="input-group-append">
                             <span class="input-group-text"><i class="fas fa-user"></i></span>
                         </div>
-                        <input type="text" name="email" class="form-control input_user" value="" placeholder="username">
+                        <input type="text" name="email" class="form-control input_user" value="" placeholder="email">
                     </div>
                     <div class="input-group mb-2">
                         <div class="input-group-append">
@@ -49,15 +62,7 @@
                         </div>
                     </div>
   
-                        {% with messages = get_flashed_messages() %}
-                        {% if messages %}
-                        <div class="form-group alert alert-danger" role="alert">
-                            {% for message in messages %}
-                            {{ message }}
-                            {% endfor %}
-                        </div>
-                        {% endif %}
-                        {% endwith %}
+                        
                     
                 <div class="d-flex justify-content-center mt-3 login_container">
                  <button type="submit" name="button" class="btn btn-dark">Login</button>

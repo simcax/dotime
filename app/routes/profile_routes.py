@@ -1,6 +1,6 @@
 '''Routes for profile creation'''
 
-from flask import Blueprint, render_template, request,session, flash, current_app
+from flask import Blueprint, redirect, render_template, request,session, flash, current_app, url_for
 from app.profile.profile import ProfileHandling
 from app.profile.settings import SettingsHandling
 from app.auth.authentication import login_required
@@ -19,7 +19,9 @@ def create_profile():
         settings_obj = SettingsHandling()
         if user:
             settings_obj.add_defaults(user.get('users_id'))
-            return_value = render_template('profile_created.html', user = user)
+            #return_value = render_template('profile_created.html', user = user)
+            flash("Profile created. Please login")
+            return_value = redirect(url_for('auth_blueprint.login'))
         else:
             return_value = render_template("profile_creation_failed.html")
     else:
