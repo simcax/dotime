@@ -39,13 +39,14 @@ def test_create_profile_endpoint(client):
     rv = client.get("/profile/create")
     assert b'Create Profile' in rv.data
 
-def test_create_profile_1(client):
+def test_create_profile_1(client,app_test_context):
+
     tu = TestUtils()
     username = tu.createRandomString()
     password = tu.createRandomString()
     email = tu.createRandomEmail()
     rv = create_profile(client, username, email, password)
-    assert b'Your profile was created.' in rv.data
+    assert b'login' in rv.data
 
 def test_create_profile_2(client):
     '''Testing the profile creation fails, if the user already exists'''
@@ -54,7 +55,7 @@ def test_create_profile_2(client):
     password = tu.createRandomString()
     email = tu.createRandomEmail()
     rv = create_profile(client, username, email, password)
-    assert b'Your profile was created.' in rv.data
+    assert b'login' in rv.data
     rv = create_profile(client,username, email, password)
     assert b"Sorry, we couldn't create your profile." in rv.data
 

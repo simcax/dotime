@@ -20,7 +20,7 @@ def create_profile():
         if user:
             settings_obj.add_defaults(user.get('users_id'))
             #return_value = render_template('profile_created.html', user = user)
-            flash("Profile created. Please login")
+            flash("Your profile was created. Please login")
             return_value = redirect(url_for('auth_blueprint.login'))
         else:
             return_value = render_template("profile_creation_failed.html")
