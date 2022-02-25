@@ -124,6 +124,27 @@
         {% endfor %}
         {% endif %}
 
+        $('#commuteornot').on('change',
+            function(){
+                var dataString = $('#commuteornotselection').serialize();
+                var commuteornotvalue = $('#commuteornotselection').val();
+                var the_date = $('#time_date').val();
+                console.log("commuteornotselected");
+                console.log(commuteornotvalue)
+                $.ajax({
+                    type: 'POST',
+                    url: "/time/register/commuteornot",
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: "json",
+                    data: JSON.stringify({'data': commuteornotvalue, 'the_date': the_date}),
+                    success: function(response){
+                        console.log(response);
+                    },
+                    error: function(error){
+                        console.log(error); 
+                    }
+                });
+            });
         
     });
 
@@ -151,16 +172,38 @@
                 </div>
                 {% endif %}
                 {% endwith %}
-               
-                <form  method="POST" action="/time/register">
-                    <input type="hidden" name="time_date" value="{{ date_info.time_date }}">
-                    <!-- Toggles for work from home and commute to work -->
-                    <div class="form-row">
-                        <div class="col-xs-3 ml-auto">
-                            Commuted or worked from home:
-                            <input type="checkbox" name="CommuteToWork" data-toggle="toggle" data-on="<i class='bi bi-truck'></i>Commuted" data-off="<i class='bi bi-house-door-fill'></i>Home" data-onstyle="primary" data-offstyle="info" data-size="mini">
+
+                {% if commute_status == None %}
+                    {% set didntwork = "selected" %}
+                    {% set workedathome = "" %}
+                    {% set commuted = "" %}
+                {% elif commute_status == "WorkFromHome" %}
+                    {% set didntwork = "" %}
+                    {% set workedathome = "selected" %}
+                    {% set commuted = "" %}
+                {% elif commute_status == "CommuteToWork" %}
+                    {% set didntwork = "" %}
+                    {% set workedathome = "" %}
+                    {% set commuted = "selected" %}
+                {% endif %}
+                <div id="commuteornot">
+                    <div class="row">
+                        <div class="col-sm-3 ml-auto">
+                        <div class="form-group">
+                            <select class="selectpicker form-control" id="commuteornotselection">
+                            <option value="didntwork" {{ didntwork }}><i class="bi bi-pause-circle-fill"></i>Didn't work</option>
+                            <option value="workedathome" {{ workedathome }}><i class='bi bi-house-door-fill'></i>Worked @home</option>
+                            <option value="commuted" {{ commuted }}><i class='bi bi-truck'></i>Commuted</option>
+                            </select>
+                        </div>
                         </div>
                     </div>
+                </div>
+
+                <form  method="POST" action="/time/register">
+                    <input type="hidden" id="time_date" name="time_date" value="{{ date_info.time_date }}">
+                    <!-- Toggles for work from home and commute to work -->
+                    
                     <div class="row">
                         <div class="form-group col-xs-4 col-md-4">
                             <label for="timecode" class="form-label">Activity</label>

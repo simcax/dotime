@@ -1,10 +1,11 @@
 '''Routes for time registration'''
+from crypt import methods
 from datetime import datetime, timedelta
 from flask import (
     Blueprint, current_app, jsonify, render_template, request, session, flash, url_for, redirect
 )
 from app.utils import date_utils
-from app.timereg import register
+from app.timereg import register, events
 from app.auth.authentication import login_required
 
 bp = Blueprint('time_blueprint', __name__, url_prefix='/time')
@@ -32,9 +33,12 @@ def enter_time():
     reg = register.TimeRegistration(session.get('user_id'))
     time_registrations = reg.get_registrations(time_date)
     current_app.logger.debug(time_registrations)
+    # Get current commute status
+    event_obj = events.HandleEvents()
+    commute_status = event_obj.get_commute_status(session.get('user_id'),time_date)
     return render_template(
         'entertime.html', date_info=date_info, days=days,
-        time_registrations=time_registrations
+        time_registrations=time_registrations, commute_status=commute_status
         )
 
 @bp.route("/register", methods=["GET","POST"])
@@ -67,6 +71,77 @@ def register_time():
             return_string = "Time registration failed"
         flash(return_string)
         return redirect(url_for("time_blueprint.enter_time",showDate=time_date))
+
+@bp.route("/register/commuteornot", methods=["POST"])
+def register_commute_or_not():
+    '''Endpoint for registering commuteornot event'''
+    request_data = request.get_json()
+    toggle_value = request_data['data']
+    the_date = request_data['the_date']
+    current_app.logger.debug(request_data['data'])
+    current_app.logger.debug(request_data['the_date'])
+    user_id = session.get('user_id')
+    timereg_obj = register.TimeRegistration(user_id)
+    event_obj = events.HandleEvents()
+    commute_event_type_uuid = event_obj.get_event_type('CommuteToWork')
+    work_from_home_event_type_uuid = event_obj.get_event_type('WorkFromHome')
+    
+    if toggle_value == 'commuted':
+        on_event_type_uuid = commute_event_type_uuid
+        off_event_type_uuid = work_from_home_event_type_uuid
+    elif toggle_value == 'workedathome':
+        current_app.logger.debug("Setting ON event type workfromhome")
+        on_event_type_uuid = work_from_home_event_type_uuid
+        off_event_type_uuid = commute_event_type_uuid
+    
+        
+    commute_status = event_obj.get_commute_status(user_id,the_date)
+    current_app.logger.debug("START commute_status: %s", commute_status)
+    turned_off = ""
+    turned_on = ""
+    if commute_status == None:
+        # Turn on the event
+        turned_on = event_obj.toggle_event(on_event_type_uuid,the_date,user_id)
+        turned_off = 'off'
+    elif toggle_value == "workedathome":
+        if commute_status == 'WorkFromHome':
+            current_app.logger.debug("Already work from home")
+            turned_on = 'on'
+            turned_off = 'off'
+        else:
+            current_app.logger.debug("Toggling WorkFromHome on")
+            turned_on = event_obj.toggle_event(on_event_type_uuid,the_date,user_id)
+            current_app.logger.debug("Toggling commute to work off")
+            turned_off = event_obj.toggle_event(off_event_type_uuid,the_date,user_id)
+    elif toggle_value == "commuted":
+        if commute_status == "CommutedToWork":
+            current_app.logger.debug("Commute already set")
+            turned_on = 'on'
+            turned_off = 'off'
+        else:
+            current_app.logger.debug("Toggling Commute on")
+            turned_on = event_obj.toggle_event(on_event_type_uuid,the_date,user_id)
+            turned_off = event_obj.toggle_event(off_event_type_uuid,the_date,user_id)
+    elif toggle_value == "didntwork":
+        current_app.logger.debug("Toggle value is %s",toggle_value)
+        if commute_status == 'WorkFromHome':
+            current_app.logger.debug("Setting off value to work from home event type")
+            off_event_type_uuid = work_from_home_event_type_uuid
+        elif commute_status == 'CommutedToWork':
+            current_app.logger.debug("Setting off value to commute to work event type")
+            off_event_type_uuid = commute_event_type_uuid
+        turned_on = 'on'
+        turned_off = event_obj.toggle_event(off_event_type_uuid,the_date,user_id)
+        
+        
+    commute_status = event_obj.get_commute_status(user_id,the_date)
+    current_app.logger.debug("RESULTING commute_status: %s", commute_status)
+    if turned_on == 'on' and turned_off == 'off':
+        return_is = "OK"
+    else:
+        return_is = "error"
+    current_app.logger.debug("Date %s, ON; %s, OFF: %s, Returning: %s", the_date, turned_on, turned_off,return_is)
+    return return_is
 
 @bp.route("/activities")
 #@login_required

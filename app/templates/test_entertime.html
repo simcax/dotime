@@ -15,30 +15,86 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
         <script lang="javascript">        
-            $(document).ready(function(){
-                $('.timepicker').timepicker({
-                    timeFormat: 'h:mm p',
+            $(document).ready(function() {
+                const roundTo = roundTo => x => Math.round(x / roundTo) * roundTo;    
+                const roundDownTo = roundTo => x => Math.floor(x / roundTo) * roundTo;
+                const roundUpTo = roundTo => x => Math.ceil(x / roundTo) * roundTo;
+
+                const roundTo5Minutes = roundTo(1000 * 60 * 5);
+                const roundDownTo5Minutes = roundDownTo(1000 * 60 * 5);
+                const roundUpTo5Minutes = roundUpTo(1000 * 60 * 5);
+                $('#timecode').select2({
+                    ajax: {
+                        url: '/time/activities',
+                        dataType: 'json'
+                    },
+                    tags: true
+                });
+                function prettyDate2(time) {
+                    var date = new Date(parseInt(time));
+                    return date.toLocaleTimeString(navigator.language, {
+                        hour: '2-digit',
+                        minute:'2-digit'
+                    });
+                }
+                var current_time = prettyDate2(roundTo5Minutes(Date.now()));
+                $('#time_start').timepicker({
+                        timeFormat: 'HH:mm',
+                        interval: 5,
+                        minTime: '00:00',
+                        defaultTime: current_time,
+                        dynamic: false,
+                        dropdown: true,
+                        scrollbar: true,
+                        change: function(time) {
+                            // the input field
+                            var from_time = $("input[name='time_start']").val();
+                            console.log("From time:"+from_time);
+                            $('#time_end').timepicker('option', 'minTime', from_time);
+                            if ($('#time_end').val() && $('#time_end').val() < from_time) {
+                                $('#time_end').timepicker('setTime', from_time);
+                        }
+                    }
+                });
+                $('#time_end').timepicker({
+                    timeFormat: 'HH:mm',
                     interval: 5,
-                    minTime: '10',
-                    maxTime: '6:00pm',
-                    defaultTime: '11',
-                    startTime: '10:00',
-                    dynamic: true,
+                    defaultTime: current_time,
+                    dynamic: false,
                     dropdown: true,
                     scrollbar: true
                 });
-                $('#timepicker')
-                .timepicker({ 'scrollDefaultNow': true })  
-                .on('changeTime', function() {  
-                    var from_time = $("input[name='from_time']").val();  
-                    $('#duration').timepicker('option', 'minTime', from_time);
-                    if ($('#duration').val() && $('#duration').val() < from_time) {
-                        $('#duration').timepicker('setTime', from_time);
-                    }
-                });
-    
-                $('#duration').timepicker({'maxTime': '11:30pm', 'showDuration': true});
+
+
+                
+
+                $('#commuteornot').on('change',
+                    function(){
+                        var dataString = $('#commuteornotbutton').serialize();
+                        var testvalue = $('#commuteornotbutton').val();
+                        if ( testvalue == 'commuted'){
+                            $('#commuteornotbutton').val("workedathome");
+                        } else {
+                            $('#commuteornotbutton').val("commuted");
+                        }
+                        console.log("commuteornotclicked");
+                        console.log(testvalue)
+                        $.ajax({
+                            type: 'POST',
+                            url: "/time/register/commuteornot",
+                            contentType: 'application/json;charset=UTF-8',
+                            data: dataString,
+                            success: function(response){
+                                console.log(response);
+                            },
+                            error: function(error){
+                                console.log(error); 
+                            }
+                        })
+                    });
             });
+                
+                
     
         </script>    
         

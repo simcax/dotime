@@ -136,7 +136,7 @@ class HandleEvents:
             Deletes a record in the events table for a given user id, date and event type
             Returns True or False as to whether it was added
         '''
-        event_added = False
+        event_deleted = False
         try:
             db_obj = Database()
             conn = db_obj.connect()
@@ -145,12 +145,15 @@ class HandleEvents:
                     WHERE usersid = '{user_id}' and eventtypeuuid = '{event_type_uuid}' \
                     and dateofevent = '{the_date}'"
                 cur.execute(sql)
-                event_added = bool(cur.rowcount)
+                event_deleted = bool(cur.rowcount)
+                current_app.logger.debug("Event deleted status: %s",event_deleted)
+                if event_deleted:
+                    conn.commit()
         except DatabaseError as error:
             current_app.logger.error("Error executing sql: %s, error: %s", sql, error)
         finally:
             conn.close()
-        return event_added
+        return event_deleted
 
     def toggle_event(self, event_type_uuid, the_date, user_id):
         '''
@@ -165,6 +168,7 @@ class HandleEvents:
         deleted = False
         added = False
         if self.is_event_registered(event_type_uuid,the_date,user_id):
+            current_app.logger.debug("Event is registered. Deleting it.", )
             deleted = self.delete_event(event_type_uuid,the_date,user_id)
         else:
             added = self.add_event(event_type_uuid,the_date,user_id)
@@ -174,3 +178,29 @@ class HandleEvents:
             toggled = 'off'
         return toggled
 
+    def get_commute_status(self, user_id,the_date):
+        '''
+            Get's the commute status for the user_id on the given date
+            Returns:
+                WorkFromHome - if this was registered on the date for the user
+                CommuteToWork - if this was registered on the date for the user
+                None - neither WorkFromHome nor CommuteToWork was registered yet
+                False - More than one is registered
+            Only one of the two is able to be registered on a given date
+        '''
+        event_obj = HandleEvents()
+        # Get event types
+        work_at_home_event_type = event_obj.get_event_type("WorkFromHome")
+        commute_event_type = event_obj.get_event_type("CommuteToWork")
+        # Get status for the two
+        worked_from_home_status = self.is_event_registered(work_at_home_event_type,the_date,user_id)
+        commuted_to_work_status = self.is_event_registered(commute_event_type,the_date,user_id)
+        if worked_from_home_status and commuted_to_work_status == False:
+            commute_status = "WorkFromHome"
+        elif worked_from_home_status == False and commuted_to_work_status:
+            commute_status = "CommuteToWork"
+        elif worked_from_home_status == False and commuted_to_work_status == False:
+            commute_status = None
+        else:
+            commute_status = False
+        return commute_status

@@ -288,23 +288,24 @@ def test_adding_event_type_for_user_on_date(create_user):
     registered = event_obj.add_event(event_type_uuid,this_date,user_id)
     assert registered == True
 
-def test_deleting_event_type_for_user_on_date(create_user):
+def test_deleting_event_type_for_user_on_date(create_user,app_test_context):
     '''
         Test removing an event on a specific date for a user
     '''
-    # Get a random event type uuid
-    event_type_uuid = get_random_event_type_uuid()
-    # Get the user id
-    userdata = create_user['info']
-    user_id = userdata['users_id']
-    # Set a date
-    this_date = datetime.datetime.now().strftime('%Y-%m-%d')
+    with app_test_context:
+        # Get a random event type uuid
+        event_type_uuid = get_random_event_type_uuid()
+        # Get the user id
+        userdata = create_user['info']
+        user_id = userdata['users_id']
+        # Set a date
+        this_date = datetime.datetime.now().strftime('%Y-%m-%d')
 
-    event_obj = HandleEvents()
-    # Register the event
-    registered = event_obj.add_event(event_type_uuid,this_date,user_id)
-    deleted = event_obj.delete_event(event_type_uuid,this_date,user_id)
-    assert deleted == True
+        event_obj = HandleEvents()
+        # Register the event
+        registered = event_obj.add_event(event_type_uuid,this_date,user_id)
+        deleted = event_obj.delete_event(event_type_uuid,this_date,user_id)
+        assert deleted == True
 
 def test_toggling_event_type_on(create_user):
     '''
@@ -327,27 +328,28 @@ def test_toggling_event_type_on(create_user):
     toggle = event_obj.toggle_event(event_type_uuid,this_date,user_id)
     assert toggle == 'on'
 
-def test_toggling_event_type_off(create_user):
+def test_toggling_event_type_off(create_user,app_test_context):
     '''
         Test toggling an event on a date. If the event type is not registered on a date, and it is 
         toggled, then add it it. 
     '''
-    # Get the user id
-    userdata = create_user['info']
-    user_id = userdata['users_id']
-    
-    event_obj = HandleEvents()
-    # Set the date of the event happening
-    this_date = datetime.datetime.now().strftime('%Y-%m-%d')
-    # Make sure the default event types are registered
-    event_obj.initialize_events()
-    # Get a random event type uuid
-    event_type_uuid = get_random_event_type_uuid()
-    # The event would not have been registered for this user, so we should have it toggled on.
-    # The method can return False (= failure), on (= toggled on) or off (= toggled off)
-    toggle = event_obj.toggle_event(event_type_uuid,this_date,user_id)
-    toggle = event_obj.toggle_event(event_type_uuid,this_date,user_id)
-    assert toggle == 'off'
+    with app_test_context:
+        # Get the user id
+        userdata = create_user['info']
+        user_id = userdata['users_id']
+        
+        event_obj = HandleEvents()
+        # Set the date of the event happening
+        this_date = datetime.datetime.now().strftime('%Y-%m-%d')
+        # Make sure the default event types are registered
+        event_obj.initialize_events()
+        # Get a random event type uuid
+        event_type_uuid = get_random_event_type_uuid()
+        # The event would not have been registered for this user, so we should have it toggled on.
+        # The method can return False (= failure), on (= toggled on) or off (= toggled off)
+        toggle = event_obj.toggle_event(event_type_uuid,this_date,user_id)
+        toggle = event_obj.toggle_event(event_type_uuid,this_date,user_id)
+        assert toggle == 'off'
 
 
 def get_random_event_type_uuid():
@@ -361,3 +363,119 @@ def get_random_event_type_uuid():
     event_type_uuid = event_obj.get_event_type(random_event_type_name)
     return event_type_uuid
 
+def test_get_event_type_for_date(create_user):
+    # Get the user id
+    userdata = create_user['info']
+    user_id = userdata['users_id']
+    
+    event_obj = HandleEvents()
+    # Set the date of the event happening
+    this_date = datetime.datetime.now().strftime('%Y-%m-%d')
+    # Make sure the default event types are registered
+    event_obj.initialize_events()
+    # Get a random event type uuid
+    event_type_uuid = get_random_event_type_uuid()
+    # Check the event does not exist - since the user is new it is not registered on this date
+    registration_status = event_obj.is_event_registered(event_type_uuid,this_date,user_id)
+    assert registration_status == False
+
+def test_get_current_commute_work_home_status_1(create_user,app_test_context):
+    '''
+        Test getting commuted to work back when it is registered in the events table
+    '''
+    with app_test_context:
+        # Get the user id
+        userdata = create_user['info']
+        user_id = userdata['users_id']
+        
+        event_obj = HandleEvents()
+        # Set the date of the event happening
+        this_date = datetime.datetime.now().strftime('%Y-%m-%d')
+        # Make sure the default event types are registered
+        event_obj.initialize_events()
+        # Get event types
+        work_at_home_event_type = event_obj.get_event_type("WorkFromHome")
+        commute_event_type = event_obj.get_event_type("CommuteToWork")
+        # Set the date
+        the_date = datetime.datetime.now().strftime('%Y-%m-%d')
+        # Register work at home
+        toggle_status = event_obj.toggle_event(work_at_home_event_type,the_date,user_id)
+        # Get the current commuted / worked at home status
+        commute_status = event_obj.get_commute_status(user_id, the_date)
+        assert commute_status == "WorkFromHome"
+
+def test_get_current_commute_work_home_status_2(create_user,app_test_context):
+    '''
+        Test getting work from home back when it is registered in the events table
+    '''
+    with app_test_context:
+        # Get the user id
+        userdata = create_user['info']
+        user_id = userdata['users_id']
+        
+        event_obj = HandleEvents()
+        # Set the date of the event happening
+        this_date = datetime.datetime.now().strftime('%Y-%m-%d')
+        # Make sure the default event types are registered
+        event_obj.initialize_events()
+        # Get event types
+        work_at_home_event_type = event_obj.get_event_type("WorkFromHome")
+        commute_event_type = event_obj.get_event_type("CommuteToWork")
+        # Set the date
+        the_date = datetime.datetime.now().strftime('%Y-%m-%d')
+        # Register commuted to work
+        toggle_status = event_obj.toggle_event(commute_event_type,the_date,user_id)
+        # Get the current commuted / worked at home status
+        commute_status = event_obj.get_commute_status(user_id, the_date)
+        assert commute_status == "CommuteToWork"
+
+def test_get_current_commute_work_home_status_3(create_user,app_test_context):
+    '''
+        Test the return when neither work from home nor commute status is in the events table
+    '''
+    with app_test_context:
+        # Get the user id
+        userdata = create_user['info']
+        user_id = userdata['users_id']
+        
+        event_obj = HandleEvents()
+        # Set the date of the event happening
+        this_date = datetime.datetime.now().strftime('%Y-%m-%d')
+        # Make sure the default event types are registered
+        event_obj.initialize_events()
+        # Get event types
+        work_at_home_event_type = event_obj.get_event_type("WorkFromHome")
+        commute_event_type = event_obj.get_event_type("CommuteToWork")
+        # Set the date
+        the_date = datetime.datetime.now().strftime('%Y-%m-%d')
+        # Get the current commuted / worked at home status
+        commute_status = event_obj.get_commute_status(user_id, the_date)
+        assert commute_status == None
+
+def test_get_current_commute_work_home_status_4(create_user,app_test_context):
+    '''
+        Test to see False is returned when both event types are registered
+        It is only allowed to have either work from home or commuted 
+    '''
+    with app_test_context:
+        # Get the user id
+        userdata = create_user['info']
+        user_id = userdata['users_id']
+        
+        event_obj = HandleEvents()
+        # Set the date of the event happening
+        this_date = datetime.datetime.now().strftime('%Y-%m-%d')
+        # Make sure the default event types are registered
+        event_obj.initialize_events()
+        # Get event types
+        work_at_home_event_type = event_obj.get_event_type("WorkFromHome")
+        commute_event_type = event_obj.get_event_type("CommuteToWork")
+        # Set the date
+        the_date = datetime.datetime.now().strftime('%Y-%m-%d')
+        # Register BOTH event types
+        toggle_status = event_obj.toggle_event(commute_event_type,the_date,user_id)
+        toggle_status = event_obj.toggle_event(work_at_home_event_type,the_date,user_id)
+        # Get the current commuted / worked at home status - we should get False
+        # since this is not allowed
+        commute_status = event_obj.get_commute_status(user_id, the_date)
+        assert commute_status == False
