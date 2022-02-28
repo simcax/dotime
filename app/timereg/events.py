@@ -89,9 +89,10 @@ class HandleEvents:
         event_type_exists = bool( self.get_event_type(eventname) is not False)
         return event_type_exists
 
-    def is_event_registered(self, event_type_uuid, the_date, user_id):
+    @classmethod
+    def is_event_registered(cls, event_type_uuid, the_date, user_id):
         '''
-            Checks the events table for a record with the event type uuid, date and users id 
+            Checks the events table for a record with the event type uuid, date and users id
             Returns true or false
         '''
         is_registered = False
@@ -110,7 +111,8 @@ class HandleEvents:
             conn.close()
         return is_registered
 
-    def add_event(self, event_type_uuid, the_date, user_id):
+    @classmethod
+    def add_event(cls, event_type_uuid, the_date, user_id):
         '''
             Adds a record in the events table for a given user id, date and event type
             Returns True or False as to whether it was added
@@ -131,7 +133,8 @@ class HandleEvents:
             conn.close()
         return event_added
 
-    def delete_event(self, event_type_uuid, the_date, user_id):
+    @classmethod
+    def delete_event(cls, event_type_uuid, the_date, user_id):
         '''
             Deletes a record in the events table for a given user id, date and event type
             Returns True or False as to whether it was added
@@ -157,8 +160,8 @@ class HandleEvents:
 
     def toggle_event(self, event_type_uuid, the_date, user_id):
         '''
-            Adds or removes an event type to the events table 
-            Takes a user id, an event type uuid and the date of the event 
+            Adds or removes an event type to the events table
+            Takes a user id, an event type uuid and the date of the event
             Returns:
             False = Something went wrong removing or adding the record to the events table
             on = record was added for the user on the given date
@@ -195,11 +198,11 @@ class HandleEvents:
         # Get status for the two
         worked_from_home_status = self.is_event_registered(work_at_home_event_type,the_date,user_id)
         commuted_to_work_status = self.is_event_registered(commute_event_type,the_date,user_id)
-        if worked_from_home_status and commuted_to_work_status == False:
+        if worked_from_home_status and commuted_to_work_status is False:
             commute_status = "WorkFromHome"
-        elif worked_from_home_status == False and commuted_to_work_status:
+        elif worked_from_home_status is False and commuted_to_work_status:
             commute_status = "CommuteToWork"
-        elif worked_from_home_status == False and commuted_to_work_status == False:
+        elif worked_from_home_status is False and commuted_to_work_status is False:
             commute_status = None
         else:
             commute_status = False

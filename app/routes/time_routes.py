@@ -1,5 +1,4 @@
 '''Routes for time registration'''
-from crypt import methods
 from datetime import datetime, timedelta
 from flask import (
     Blueprint, current_app, jsonify, render_template, request, session, flash, url_for, redirect
@@ -55,7 +54,7 @@ def register_time():
         else:
             user_id = request.form.get('user_id')
         time_reg = register.TimeRegistration(user_id)
-        # Due to the way select2 works, an activity uuid will be sent, when a 
+        # Due to the way select2 works, an activity uuid will be sent, when a
         # pre-existing activity is selected and registered. In that case, it
         # shouldn't be added - it is already in the database.
         # So a check is performed to see if it is a uuid already existing.
@@ -66,11 +65,14 @@ def register_time():
             # The method was given an activity UUID
             activity_uuid = activity
         if time_reg.add_timeregistration(activity_uuid, time_date,time_start, time_end):
-            return_string =  "Time registration registered"
+            error_message =  "Time registration registered"
         else:
-            return_string = "Time registration failed"
-        flash(return_string)
-        return redirect(url_for("time_blueprint.enter_time",showDate=time_date))
+            error_message = "Time registration failed"
+        flash(error_message)
+        returning = redirect(url_for("time_blueprint.enter_time",showDate=time_date))
+    else:
+        returning = redirect(url_for("home"))
+    return returning
 
 @bp.route("/register/commuteornot", methods=["POST"])
 def register_commute_or_not():
@@ -81,11 +83,10 @@ def register_commute_or_not():
     current_app.logger.debug(request_data['data'])
     current_app.logger.debug(request_data['the_date'])
     user_id = session.get('user_id')
-    timereg_obj = register.TimeRegistration(user_id)
     event_obj = events.HandleEvents()
     commute_event_type_uuid = event_obj.get_event_type('CommuteToWork')
     work_from_home_event_type_uuid = event_obj.get_event_type('WorkFromHome')
-    
+
     if toggle_value == 'commuted':
         on_event_type_uuid = commute_event_type_uuid
         off_event_type_uuid = work_from_home_event_type_uuid
@@ -93,13 +94,13 @@ def register_commute_or_not():
         current_app.logger.debug("Setting ON event type workfromhome")
         on_event_type_uuid = work_from_home_event_type_uuid
         off_event_type_uuid = commute_event_type_uuid
-    
-        
+
+
     commute_status = event_obj.get_commute_status(user_id,the_date)
     current_app.logger.debug("START commute_status: %s", commute_status)
     turned_off = ""
     turned_on = ""
-    if commute_status == None:
+    if commute_status is None:
         # Turn on the event
         turned_on = event_obj.toggle_event(on_event_type_uuid,the_date,user_id)
         turned_off = 'off'
@@ -132,15 +133,16 @@ def register_commute_or_not():
             off_event_type_uuid = commute_event_type_uuid
         turned_on = 'on'
         turned_off = event_obj.toggle_event(off_event_type_uuid,the_date,user_id)
-        
-        
+
+
     commute_status = event_obj.get_commute_status(user_id,the_date)
     current_app.logger.debug("RESULTING commute_status: %s", commute_status)
     if turned_on == 'on' and turned_off == 'off':
         return_is = "OK"
     else:
         return_is = "error"
-    current_app.logger.debug("Date %s, ON; %s, OFF: %s, Returning: %s", the_date, turned_on, turned_off,return_is)
+    current_app.logger.debug("Date %s, ON; %s, OFF: %s, Returning: %s",
+        the_date, turned_on, turned_off,return_is)
     return return_is
 
 @bp.route("/activities")
