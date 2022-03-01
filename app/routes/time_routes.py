@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from flask import (
     Blueprint, current_app, jsonify, render_template, request, session, flash, url_for, redirect
 )
+from app.profile.settings import SettingsHandling
 from app.utils import date_utils
 from app.timereg import register, events
 from app.auth.authentication import login_required
@@ -35,9 +36,19 @@ def enter_time():
     # Get current commute status
     event_obj = events.HandleEvents()
     commute_status = event_obj.get_commute_status(session.get('user_id'),time_date)
+    time_registered = reg.get_registration_time_on_day(time_date)
+    settings_obj = SettingsHandling()
+    weekday_lengths = settings_obj.get_workweek_day_lengths(session.get('user_id'))
+    current_app.logger.info(weekday_lengths)
+    weekday_length_hour = weekday_lengths.get(f'workdayLength{daynumber}Hour')
+    if weekday_length_hour:
+        weekday_length_hour = f"{int(weekday_length_hour):02d}"
+    
+    weekday_length_minutes = weekday_lengths.get(f'workdayLength{daynumber}Minutes')
     return render_template(
         'entertime.html', date_info=date_info, days=days,
-        time_registrations=time_registrations, commute_status=commute_status
+        time_registrations=time_registrations, commute_status=commute_status,
+        time_registered=time_registered, weekday_length=f"{weekday_length_hour}:{weekday_length_minutes}"
         )
 
 @bp.route("/register", methods=["GET","POST"])

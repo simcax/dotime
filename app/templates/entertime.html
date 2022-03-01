@@ -251,7 +251,19 @@
                             </div>
                         </div>
                     </div>
-                    <input type="submit" class="btn btn-primary" value="Submit time for the day">    
+                    <div class="row">
+                        <div class="col">
+                            <input type="submit" class="btn btn-primary" value="Submit time for the day">    
+                        </div>
+                        <div class="col"> </div>
+                        <div class="col ml-auto">
+                            <h3>
+                                
+                                <span class="badge xl badge-info" data-toggle="tooltip" data-placement="bottom" title="Time worked today">{{ time_registered }}</span><span class="badge xl badge-warning" data-toggle="tooltip" data-placement="bottom" title="Hours to work">{{ weekday_length }}</span>
+                            </h3>
+                        </div>
+                    </div>
+                    
                 </form>
 
             

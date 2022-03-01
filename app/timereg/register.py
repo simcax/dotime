@@ -198,6 +198,7 @@ class TimeRegistration:
             Get the amount of time registered on a given date
         '''
         try:
+            time_string = "00:00"
             db_obj = database.Database()
             conn = db_obj.connect()
             with conn.cursor() as cur:
@@ -208,7 +209,10 @@ class TimeRegistration:
                 cur.execute(sql)
                 if cur.rowcount:
                     result = cur.fetchone()[0]
-                    time_string = strftime("%H:%M",gmtime(result.seconds))
+                    if result != None:
+                        time_string = strftime("%H:%M",gmtime(result.seconds))
+                    else:
+                        time_string = "00:00"
                 else:
                     time_string = "00:00"
         except DatabaseError as error:
