@@ -3,6 +3,7 @@ from uuid import UUID
 from flask import current_app, flash
 from psycopg2 import DatabaseError
 from psycopg2.extras import DictCursor
+from time import strftime, gmtime
 from app.db import database
 
 class TimeRegistration:
@@ -191,3 +192,27 @@ class TimeRegistration:
         finally:
             conn.close()
         return rows
+
+    def get_registration_time_on_day(self,the_date):
+        '''
+            Get the amount of time registered on a given date
+        '''
+        try:
+            db_obj = database.Database()
+            conn = db_obj.connect()
+            with conn.cursor() as cur:
+                sql = f"SELECT AGE(MAX(t.timeto), MIN(t.timefrom) ) as timediff \
+                    FROM soc.users u INNER JOIN  soc.timedmeetgo t on u.usersid = t.usersid \
+                    WHERE u.usersid = '{self.userid}' \
+                    AND (t.timefrom BETWEEN '{the_date} 00:00:00' AND '{the_date} 23:59:59')"
+                cur.execute(sql)
+                if cur.rowcount:
+                    result = cur.fetchone()[0]
+                    time_string = strftime("%H:%M",gmtime(result.seconds))
+                else:
+                    time_string = "00:00"
+        except DatabaseError as error:
+            current_app.logger.error("Error executing sql: %s, error: %s",sql,error)
+        finally:
+            conn.close()
+        return time_string

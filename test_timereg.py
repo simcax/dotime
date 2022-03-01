@@ -479,3 +479,39 @@ def test_get_current_commute_work_home_status_4(create_user,app_test_context):
         # since this is not allowed
         commute_status = event_obj.get_commute_status(user_id, the_date)
         assert commute_status == False
+
+def test_get_time_registered_today(create_user, app_test_context):
+    '''
+        Test retrieving the time registered on a given date
+    '''
+    # Get the user id
+    userdata = create_user['info']
+    user_id = userdata['users_id']
+    tu = TestUtils()
+    time_reg = TimeRegistration(user_id)
+    with app_test_context:
+        # Create an activity on which to register some time
+        activity_name_str = tu.createRandomString()
+        activity_uuid = time_reg.add_activity(activity_name_str)
+        # Establish the start time and date for the reigstration
+        start_timefrom = datetime.datetime.now()
+        thisdate = start_timefrom.strftime('%Y-%m-%d')
+        # Base timestamps
+        timefrom_timestamp = start_timefrom
+        timeto_timestamp = timefrom_timestamp + datetime.timedelta(minutes=2)
+        # hour and minute times of first entry
+        timefrom1 = timefrom_timestamp.strftime('%I:%M')
+        timeto1 = timeto_timestamp.strftime('%I:%M')
+        # Timestamps for 2nd entry
+        timefrom2_timestamp = timeto_timestamp
+        timeto2_timestamp = timefrom2_timestamp + datetime.timedelta(minutes=2)
+        # Hour and minute times of 2nd entry
+        timefrom2 = timefrom2_timestamp.strftime('%I:%M')
+        timeto2 = timeto2_timestamp.strftime('%I:%M')
+        time_reg.add_timeregistration(activity_uuid,thisdate,timefrom1,timeto1,testing=True)
+        time_reg.add_timeregistration(activity_uuid,thisdate,timefrom2,timeto2,testing=True)
+        
+        # 4 minutes have been registered. Let's get the time out from the db again
+        time_registered = time_reg.get_registration_time_on_day(thisdate)
+        assert time_registered == "00:04"
+
