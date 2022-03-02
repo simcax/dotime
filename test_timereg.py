@@ -528,3 +528,40 @@ def test_find_hours_current_week(create_user):
     assert str(start_of_week) == "2022-02-28"
     assert str(end_of_week) == "2022-03-06"
 
+def test_get_time_registered_this_week(create_user, app_test_context):
+    '''
+        Test retrieving the time registered on a given date
+    '''
+    # Get the user id
+    userdata = create_user['info']
+    user_id = userdata['users_id']
+    tu = TestUtils()
+    time_reg = TimeRegistration(user_id)
+    date_util = DoTimeDataHelp()
+    with app_test_context:
+        # Create an activity on which to register some time
+        activity_name_str = tu.createRandomString()
+        activity_uuid = time_reg.add_activity(activity_name_str)
+        # Establish the start time and date for the reigstration
+        start_timefrom = datetime.datetime.now()
+        start_of_week,end_of_week = date_util.get_start_end_of_week(start_timefrom.strftime('%Y-%m-%d'))
+        day_1 = start_of_week
+        # Base timestamps - Monday worked 1 hour
+        timefrom_timestamp = datetime.datetime.strptime(day_1,'%Y-%m-%d')
+        timeto_timestamp = timefrom_timestamp + datetime.timedelta(minutes=60)
+        # hour and minute times of first entry 
+        timefrom1 = timefrom_timestamp.strftime('%H:%M')
+        timeto1 = timeto_timestamp.strftime('%H:%M')
+        # Timestamps for 2nd entry - 1 hour worked on tuesday
+        timefrom2_timestamp = timeto_timestamp + datetime.timedelta(days=1)
+        timeto2_timestamp = timefrom2_timestamp + datetime.timedelta(minutes=60)
+        day_2 = timefrom2_timestamp.strftime('%Y-%m-%d')
+        # Hour and minute times of 2nd entry
+        timefrom2 = timefrom2_timestamp.strftime('%H:%M')
+        timeto2 = timeto2_timestamp.strftime('%H:%M')
+        time_reg.add_timeregistration(activity_uuid,day_1,timefrom1,timeto1,testing=True)
+        time_reg.add_timeregistration(activity_uuid,day_2,timefrom2,timeto2,testing=True)
+        
+        # 4 minutes have been registered. Let's get the time out from the db again
+        time_registered = time_reg.get_registration_time_for_week(day_1)
+        assert time_registered == "02:00"

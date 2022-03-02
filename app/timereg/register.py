@@ -4,8 +4,9 @@ from flask import current_app, flash
 from psycopg2 import DatabaseError
 from psycopg2.extras import DictCursor
 from time import strftime, gmtime
+from datetime import datetime, timedelta
 from app.db import database
-
+from app.utils import date_utils
 class TimeRegistration:
     '''Class for time registration'''
 
@@ -219,4 +220,22 @@ class TimeRegistration:
             current_app.logger.error("Error executing sql: %s, error: %s",sql,error)
         finally:
             conn.close()
+        return time_string
+
+    def get_registration_time_for_week(self,the_date):
+        '''
+            Get the amount of time registered for the week based on a given date in that week
+        '''
+        date_util = date_utils.DoTimeDataHelp()
+        start_of_week, end_of_week = date_util.get_start_end_of_week(the_date)
+        hours = 0
+        minutes = 0
+        # Get Number of hours and minutes worked each day
+        this_day = datetime.strptime(start_of_week,'%Y-%m-%d')
+        for i in range(0,6):
+            this_day = this_day + timedelta(days=i)
+            time_registered = self.get_registration_time_on_day(this_day.strftime('%Y-%m-%d'))
+            hours += int(time_registered.split(':')[0])
+            minutes += int(time_registered.split(':')[1])
+        time_string = f"{hours:02d}:{minutes:02d}"
         return time_string
