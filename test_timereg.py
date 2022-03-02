@@ -8,6 +8,7 @@ import pytest
 from app.timereg.register import TimeRegistration
 from app.profile.profile import ProfileHandling
 from app.timereg.events import HandleEvents
+from app.utils.date_utils import DoTimeDataHelp
 from test_utils import TestUtils
 from conftest import login, logout
 
@@ -514,4 +515,16 @@ def test_get_time_registered_today(create_user, app_test_context):
         # 4 minutes have been registered. Let's get the time out from the db again
         time_registered = time_reg.get_registration_time_on_day(thisdate)
         assert time_registered == "00:04"
+
+def test_find_hours_current_week(create_user):
+    '''
+        Test we can get the start and end date for a week
+    '''
+    # March 1st is a good candidate to test out date calculation
+    # since february is a short month
+    the_date = "2022-03-01"
+    date_utils = DoTimeDataHelp()
+    start_of_week, end_of_week = date_utils.get_start_end_of_week(the_date)
+    assert str(start_of_week) == "2022-02-28"
+    assert str(end_of_week) == "2022-03-06"
 

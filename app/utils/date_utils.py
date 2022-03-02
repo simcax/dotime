@@ -1,5 +1,5 @@
 '''Class to supply date help'''
-
+from datetime import datetime,timedelta
 class DoTimeDataHelp:
     '''Class supplying date help'''
     language = "en"
@@ -40,3 +40,14 @@ class DoTimeDataHelp:
         '''control method to make sure the values are within range'''
         range_ok = bool(day_number >= 0 and day_number <= 7)
         return range_ok
+
+    @classmethod
+    def get_start_end_of_week(cls,the_date):
+        '''
+            Takes a date in iso format YYYY-MM-DD
+            Returns start and end date for the week the date is in
+        '''
+        dt = datetime.strptime(the_date, '%Y-%m-%d')
+        start = dt - timedelta(days=dt.weekday())
+        end = start + timedelta(days=6)
+        return start.strftime("%Y-%m-%d"),end.strftime("%Y-%m-%d")
