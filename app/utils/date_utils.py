@@ -51,3 +51,16 @@ class DoTimeDataHelp:
         start = dt - timedelta(days=dt.weekday())
         end = start + timedelta(days=6)
         return start.strftime("%Y-%m-%d"),end.strftime("%Y-%m-%d")
+
+    @classmethod
+    def convert_minutes_to_hours(cls,minutes):
+        '''
+            Method to convert minuts into hours and minutes
+            Takes: minutes
+            Returns: hours and minutes (both ints)
+            Thx to @Chris on Stack Overflow: https://stackoverflow.com/a/51566057
+            for this simple solution :-) 
+        '''
+        result_hours = minutes // 60
+        result_minutes = minutes % 60
+        return result_hours, result_minutes

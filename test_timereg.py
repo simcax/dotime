@@ -565,3 +565,69 @@ def test_get_time_registered_this_week(create_user, app_test_context):
         # 4 minutes have been registered. Let's get the time out from the db again
         time_registered = time_reg.get_registration_time_for_week(day_1)
         assert time_registered == "02:00"
+
+def test_converting_minutes_to_hour_1():
+    '''
+        Test minutes over 60 getting converted to hours
+    '''
+    minutes = 85
+    dotime_help = DoTimeDataHelp()
+    hours,minutes = dotime_help.convert_minutes_to_hours(minutes)
+    assert minutes == 25
+    assert hours == 1
+
+def test_converting_minutes_to_hour_2():
+    '''
+        Test minutes over 60 getting converted to hours
+    '''
+    minutes = 374
+    dotime_help = DoTimeDataHelp()
+    hours,minutes = dotime_help.convert_minutes_to_hours(minutes)
+    assert minutes == 14
+    assert hours == 6
+
+def test_minutes_over_60_converted_to_hours_when_getting_time_for_week(create_user, app_test_context):
+    '''
+        Test minutes are converted to hours when getting total time registered for a week
+    '''
+    # Get the user id
+    userdata = create_user['info']
+    user_id = userdata['users_id']
+    tu = TestUtils()
+    time_reg = TimeRegistration(user_id)
+    date_util = DoTimeDataHelp()
+    with app_test_context:
+        # Create an activity on which to register some time
+        activity_name_str = tu.createRandomString()
+        activity_uuid = time_reg.add_activity(activity_name_str)
+        # Establish the start time and date for the reigstration
+        start_timefrom = datetime.datetime.now()
+        start_of_week,end_of_week = date_util.get_start_end_of_week(start_timefrom.strftime('%Y-%m-%d'))
+        day_1 = start_of_week
+        # Base timestamps - Monday worked 37 minutes hour
+        timefrom_timestamp = datetime.datetime.strptime(day_1,'%Y-%m-%d')
+        timeto_timestamp = timefrom_timestamp + datetime.timedelta(minutes=37)
+        # hour and minute times of first entry 
+        timefrom1 = timefrom_timestamp.strftime('%H:%M')
+        timeto1 = timeto_timestamp.strftime('%H:%M')
+        # Timestamps for 2nd entry - 33 minutes worked on tuesday
+        timefrom2_timestamp = timeto_timestamp + datetime.timedelta(days=1)
+        timeto2_timestamp = timefrom2_timestamp + datetime.timedelta(minutes=33)
+        day_2 = timefrom2_timestamp.strftime('%Y-%m-%d')
+        # Hour and minute times of 2nd entry
+        timefrom2 = timefrom2_timestamp.strftime('%H:%M')
+        timeto2 = timeto2_timestamp.strftime('%H:%M')
+        # Timestamps for 3rd entry - 21 minutes worked on wednesday
+        timefrom3_timestamp = timeto2_timestamp + datetime.timedelta(days=1)
+        timeto3_timestamp = timefrom3_timestamp + datetime.timedelta(minutes=21)
+        day_3 = timefrom2_timestamp.strftime('%Y-%m-%d')
+        # Hour and minute times of 2nd entry
+        timefrom3 = timefrom3_timestamp.strftime('%H:%M')
+        timeto3 = timeto3_timestamp.strftime('%H:%M')
+        time_reg.add_timeregistration(activity_uuid,day_1,timefrom1,timeto1,testing=True)
+        time_reg.add_timeregistration(activity_uuid,day_2,timefrom2,timeto2,testing=True)
+        time_reg.add_timeregistration(activity_uuid,day_3,timefrom3,timeto3,testing=True)
+        
+        # 4 minutes have been registered. Let's get the time out from the db again
+        time_registered = time_reg.get_registration_time_for_week(day_1)
+        assert time_registered == "01:31"

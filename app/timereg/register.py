@@ -237,5 +237,9 @@ class TimeRegistration:
             time_registered = self.get_registration_time_on_day(this_day.strftime('%Y-%m-%d'))
             hours += int(time_registered.split(':')[0])
             minutes += int(time_registered.split(':')[1])
+        if minutes > 60:
+            min_to_hours, min_to_remaining_minutes = date_util.convert_minutes_to_hours(minutes)
+            hours = hours + min_to_hours
+            minutes = min_to_remaining_minutes
         time_string = f"{hours:02d}:{minutes:02d}"
         return time_string
