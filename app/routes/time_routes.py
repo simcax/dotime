@@ -45,10 +45,12 @@ def enter_time():
         weekday_length_hour = f"{int(weekday_length_hour):02d}"
     
     weekday_length_minutes = weekday_lengths.get(f'workdayLength{daynumber}Minutes')
+    total_time_worked_this_week = reg.get_registration_time_for_week(time_date)
     return render_template(
         'entertime.html', date_info=date_info, days=days,
         time_registrations=time_registrations, commute_status=commute_status,
-        time_registered=time_registered, weekday_length=f"{weekday_length_hour}:{weekday_length_minutes}"
+        time_registered=time_registered, weekday_length=f"{weekday_length_hour}:{weekday_length_minutes}",
+        time_worked_week=total_time_worked_this_week
         )
 
 @bp.route("/register", methods=["GET","POST"])

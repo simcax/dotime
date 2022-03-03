@@ -188,7 +188,10 @@
                 {% endif %}
                 <div id="commuteornot">
                     <div class="row">
-                        <div class="col-sm-3 ml-auto">
+                        <div class="col">
+                            <span class="badge xl badge-pill badge-success" data-toggle="tooltip" data-placement="bottom" title="Hours this week"> {{ time_worked_week }} </span>
+                        </div>
+                        <div class="col-sm-2 ml-auto">
                         <div class="form-group">
                             <select class="selectpicker form-control" id="commuteornotselection">
                             <option value="didntwork" {{ didntwork }}><i class="bi bi-pause-circle-fill"></i>Didn't work</option>
