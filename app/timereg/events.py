@@ -1,7 +1,7 @@
 '''
     Class for handling events
 '''
-from psycopg2 import DatabaseError
+from psycopg2 import DatabaseError, sql
 from flask import current_app
 from app.db.database import Database
 
@@ -37,10 +37,14 @@ class HandleEvents:
             db_obj = Database()
             conn = db_obj.connect()
             with conn.cursor() as cur:
-                sql = f"INSERT INTO soc.eventtypes (eventname) VALUES ('{event_type}') \
-                ON CONFLICT (eventname) \
-                DO NOTHING "
-                cur.execute(sql)
+                stmt = sql.SQL("""
+                    INSERT INTO soc.eventtypes (eventname) VALUES ({event_type})
+                    ON CONFLICT (eventname) \
+                    DO NOTHING
+                """).format(
+                    event_type = sql.Literal(event_type)
+                )
+                cur.execute(stmt)
                 conn.commit()
                 added = True
         except DatabaseError as error:
@@ -67,9 +71,13 @@ class HandleEvents:
             db_obj = Database()
             conn = db_obj.connect()
             with conn.cursor() as cur:
-                sql = f"SELECT eventtypeuuid, eventname FROM soc.eventtypes \
-                    WHERE eventname = '{eventname}'"
-                cur.execute(sql)
+                stmt = sql.SQL("""
+                    SELECT eventtypeuuid, eventname FROM soc.eventtypes
+                    WHERE eventname = {eventname}
+                """).format(
+                    eventname = sql.Literal(eventname)
+                )
+                cur.execute(stmt)
                 if cur.rowcount:
                     return_is = cur.fetchone()[0]
                 else:
@@ -100,10 +108,16 @@ class HandleEvents:
             db_obj = Database()
             conn = db_obj.connect()
             with conn.cursor() as cur:
-                sql = f"SELECT 1 FROM soc.events \
-                    WHERE usersid = '{user_id}' and eventtypeuuid = '{event_type_uuid}' \
-                    and dateofevent = '{the_date}'"
-                cur.execute(sql)
+                stmt = sql.SQL("""
+                    SELECT 1 FROM soc.events
+                    WHERE usersid = {user_id} and eventtypeuuid = {event_type_uuid}
+                    and dateofevent = {the_date}
+                """).format(
+                    user_id = sql.Literal(user_id),
+                    event_type_uuid = sql.Literal(event_type_uuid),
+                    the_date = sql.Literal(the_date)
+                )
+                cur.execute(stmt)
                 is_registered = bool(cur.rowcount)
         except DatabaseError as error:
             current_app.logger.error("Error executing sql: %s, error: %s", sql, error)
@@ -122,9 +136,15 @@ class HandleEvents:
             db_obj = Database()
             conn = db_obj.connect()
             with conn.cursor() as cur:
-                sql = f"INSERT INTO soc.events (usersid, eventtypeuuid, dateofevent) \
-                    VALUES ('{user_id}','{event_type_uuid}','{the_date}')"
-                cur.execute(sql)
+                stmt = sql.SQL("""
+                    INSERT INTO soc.events (usersid, eventtypeuuid, dateofevent)
+                    VALUES ({user_id},{event_type_uuid},{the_date})
+                """).format(
+                    user_id = sql.Literal(user_id),
+                    event_type_uuid = sql.Literal(event_type_uuid),
+                    the_date = sql.Literal(the_date)
+                )
+                cur.execute(stmt)
                 event_added = bool(cur.rowcount)
                 conn.commit()
         except DatabaseError as error:
@@ -144,10 +164,16 @@ class HandleEvents:
             db_obj = Database()
             conn = db_obj.connect()
             with conn.cursor() as cur:
-                sql = f"DELETE FROM soc.events \
-                    WHERE usersid = '{user_id}' and eventtypeuuid = '{event_type_uuid}' \
-                    and dateofevent = '{the_date}'"
-                cur.execute(sql)
+                stmt = sql.SQL("""
+                    DELETE FROM soc.events
+                    WHERE usersid = {user_id} and eventtypeuuid = {event_type_uuid}
+                    and dateofevent = {the_date}
+                """).format(
+                    user_id = sql.Literal(user_id),
+                    event_type_uuid = sql.Literal(event_type_uuid),
+                    the_date = sql.Literal(the_date)
+                )
+                cur.execute(stmt)
                 event_deleted = bool(cur.rowcount)
                 current_app.logger.debug("Event deleted status: %s",event_deleted)
                 if event_deleted:
