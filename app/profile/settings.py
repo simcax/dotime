@@ -1,5 +1,5 @@
 '''Handling of settings for users'''
-from psycopg2 import DatabaseError
+from psycopg2 import DatabaseError,sql
 from flask import current_app
 from app.db.database import Database
 
@@ -14,11 +14,17 @@ class SettingsHandling:
             db_obj = Database()
             conn = db_obj.connect()
             with conn.cursor() as cur:
-                sql = f"INSERT INTO soc.userSettings (usersId, settingName, settingValue) \
-                    VALUES ('{user_id}','{setting_name}','{setting_value}') \
-                    ON CONFLICT (usersid,settingname)    \
-                    DO UPDATE SET(settingname,settingvalue) = ('{setting_name}','{setting_value}')"
-                cur.execute(sql)
+                stmt = sql.SQL("""
+                    INSERT INTO soc.userSettings (usersId, settingName, settingValue)
+                    VALUES ({user_id},{setting_name},{setting_value})
+                    ON CONFLICT (usersid,settingname)
+                    DO UPDATE SET(settingname,settingvalue) = ({setting_name},{setting_value})
+                """).format(
+                    user_id = sql.Literal(user_id),
+                    setting_name = sql.Literal(setting_name),
+                    setting_value = sql.Literal(str(setting_value))
+                )
+                cur.execute(stmt)
                 if cur.rowcount == 1:
                     conn.commit()
                     setting_added = True
@@ -39,9 +45,13 @@ class SettingsHandling:
             db_obj = Database()
             conn = db_obj.connect()
             with conn.cursor() as cur:
-                sql = f"SELECT settingName, settingValue FROM soc.userSettings\
-                    WHERE usersId = '{user_id}'"
-                cur.execute(sql)
+                stmt = sql.SQL("""
+                    SELECT settingName, settingValue FROM soc.userSettings
+                    WHERE usersId = {user_id}
+                """).format(
+                    user_id = sql.Literal(user_id)
+                )
+                cur.execute(stmt)
                 if cur.rowcount >= 1:
                     rows = cur.fetchall()
                     if as_dict:
