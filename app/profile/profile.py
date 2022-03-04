@@ -1,6 +1,7 @@
 '''Class to handle new users'''
+from platformdirs import user_runtime_dir
 from werkzeug.security import check_password_hash, generate_password_hash
-from psycopg2 import DatabaseError
+from psycopg2 import DatabaseError, sql
 from flask import current_app, flash
 from app.db.database import Database
 class ProfileHandling:
@@ -24,10 +25,15 @@ class ProfileHandling:
         return_value = False
         try:
             with conn.cursor() as cur:
-                sql = f"INSERT INTO soc.users (username,email) \
-                    VALUES ('{username}','{email}')\
-                    RETURNING usersid"
-                cur.execute(sql)
+                stmt = sql.SQL("""
+                    INSERT INTO soc.users (username,email)
+                    VALUES ({username},{email})
+                    RETURNING usersid
+                """).format(
+                    username = sql.Literal(username),
+                    email = sql.Literal(email)
+                )
+                cur.execute(stmt)
                 users_id = cur.fetchone()[0]
                 if users_id:
                     password_added = self.add_user_password(conn,users_id, hashed_password)
@@ -56,9 +62,14 @@ class ProfileHandling:
         return_value = False
         try:
             with conn.cursor() as cur:
-                sql = f"INSERT INTO soc.userpasswords (usersid, passwordhash)\
-                     VALUES ('{user_id}','{password_hash}')"
-                cur.execute(sql)
+                stmt = sql.SQL("""
+                    INSERT INTO soc.userpasswords (usersid, passwordhash)
+                     VALUES ({user_id},{password_hash})
+                    """).format(
+                        user_id = sql.Literal(user_id),
+                        password_hash = sql.Literal(password_hash)
+                    )
+                cur.execute(stmt)
                 conn.commit()
                 return_value = bool(cur.rowcount)
         except DatabaseError as error:
@@ -72,10 +83,14 @@ class ProfileHandling:
             conn = db_obj.connect()
             users_id = None
             with conn.cursor() as cur:
-                sql = f"SELECT u.usersid, p.passwordHash FROM soc.users u \
-                    INNER JOIN soc.userpasswords p ON u.usersid = p.usersid \
-                    WHERE u.email = '{email}'"
-                cur.execute(sql)
+                stmt = sql.SQL("""
+                    SELECT u.usersid, p.passwordHash FROM soc.users u
+                    INNER JOIN soc.userpasswords p ON u.usersid = p.usersid
+                    WHERE u.email = {email}
+                """).format(
+                    email = sql.Literal(email)
+                )
+                cur.execute(stmt)
                 if cur.rowcount >= 1:
                     row = cur.fetchone()
                     if self.validate_password(row[1],password):
@@ -94,10 +109,13 @@ class ProfileHandling:
             db_obj = Database()
             conn = db_obj.connect()
             with conn.cursor() as cur:
-                sql = f"SELECT username, email FROM soc.users \
-                        WHERE usersid = '{user_id}'\
-                    "
-                cur.execute(sql)
+                stmt = sql.SQL("""
+                        SELECT username, email FROM soc.users
+                        WHERE usersid = {user_id}
+                    """).format(
+                        user_id = sql.Literal(user_id)
+                    )
+                cur.execute(stmt)
                 if cur.rowcount >= 1:
                     row = cur.fetchone()
                     userdata = { 'username': row[0], 'email': row[1]}
@@ -116,10 +134,15 @@ class ProfileHandling:
             db_obj = Database()
             conn = db_obj.connect()
             with conn.cursor() as cur:
-                sql = f"UPDATE soc.users \
-                    SET email = '{email}' \
-                    WHERE usersid = '{users_id}'"
-                cur.execute(sql)
+                stmt = sql.SQL("""
+                    UPDATE soc.users
+                    SET email = {email}
+                    WHERE usersid = {users_id}
+                """).format(
+                    email = sql.Literal(email),
+                    users_id = sql.Literal(users_id)
+                )
+                cur.execute(stmt)
                 updated = bool( cur.rowcount == 1)
                 if updated:
                     current_app.logger.info("userid %s updated", users_id)
@@ -140,9 +163,14 @@ class ProfileHandling:
             db_obj = Database()
             conn = db_obj.connect()
             with conn.cursor() as cur:
-                sql = f"UPDATE soc.userPasswords SET passwordHash = '{password_hash}' \
-                        WHERE usersid = '{users_id}'"
-                cur.execute(sql)
+                stmt = sql.SQL("""
+                        UPDATE soc.userPasswords SET passwordHash = {password_hash}
+                        WHERE usersid = {users_id}
+                        """).format(
+                            users_id = sql.Literal(users_id),
+                            password_hash = sql.Literal(password_hash)
+                        )
+                cur.execute(stmt)
                 password_changed = bool(cur.rowcount == 1)
                 conn.commit()
         except DatabaseError as error:
@@ -169,8 +197,12 @@ class ProfileHandling:
             db_obj = Database()
             conn = db_obj.connect()
             with conn.cursor() as cur:
-                sql = f"SELECT email FROM soc.users WHERE usersid = '{user_id}'"
-                cur.execute(sql)
+                stmt = sql.SQL("""
+                SELECT email FROM soc.users WHERE usersid = {user_id}
+                """).format(
+                    user_id = sql.Literal(user_id)
+                )
+                cur.execute(stmt)
                 if cur.rowcount == 1:
                     email = cur.fetchone()[0]
         except DatabaseError as error:
@@ -187,8 +219,12 @@ class ProfileHandling:
             db_obj = Database()
             conn = db_obj.connect()
             with conn.cursor() as cur:
-                sql = f"SELECT usersid FROM soc.users WHERE email = '{email}'"
-                cur.execute(sql)
+                stmt = sql.SQL("""
+                    SELECT usersid FROM soc.users WHERE email = {email}
+                """).format(
+                    email = sql.Literal(email)
+                )
+                cur.execute(stmt)
                 if cur.rowcount == 1:
                     uuid = cur.fetchone()[0]
         except DatabaseError as error:
