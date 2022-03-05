@@ -202,14 +202,15 @@ def test_seeing_if_uuid_exists(create_user, app_test_context):
         is_activity_uuid = time_reg.is_activityuuid(activity_uuid)
         assert is_activity_uuid == True
 
-def test_seeing_if_uuid_exists_with_non_existing_uuid(create_user):
-    userdata = create_user['info']
-    user_id = userdata['users_id']
-    tu = TestUtils()
-    time_reg = TimeRegistration(user_id)
-    test_uuid = uuid.uuid4()
-    is_activity_uuid = time_reg.is_activityuuid(test_uuid)
-    assert is_activity_uuid == False
+def test_seeing_if_uuid_exists_with_non_existing_uuid(create_user, app_test_context):
+    with app_test_context:
+        userdata = create_user['info']
+        user_id = userdata['users_id']
+        tu = TestUtils()
+        time_reg = TimeRegistration(user_id)
+        test_uuid = uuid.uuid4()
+        is_activity_uuid = time_reg.is_activityuuid(test_uuid)
+        assert is_activity_uuid == False
 
 def test_seeing_if_uuid_exists_with_string(create_user):
     userdata = create_user['info']

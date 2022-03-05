@@ -1,7 +1,9 @@
 '''Module handling time registration'''
+from distutils.errors import LibError
+from typing import Literal
 from uuid import UUID
 from flask import current_app, flash
-from psycopg2 import DatabaseError
+from psycopg2 import DatabaseError,sql
 from psycopg2.extras import DictCursor
 from time import strftime, gmtime
 from datetime import datetime, timedelta
@@ -20,13 +22,18 @@ class TimeRegistration:
             db_obj = database.Database()
             conn = db_obj.connect()
             with conn.cursor() as cur:
-                sql = f"INSERT INTO soc.activites (usersId,activityname) \
-                VALUES ('{self.userid}','{activity_name}') RETURNING activitesuuid"
-                cur.execute(sql)
+                stmt = sql.SQL("""
+                    INSERT INTO soc.activites (usersId,activityname)
+                    VALUES ({userid},{activity_name}) RETURNING activitesuuid
+                """).format(
+                    userid = sql.Literal(self.userid),
+                    activity_name = sql.Literal(activity_name)
+                )
+                cur.execute(stmt)
                 activity_uuid = cur.fetchone()[0]
                 conn.commit()
         except DatabaseError as error:
-            print(f"Error with sql {sql} - {error}")
+            print(f"Error with sql - {error}")
         finally:
             # Close connection
             conn.close()
@@ -45,13 +52,18 @@ class TimeRegistration:
                     db_obj = database.Database()
                     conn = db_obj.connect()
                     with conn.cursor() as cur:
-                        sql = f"SELECT 1 FROM soc.activites \
-                                WHERE usersid = '{self.userid}' \
-                                AND activitesuuid = '{activity_uuid}'"
-                        cur.execute(sql)
+                        stmt = sql.SQL("""
+                                SELECT 1 FROM soc.activites
+                                WHERE usersid = {userid}
+                                AND activitesuuid = {activity_uuid}
+                            """).format(
+                                userid = sql.Literal(self.userid),
+                                activity_uuid = sql.Literal(activity_uuid)
+                            )
+                        cur.execute(stmt)
                         is_activity_uuid = bool(cur.rowcount)
                 except DatabaseError as error:
-                    current_app.logger.error("Error executing sql: %s - error: %s",sql,error)
+                    current_app.logger.error("Error executing sql - error: %s",error)
                 finally:
                     conn.close()
             except ValueError:
@@ -72,14 +84,38 @@ class TimeRegistration:
             db_obj = database.Database()
             conn = db_obj.connect()
             with conn.cursor(cursor_factory=DictCursor) as cur:
-                sql = f"SELECT activitesuuid, activityname FROM soc.activites \
-                        WHERE usersId = '{self.userid}' {and_activity_name} {and_activity_uuid}"
-                current_app.logger.debug("%s",sql)
-                cur.execute(sql)
+                if activity_name:
+                    activity_name = activity_name.strip("'")
+                    activity_name = f"%{activity_name}%"
+                    stmt = sql.SQL("""
+                        SELECT activitesuuid, activityname FROM soc.activites
+                        WHERE usersId = {userid} and activityname LIKE {activity_name}
+                    """).format(
+                        userid = sql.Literal(self.userid),
+                        activity_name = sql.Literal(f"{activity_name}")
+                    )
+                elif activity_uuid:
+                    activity_uuid = activity_uuid.strip("'")
+                    stmt = sql.SQL("""
+                        SELECT activitesuuid, activityname FROM soc.activites
+                        WHERE usersId = {userid} and activitesuuid = {activity_uuid}
+                    """).format(
+                        userid = sql.Literal(self.userid),
+                        activity_uuid = sql.Literal(f"{activity_uuid}")
+                    )
+                else:
+                    stmt = sql.SQL("""
+                        SELECT activitesuuid, activityname FROM soc.activites
+                        WHERE usersId = {userid}
+                    """).format(
+                        userid = sql.Literal(self.userid)                        
+                    )
+                cur.execute(stmt)
+                current_app.logger.debug(stmt.as_string(conn)) 
                 if cur.rowcount:
                     activities = cur.fetchall()
         except DatabaseError as error:
-            current_app.logger.error("Error executing sql: %s - error: %s", sql, error)
+            current_app.logger.error("Error executing sql - error: %s", error)
         finally:
             conn.close()
         return activities
@@ -115,22 +151,33 @@ class TimeRegistration:
                     db_obj = database.Database()
                     conn = db_obj.connect()
                     with conn.cursor() as cur:
-                        sql = f"INSERT INTO soc.timedmeetgo (timefrom, timeto, usersId) \
-                            VALUES ('{timefrom_full}','{timeto_full}','{self.userid}') \
-                                RETURNING timedmeetgouuid"
-                        cur.execute(sql)
+                        stmt = sql.SQL("""
+                            INSERT INTO soc.timedmeetgo (timefrom, timeto, usersId)
+                            VALUES ({timefrom_full},{timeto_full},{userid})
+                            RETURNING timedmeetgouuid
+                        """).format(
+                            timefrom_full = sql.Literal(timefrom_full),
+                            timeto_full = sql.Literal(timeto_full),
+                            userid = sql.Literal(self.userid)
+                        )
+                        cur.execute(stmt)
                         timed_meet_go_uuid = cur.fetchone()[0]
 
-                        sql = f"INSERT INTO soc.ln_timemeetgo (timedmeetgouuid,activitesuuid) \
-                            VALUES ('{timed_meet_go_uuid}','{activity_uuid}')"
-                        cur.execute(sql)
+                        stmt = sql.SQL("""
+                            INSERT INTO soc.ln_timemeetgo (timedmeetgouuid,activitesuuid)
+                            VALUES ({timed_meet_go_uuid},{activity_uuid})
+                        """).format(
+                            timed_meet_go_uuid = sql.Literal(timed_meet_go_uuid),
+                            activity_uuid = sql.Literal(activity_uuid)
+                        )
+                        cur.execute(stmt)
                         if cur.rowcount == 1:
                             conn.commit()
                             timereg_added = True
                         else:
                             timereg_added = False
                 except DatabaseError as error:
-                    print(f"Error with sql {sql} - {error}")
+                    print(f"Error with sql {error}")
                 finally:
                     conn.close()
             else:
@@ -153,16 +200,21 @@ class TimeRegistration:
             timestamp_is_not_here = True
             db_obj = database.Database()
             conn = db_obj.connect()
-            sql = f"SELECT 1 FROM soc.timedmeetgo WHERE timefrom <= '{timestamp}'  \
-                AND timeto > '{timestamp}' AND usersid = '{self.userid}'"
+            stmt = sql.SQL("""
+                SELECT 1 FROM soc.timedmeetgo WHERE timefrom <= {timestamp}
+                AND timeto > {timestamp} AND usersid = {userid}
+            """).format(
+                timestamp = sql.Literal(timestamp),
+                userid = sql.Literal(self.userid)
+            )
             with conn.cursor() as cur:
-                cur.execute(sql)
+                cur.execute(stmt)
                 timestamp_is_not_here = bool(cur.rowcount==0)
                 if not timestamp_is_not_here:
                     current_app.logger.debug('Rows: %s - Timestamp %s existed already. SQL :%s'
-                    ,cur.rowcount,timestamp, sql)
+                    ,cur.rowcount,timestamp, stmt)
         except DatabaseError as error:
-            print(f"Error executing SQL {sql} - {error}")
+            print(f"Error executing SQL {stmt} - {error}")
         finally:
             conn.close()
         return timestamp_is_not_here
@@ -176,20 +228,25 @@ class TimeRegistration:
             db_obj = database.Database()
             conn = db_obj.connect()
             with conn.cursor() as cur:
-                sql = f"SELECT experimental_strftime( t.timefrom,'%H:%M') as timefrom, \
-                    experimental_strftime(t.timeto,'%H:%M') as timeto, \
-                    a.activitesuuid, a.activityname \
-                    FROM soc.timedmeetgo t \
-                    INNER JOIN soc.ln_timemeetgo l ON t.timedmeetgouuid = l.timedmeetgouuid \
-                    INNER JOIN soc.activites a ON l.activitesuuid = a.activitesuuid \
-                    WHERE t.usersId = '{self.userid}' \
-                    AND t.timefrom BETWEEN '{registration_date} 00:00:00' AND '{registration_date} 23:59:59' \
-                    ORDER BY t.timefrom"
-                current_app.logger.debug(sql)
-                cur.execute(sql)
+                stmt = sql.SQL("""
+                    SELECT experimental_strftime( t.timefrom,'%H:%M') as timefrom,
+                    experimental_strftime(t.timeto,'%H:%M') as timeto,
+                    a.activitesuuid, a.activityname
+                    FROM soc.timedmeetgo t
+                    INNER JOIN soc.ln_timemeetgo l ON t.timedmeetgouuid = l.timedmeetgouuid
+                    INNER JOIN soc.activites a ON l.activitesuuid = a.activitesuuid
+                    WHERE t.usersId = {userid}
+                    AND t.timefrom BETWEEN {registration_date_with_time_start} AND {registration_date_with_time_end}
+                    ORDER BY t.timefrom
+                """).format(
+                    userid = sql.Literal(self.userid),
+                    registration_date_with_time_start = sql.Literal(f"{registration_date} 00:00:00"),
+                    registration_date_with_time_end = sql.Literal(f"{registration_date} 23:59:59")
+                )
+                cur.execute(stmt)
                 rows = cur.fetchall()
         except DatabaseError as error:
-            current_app.logger.error("Error executing sql: %s, error: %s", sql, error)
+            current_app.logger.error("Error executing sql: %s, error: %s", stmt, error)
         finally:
             conn.close()
         return rows
@@ -203,11 +260,17 @@ class TimeRegistration:
             db_obj = database.Database()
             conn = db_obj.connect()
             with conn.cursor() as cur:
-                sql = f"SELECT AGE(MAX(t.timeto), MIN(t.timefrom) ) as timediff \
-                    FROM soc.users u INNER JOIN  soc.timedmeetgo t on u.usersid = t.usersid \
-                    WHERE u.usersid = '{self.userid}' \
-                    AND (t.timefrom BETWEEN '{the_date} 00:00:00' AND '{the_date} 23:59:59')"
-                cur.execute(sql)
+                stmt = sql.SQL("""
+                    SELECT AGE(MAX(t.timeto), MIN(t.timefrom) ) as timediff
+                    FROM soc.users u INNER JOIN  soc.timedmeetgo t on u.usersid = t.usersid
+                    WHERE u.usersid = {userid}
+                    AND (t.timefrom BETWEEN {the_date_start} AND {the_date_end})
+                """).format(
+                    userid = sql.Literal(self.userid),
+                    the_date_start = sql.Literal(f"{the_date} 00:00:00"),
+                    the_date_end = sql.Literal(f"{the_date} 23:59:59")
+                )
+                cur.execute(stmt)
                 if cur.rowcount:
                     result = cur.fetchone()[0]
                     if result != None:
@@ -217,7 +280,7 @@ class TimeRegistration:
                 else:
                     time_string = "00:00"
         except DatabaseError as error:
-            current_app.logger.error("Error executing sql: %s, error: %s",sql,error)
+            current_app.logger.error("Error executing sql: %s, error: %s",stmt,error)
         finally:
             conn.close()
         return time_string
