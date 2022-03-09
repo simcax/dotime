@@ -33,6 +33,7 @@ def login():
                 return_is = redirect(url_for('time_blueprint.enter_time'))
         else:
             flash("Error logging you in.")
+            current_app.logger.info("User was not logged in: %s", email)
             return_is = render_template('loginonly.html',color_class='danger')
     else:
         return_is = render_template('loginonly.html')
