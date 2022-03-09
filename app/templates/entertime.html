@@ -12,6 +12,13 @@
 -->
 <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
 <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+<!-- 
+    Javascript and CSS for datapicker
+    URL: https://bootstrap-datepicker.readthedocs.io/en/latest/index.html - https://github.com/uxsolutions/bootstrap-datepicker
+-->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.standalone.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
 <script lang="javascript">
     $(document).ready(function() {
         const roundTo = roundTo => x => Math.round(x / roundTo) * roundTo;    
@@ -145,7 +152,14 @@
                     }
                 });
             });
-        
+            $('#datepicker').datepicker({
+                format: 'yyyy-mm-dd'
+            });
+            $('#datepicker').on('changeDate', function() {
+            $('#my_hidden_input').val(
+                $('#datepicker').datepicker('getFormattedDate')
+                );
+            });
     });
 
 </script>
@@ -158,7 +172,8 @@
                     <a href="/time/enter?showDate={{date_info.yesterday}}">
                         <i class="bi bi-caret-left-fill"></i>
                     </a>
-                    {{ date_info.today }}
+                    <input type="text" id="datepicker" class="btn btn-secondary form-control col-3 btn-sm" value="{{ date_info.today }}">
+                    
                     <a href="/time/enter?showDate={{date_info.tomorrow}}">
                         <i class="bi bi-caret-right-fill"></i>
                     </a>
