@@ -153,12 +153,17 @@
                 });
             });
             $('#datepicker').datepicker({
-                format: 'yyyy-mm-dd'
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                calendarWeeks: true
             });
             $('#datepicker').on('changeDate', function() {
             $('#my_hidden_input').val(
-                $('#datepicker').datepicker('getFormattedDate')
+                
                 );
+                var newDate = $('#datepicker').datepicker('getFormattedDate');
+                var goto = document.location.pathname+'?showDate='+newDate;
+                location.assign(goto);
             });
     });
 

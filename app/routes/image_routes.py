@@ -37,3 +37,8 @@ def dotime_logo_png():
 def dotime_logo_only_png():
     '''Serve dotime_logo_only.png'''
     return send_from_directory('static/images','dotime_logo_only.png',mimetype='image/jpg')
+
+@bp1.route("/datepicker_feature.png")
+def datepicker_feature_png():
+    '''Serve datepicker_feature.png'''
+    return send_from_directory('static/images','datepicker_feature.png',mimetype='image/png')
