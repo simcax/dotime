@@ -152,10 +152,18 @@
                     }
                 });
             });
+            
+            var dateToShow = $('#chosendate').val();
+            var dateToShow = '2022-03-08';
+            var endDateToShow = new Date();
+            console.log(endDateToShow.toISOString().split('T')[0]);
+            console.log(dateToShow);
             $('#datepicker').datepicker({
                 format: 'yyyy-mm-dd',
                 autoclose: true,
-                calendarWeeks: true
+                calendarWeeks: true,
+                defaultViewDate: dateToShow,
+                endDate: endDateToShow.toISOString().split('T')[0]
             });
             $('#datepicker').on('changeDate', function() {
             $('#my_hidden_input').val(
@@ -178,7 +186,7 @@
                         <i class="bi bi-caret-left-fill"></i>
                     </a>
                     <input type="text" id="datepicker" class="btn btn-secondary form-control col-3 btn-sm" value="{{ date_info.today }}">
-                    
+                    <input type="hidden" id="chosendate" value="{{ date_info.time_date }}">
                     <a href="/time/enter?showDate={{date_info.tomorrow}}">
                         <i class="bi bi-caret-right-fill"></i>
                     </a>
