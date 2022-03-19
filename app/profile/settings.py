@@ -2,6 +2,7 @@
 from psycopg2 import DatabaseError,sql
 from flask import current_app
 from app.db.database import Database
+from app.utils import date_utils
 
 class SettingsHandling:
     '''Class for handling sessions for users'''
@@ -119,3 +120,26 @@ class SettingsHandling:
         for i in enumerate(all_days):
             workweek_day_lengths[f'workdayName{i[0]+1}'] = all_days[i[0]]
         return workweek_day_lengths
+
+    def get_number_of_work_hours_for_a_week(self,user_id):
+        '''
+            Returns the total number of hours and minutes the user has as a standard work week
+            This will be in the form of HH:MM - zero filled.
+        '''
+        date_util = date_utils.DoTimeDataHelp()
+        work_week = self.get_workweek_day_lengths(user_id)
+        total_hours_and_minutes = 0 
+        hours = 0
+        minutes = 0
+        for key, value in work_week.items():
+            if key.endswith('Hour'):
+                hours += int(value)
+            elif key.endswith('Minutes'):
+                minutes += int(value)
+        if minutes > 60:
+            min_to_hours, min_to_remaining_minutes = date_util.convert_minutes_to_hours(minutes)
+            hours = hours + min_to_hours
+            minutes = min_to_remaining_minutes
+        total_hours_and_minutes = f"{hours:02d}:{minutes:02d}"        
+
+        return total_hours_and_minutes

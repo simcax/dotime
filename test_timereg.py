@@ -5,6 +5,7 @@ from random import randint, choice
 from venv import create
 import uuid
 import pytest
+from app.profile.settings import SettingsHandling
 from app.timereg.register import TimeRegistration
 from app.profile.profile import ProfileHandling
 from app.timereg.events import HandleEvents
@@ -632,3 +633,15 @@ def test_minutes_over_60_converted_to_hours_when_getting_time_for_week(create_us
         # 4 minutes have been registered. Let's get the time out from the db again
         time_registered = time_reg.get_registration_time_for_week(day_1)
         assert time_registered == "01:31"
+
+def test_get_total_hours_to_work_for_the_week(create_user,app_test_context):
+    '''Get the total amount of hours a user should work for the week'''
+    # Get the user id
+    userdata = create_user['info']
+    user_id = userdata['users_id']
+    settings = SettingsHandling()
+    with app_test_context:
+        settings.add_defaults(user_id)
+        total_time = settings.get_number_of_work_hours_for_a_week(user_id)
+    assert total_time == "37:30"
+

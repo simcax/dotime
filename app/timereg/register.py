@@ -306,3 +306,4 @@ class TimeRegistration:
             minutes = min_to_remaining_minutes
         time_string = f"{hours:02d}:{minutes:02d}"
         return time_string
+        
