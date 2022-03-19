@@ -61,7 +61,6 @@ def test_enter_time_form_today_exists(client, enter_time_form):
     rv = enter_time_form
     today = datetime.datetime.now()
     year, weeknumber, weekday  = today.isocalendar()
-    assert bytes(str(weeknumber), 'utf-8') in rv.data
     assert bytes(str(year), 'utf-8') in rv.data
 
 def test_daynumber_to_dayname():
