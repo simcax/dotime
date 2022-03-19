@@ -8,6 +8,7 @@ from psycopg2.extras import DictCursor
 from time import strftime, gmtime
 from datetime import datetime, timedelta
 from app.db import database
+from app.profile.settings import SettingsHandling
 from app.utils import date_utils
 class TimeRegistration:
     '''Class for time registration'''
@@ -306,4 +307,17 @@ class TimeRegistration:
             minutes = min_to_remaining_minutes
         time_string = f"{hours:02d}:{minutes:02d}"
         return time_string
-        
+
+    def percentage_worked(self,user_id, date_of_any_day_in_week):
+        '''
+            Returns the percentage of worked hours for a user for the week with the given date
+        '''
+        date_util = date_utils.DoTimeDataHelp()
+        settings = SettingsHandling()
+        first_day_of_week, last_day_of_week = date_util.get_start_end_of_week(date_of_any_day_in_week)
+        # Retrieve number of hours worked this week so far
+        worked_time = self.get_registration_time_for_week(first_day_of_week)
+        # How many hours is standard for a week
+        intended_time_week = settings.get_number_of_work_hours_for_a_week(user_id)
+        percentage_worked = date_util.convert_hours_and_minutes_to_minutes(worked_time) / date_util.convert_hours_and_minutes_to_minutes(intended_time_week) * 100
+        return percentage_worked

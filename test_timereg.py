@@ -645,3 +645,109 @@ def test_get_total_hours_to_work_for_the_week(create_user,app_test_context):
         total_time = settings.get_number_of_work_hours_for_a_week(user_id)
     assert total_time == "37:30"
 
+def test_get_intended_work_hours_until_1(create_user, app_test_context):
+    '''
+        A test to get the number of intended workhours until the current day
+        This test tests Monday and Tuesday    
+    '''
+    # Get the user id
+    userdata = create_user['info']
+    user_id = userdata['users_id']
+    settings = SettingsHandling()
+    with app_test_context:
+        settings.add_defaults(user_id)
+        total_time = settings.get_number_of_work_hours_until_current_day(user_id,2)
+    assert total_time == "15:00"
+    
+def test_get_intended_work_hours_until_2(create_user, app_test_context):
+    '''
+        A test to get the number of intended workhours until the current day
+        This test tests Monday though Thursday
+    '''
+    # Get the user id
+    userdata = create_user['info']
+    user_id = userdata['users_id']
+    settings = SettingsHandling()
+    with app_test_context:
+        settings.add_defaults(user_id)
+        total_time = settings.get_number_of_work_hours_until_current_day(user_id,4)
+    assert total_time == "30:00"
+
+def test_convert_hours_minutes_to_minutes_1():
+    '''Test the conversion from hours:minutes to minutes works'''
+    date_utils = DoTimeDataHelp()
+    time_to_convert = "15:59"
+    minutes = date_utils.convert_hours_and_minutes_to_minutes(time_to_convert)
+    assert minutes == 959
+
+def test_convert_hours_minutes_to_minutes_2():
+    '''
+        Test the conversion from hours:minutes to minutes works,
+        when no hours is given
+    '''
+    date_utils = DoTimeDataHelp()
+    time_to_convert = "00:59"
+    minutes = date_utils.convert_hours_and_minutes_to_minutes(time_to_convert)
+    assert minutes == 59
+
+def test_convert_hours_minutes_to_minutes_3():
+    '''
+        Test the conversion from hours:minutes to minutes fails, if number of chars is not 5
+    '''
+    date_utils = DoTimeDataHelp()
+    time_to_convert = "0:59"
+    minutes = date_utils.convert_hours_and_minutes_to_minutes(time_to_convert)
+    assert minutes == False
+
+def test_convert_hours_minutes_to_minutes_4():
+    '''
+        Test the conversion from hours:minutes to minutes fails, if string does not contain colon
+    '''
+    date_utils = DoTimeDataHelp()
+    time_to_convert = "00589"
+    minutes = date_utils.convert_hours_and_minutes_to_minutes(time_to_convert)
+    assert minutes == False
+
+
+def test_get_percentage_worked_of_intended_hours(create_user, app_test_context):
+    '''
+        Testing getting the percentage of hours worked in current week
+    '''
+    # Get the user id
+    userdata = create_user['info']
+    user_id = userdata['users_id']
+    settings = SettingsHandling()
+    time_reg = TimeRegistration(user_id)
+    date_util = DoTimeDataHelp()
+    tu = TestUtils()
+    with app_test_context:
+        # Initialize standard settings for user.
+        settings.add_defaults(user_id)
+        # Create an activity on which to register some time
+        activity_name_str = tu.createRandomString()
+        activity_uuid = time_reg.add_activity(activity_name_str)
+        # Establish the start time and date for the reigstration
+        start_timefrom = datetime.datetime.now()
+        start_of_week,end_of_week = date_util.get_start_end_of_week(start_timefrom.strftime('%Y-%m-%d'))
+        day_1 = start_of_week
+        # Base timestamps - Monday worked 1 hour
+        timefrom_timestamp = datetime.datetime.strptime(day_1,'%Y-%m-%d')
+        timeto_timestamp = timefrom_timestamp + datetime.timedelta(hours=7,minutes=30)
+        # hour and minute times of first entry 
+        timefrom1 = timefrom_timestamp.strftime('%H:%M')
+        timeto1 = timeto_timestamp.strftime('%H:%M')
+        # Timestamps for 2nd entry - 1 hour worked on tuesday
+        timefrom2_timestamp = timeto_timestamp + datetime.timedelta(days=1)
+        timeto2_timestamp = timefrom2_timestamp + datetime.timedelta(hours=7, minutes=30)
+        day_2 = timefrom2_timestamp.strftime('%Y-%m-%d')
+        # Hour and minute times of 2nd entry
+        timefrom2 = timefrom2_timestamp.strftime('%H:%M')
+        timeto2 = timeto2_timestamp.strftime('%H:%M')
+        time_reg.add_timeregistration(activity_uuid,day_1,timefrom1,timeto1,testing=True)
+        time_reg.add_timeregistration(activity_uuid,day_2,timefrom2,timeto2,testing=True)
+        
+        # 15 hours have been registered. Let's get the time out from the db again
+        
+        # Get the percentage worked out of the norm hours for the week
+        percentage_worked = time_reg.percentage_worked(user_id,day_1)
+        assert percentage_worked == 40

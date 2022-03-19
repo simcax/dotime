@@ -64,3 +64,12 @@ class DoTimeDataHelp:
         result_hours = minutes // 60
         result_minutes = minutes % 60
         return result_hours, result_minutes
+    
+    @classmethod
+    def convert_hours_and_minutes_to_minutes(cls,hours_and_minutes):
+        return_value = False
+        if ":" in hours_and_minutes and len(hours_and_minutes) == 5:
+            minutes = int(hours_and_minutes.split(':')[0]) * 60 
+            minutes += int(hours_and_minutes.split(':')[1])
+            return_value = minutes
+        return return_value

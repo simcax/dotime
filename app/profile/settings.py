@@ -143,3 +143,26 @@ class SettingsHandling:
         total_hours_and_minutes = f"{hours:02d}:{minutes:02d}"        
 
         return total_hours_and_minutes
+
+    def get_number_of_work_hours_until_current_day(self,user_id,day_number):
+        '''
+            Takes a user_id and the daynumber as input
+            Returning the intended number of hours, which should be worked as taken from the user settings
+            The day number should be 1 = Monday, 2 = Tuesday, 3 = Wednesday, 4 = Thursday, 5 = Friday, 6 = Saturday, 7 = Sunday
+            Return values will be hours and minutes: HH:MM - zerofilled
+        '''
+        date_util = date_utils.DoTimeDataHelp()
+        work_week = self.get_workweek_day_lengths(user_id)
+        total_hours_and_minutes = 0 
+        hours = 0
+        minutes = 0
+        for i in range(0,day_number):
+            hours += int(work_week.get(f'workdayLength{i+1}Hour'))
+            minutes += int(work_week.get(f'workdayLength{i+1}Minutes'))
+        if minutes >= 60:
+            min_to_hours, min_to_remaining_minutes = date_util.convert_minutes_to_hours(minutes)
+            hours = hours + min_to_hours
+            minutes = min_to_remaining_minutes
+        total_hours_and_minutes = f"{hours:02d}:{minutes:02d}"        
+
+        return total_hours_and_minutes
