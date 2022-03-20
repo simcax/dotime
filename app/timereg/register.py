@@ -274,6 +274,9 @@ class TimeRegistration:
                 cur.execute(stmt)
                 if cur.rowcount:
                     result = cur.fetchone()[0]
+                    current_app.logger.debug("Hours retrieved from db %s",result)
+                    current_app.logger.debug("User ID: %s", self.userid)
+                    current_app.logger.debug("SQL: %s", stmt)
                     if result != None:
                         time_string = strftime("%H:%M",gmtime(result.seconds))
                     else:
@@ -295,9 +298,10 @@ class TimeRegistration:
         hours = 0
         minutes = 0
         # Get Number of hours and minutes worked each day
-        this_day = datetime.strptime(start_of_week,'%Y-%m-%d')
+        base_date = datetime.strptime(start_of_week,'%Y-%m-%d')
         for i in range(0,6):
-            this_day = this_day + timedelta(days=i)
+            this_day = base_date + timedelta(days=i)
+            current_app.logger.debug("Getting time registered on %s",this_day)
             time_registered = self.get_registration_time_on_day(this_day.strftime('%Y-%m-%d'))
             hours += int(time_registered.split(':')[0])
             minutes += int(time_registered.split(':')[1])
@@ -314,10 +318,14 @@ class TimeRegistration:
         '''
         date_util = date_utils.DoTimeDataHelp()
         settings = SettingsHandling()
+        worked_time = 0
         first_day_of_week, last_day_of_week = date_util.get_start_end_of_week(date_of_any_day_in_week)
         # Retrieve number of hours worked this week so far
         worked_time = self.get_registration_time_for_week(first_day_of_week)
         # How many hours is standard for a week
         intended_time_week = settings.get_number_of_work_hours_for_a_week(user_id)
-        percentage_worked = date_util.convert_hours_and_minutes_to_minutes(worked_time) / date_util.convert_hours_and_minutes_to_minutes(intended_time_week) * 100
+        if worked_time != '00:00':
+            percentage_worked = date_util.convert_hours_and_minutes_to_minutes(worked_time) / date_util.convert_hours_and_minutes_to_minutes(intended_time_week) * 100
+        else:
+            percentage_worked = 0
         return percentage_worked

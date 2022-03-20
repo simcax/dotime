@@ -162,7 +162,8 @@
                 format: 'yyyy-mm-dd',
                 autoclose: true,
                 calendarWeeks: true,
-                defaultViewDate: dateToShow,
+                todayHighlight: true,
+                updateViewDate: true,
                 endDate: endDateToShow.toISOString().split('T')[0]
             });
             $('#datepicker').on('changeDate', function() {
@@ -173,6 +174,11 @@
                 var goto = document.location.pathname+'?showDate='+newDate;
                 location.assign(goto);
             });
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            })
+
     });
 
 </script>
@@ -217,7 +223,9 @@
                 <div id="commuteornot">
                     <div class="row">
                         <div class="col">
-                            <span class="badge xl badge-pill badge-success" data-toggle="tooltip" data-placement="bottom" title="Hours this week"> {{ time_worked_week }} </span>
+                            <div class="progress">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ percentage_hours_worked_this_week }}%;" aria-valuenow="{{ percentage_hours_worked_this_week }}" aria-valuemin="0" aria-valuemax="100" data-bs-toggle="tooltip" data-bs-placement="top" title="Tooltip on top">{{ time_worked_week }} / {{ total_norm_hours_week }}</div>
+                            </div>
                         </div>
                         <div class="col-sm-2 ml-auto">
                         <div class="form-group">

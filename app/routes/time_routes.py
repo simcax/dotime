@@ -32,7 +32,7 @@ def enter_time():
     days = dotime_date_help.all_days('en')
     reg = register.TimeRegistration(session.get('user_id'))
     time_registrations = reg.get_registrations(time_date)
-    current_app.logger.debug(time_registrations)
+    
     # Get current commute status
     event_obj = events.HandleEvents()
     commute_status = event_obj.get_commute_status(session.get('user_id'),time_date)
@@ -46,11 +46,17 @@ def enter_time():
     
     weekday_length_minutes = weekday_lengths.get(f'workdayLength{daynumber}Minutes')
     total_time_worked_this_week = reg.get_registration_time_for_week(time_date)
+    total_norm_hours_week = settings_obj.get_number_of_work_hours_for_a_week(session.get('user_id'))
+    current_app.logger.debug("worked week %s",total_time_worked_this_week)
+    percentage_hours_worked_this_week = reg.percentage_worked(session.get('user_id'),time_date)
+    current_app.logger.debug("Percentage: %s",percentage_hours_worked_this_week)
     return render_template(
         'entertime.html', date_info=date_info, days=days,
         time_registrations=time_registrations, commute_status=commute_status,
         time_registered=time_registered, weekday_length=f"{weekday_length_hour}:{weekday_length_minutes}",
-        time_worked_week=total_time_worked_this_week
+        time_worked_week=total_time_worked_this_week,
+        percentage_hours_worked_this_week=percentage_hours_worked_this_week,
+        total_norm_hours_week=total_norm_hours_week
         )
 
 @bp.route("/register", methods=["GET","POST"])
