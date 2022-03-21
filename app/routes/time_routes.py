@@ -48,7 +48,8 @@ def enter_time():
     total_time_worked_this_week = reg.get_registration_time_for_week(time_date)
     total_norm_hours_week = settings_obj.get_number_of_work_hours_for_a_week(session.get('user_id'))
     
-    percentage_hours_worked_this_week = reg.percentage_worked(session.get('user_id'),time_date)
+    percentage_hours_worked_this_week = reg.percentage_worked(session.get('user_id'),time_date,'week')
+    percentage_hours_worked_this_day = reg.percentage_worked(session.get('user_id'),time_date,'day')
     
     return render_template(
         'entertime.html', date_info=date_info, days=days,

@@ -295,11 +295,13 @@
                             <input type="submit" class="btn btn-primary" value="Submit time for the day">    
                         </div>
                         <div class="col"> </div>
-                        <div class="col ml-auto">
-                            <h3>
-                                
-                                <span class="badge xl badge-info" data-toggle="tooltip" data-placement="bottom" title="Time worked today">{{ time_registered }}</span><span class="badge xl badge-warning" data-toggle="tooltip" data-placement="bottom" title="Hours to work">{{ weekday_length }}</span>
-                            </h3>
+                        <div class="col-sm-2 ml-auto">
+                            <div class="progress">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ percentage_hours_worked_this_day }}%;" aria-valuenow="{{ percentage_hours_worked_this_day }}" aria-valuemin="0" aria-valuemax="100" data-bs-toggle="tooltip" data-bs-placement="top" title="Hours worked out of norm hours">{{ time_registered }} / {{ weekday_length }}</div>
+                            </div>
+                        </div>
+                        <div class="col">
+
                         </div>
                     </div>
                     

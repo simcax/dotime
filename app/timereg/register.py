@@ -308,20 +308,32 @@ class TimeRegistration:
         time_string = f"{hours:02d}:{minutes:02d}"
         return time_string
 
-    def percentage_worked(self,user_id, date_of_any_day_in_week):
+    def percentage_worked(self,user_id, date_of_any_day_in_week, type):
         '''
             Returns the percentage of worked hours for a user for the week with the given date
         '''
         date_util = date_utils.DoTimeDataHelp()
         settings = SettingsHandling()
         worked_time = 0
-        first_day_of_week, last_day_of_week = date_util.get_start_end_of_week(date_of_any_day_in_week)
-        # Retrieve number of hours worked this week so far
-        worked_time = self.get_registration_time_for_week(first_day_of_week)
-        # How many hours is standard for a week
-        intended_time_week = settings.get_number_of_work_hours_for_a_week(user_id)
+        if type == 'week':
+            first_day_of_week, last_day_of_week = date_util.get_start_end_of_week(date_of_any_day_in_week)
+            # Retrieve number of hours worked this week so far
+            worked_time = self.get_registration_time_for_week(first_day_of_week)
+            # How many hours is standard for a week
+            intended_time = settings.get_number_of_work_hours_for_a_week(user_id)
+        elif type == 'day':
+            worked_time = self.get_registration_time_on_day(date_of_any_day_in_week)
+            weekday_lengths = settings.get_workweek_day_lengths(user_id)
+            date_obj = datetime.strptime(date_of_any_day_in_week,'%Y-%m-%d')
+            daynumber = date_obj.weekday()
+            weekday_length_hour = weekday_lengths.get(f'workdayLength{daynumber+1}Hour')
+            weekday_length_minutes = weekday_lengths.get(f'workdayLength{daynumber+1}Minutes')
+            if weekday_length_hour:
+                intended_time = f"{int(weekday_length_hour):02d}:{int(weekday_length_minutes):02d}"
+            else:
+                intended_time = "00:00"
         if worked_time != '00:00':
-            percentage_worked = date_util.convert_hours_and_minutes_to_minutes(worked_time) / date_util.convert_hours_and_minutes_to_minutes(intended_time_week) * 100
+            percentage_worked = date_util.convert_hours_and_minutes_to_minutes(worked_time) / date_util.convert_hours_and_minutes_to_minutes(intended_time) * 100
         else:
             percentage_worked = 0
-        return percentage_worked
+        return int(percentage_worked)

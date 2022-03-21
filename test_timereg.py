@@ -749,5 +749,48 @@ def test_get_percentage_worked_of_intended_hours(create_user, app_test_context):
         # 15 hours have been registered. Let's get the time out from the db again
         
         # Get the percentage worked out of the norm hours for the week
-        percentage_worked = time_reg.percentage_worked(user_id,day_1)
+        percentage_worked = time_reg.percentage_worked(user_id,day_1,'week')
         assert percentage_worked == 40
+
+def test_get_percentage_worked_of_intended_hours(create_user, app_test_context):
+    '''
+        Testing getting the percentage of hours worked on a specified day
+    '''
+    # Get the user id
+    userdata = create_user['info']
+    user_id = userdata['users_id']
+    settings = SettingsHandling()
+    time_reg = TimeRegistration(user_id)
+    date_util = DoTimeDataHelp()
+    tu = TestUtils()
+    with app_test_context:
+        # Initialize standard settings for user.
+        settings.add_defaults(user_id)
+        # Create an activity on which to register some time
+        activity_name_str = tu.createRandomString()
+        activity_uuid = time_reg.add_activity(activity_name_str)
+        # Establish the start time and date for the reigstration
+        start_timefrom = datetime.datetime.now()
+        start_of_week,end_of_week = date_util.get_start_end_of_week(start_timefrom.strftime('%Y-%m-%d'))
+        day_1 = start_of_week
+        # Base timestamps - Monday worked 1 hour
+        timefrom_timestamp = datetime.datetime.strptime(day_1,'%Y-%m-%d')
+        timeto_timestamp = timefrom_timestamp + datetime.timedelta(hours=7,minutes=30)
+        # hour and minute times of first entry 
+        timefrom1 = timefrom_timestamp.strftime('%H:%M')
+        timeto1 = timeto_timestamp.strftime('%H:%M')
+        # Timestamps for 2nd entry - 1 hour worked on tuesday
+        timefrom2_timestamp = timeto_timestamp + datetime.timedelta(days=1)
+        timeto2_timestamp = timefrom2_timestamp + datetime.timedelta(hours=7, minutes=30)
+        day_2 = timefrom2_timestamp.strftime('%Y-%m-%d')
+        # Hour and minute times of 2nd entry
+        timefrom2 = timefrom2_timestamp.strftime('%H:%M')
+        timeto2 = timeto2_timestamp.strftime('%H:%M')
+        time_reg.add_timeregistration(activity_uuid,day_1,timefrom1,timeto1,testing=True)
+        time_reg.add_timeregistration(activity_uuid,day_2,timefrom2,timeto2,testing=True)
+        
+        # 15 hours have been registered. Let's get the time out from the db again
+        
+        # Get the percentage worked out of the norm hours for the week
+        percentage_worked = time_reg.percentage_worked(user_id,day_1,'day')
+        assert percentage_worked == 100
