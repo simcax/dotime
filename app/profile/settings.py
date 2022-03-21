@@ -29,7 +29,6 @@ class SettingsHandling:
                 if cur.rowcount == 1:
                     conn.commit()
                     setting_added = True
-                    current_app.logger.error("Settings updated with sql: %s", sql)
         except DatabaseError as error:
             current_app.logger.error("Error executing sql: %s, error: %s", sql, error)
         finally:

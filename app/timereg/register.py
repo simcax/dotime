@@ -274,9 +274,6 @@ class TimeRegistration:
                 cur.execute(stmt)
                 if cur.rowcount:
                     result = cur.fetchone()[0]
-                    current_app.logger.debug("Hours retrieved from db %s",result)
-                    current_app.logger.debug("User ID: %s", self.userid)
-                    current_app.logger.debug("SQL: %s", stmt)
                     if result != None:
                         time_string = strftime("%H:%M",gmtime(result.seconds))
                     else:
@@ -301,7 +298,6 @@ class TimeRegistration:
         base_date = datetime.strptime(start_of_week,'%Y-%m-%d')
         for i in range(0,6):
             this_day = base_date + timedelta(days=i)
-            current_app.logger.debug("Getting time registered on %s",this_day)
             time_registered = self.get_registration_time_on_day(this_day.strftime('%Y-%m-%d'))
             hours += int(time_registered.split(':')[0])
             minutes += int(time_registered.split(':')[1])
