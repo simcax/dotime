@@ -1,4 +1,4 @@
-FROM python:slim
+FROM python:3.11-rc-slim
 LABEL maintainer="carsten@skov.codes"
 RUN apt update
 RUN apt install -y gunicorn3 gcc python3-dev libpq-dev
