@@ -1,4 +1,4 @@
-FROM python:3.10-slim-bullseye
+FROM python:3.11.0b1-slim-buster
 LABEL maintainer="carsten@skov.codes"
 RUN apt update
 RUN apt install -y gunicorn3 gcc python3-dev libpq-dev
