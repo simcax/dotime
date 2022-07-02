@@ -199,3 +199,6 @@ def test_favicon(client):
 def test_datepicker_feature_image(client):
     rv = client.get("/images/datepicker_feature.png")
     assert rv.status_code == 200
+
+
+    

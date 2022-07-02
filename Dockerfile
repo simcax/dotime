@@ -1,12 +1,12 @@
-FROM python:3.11.0b1-slim-buster
+FROM python:3.11.0b3-slim-bullseye
 LABEL maintainer="carsten@skov.codes"
 RUN apt update
 RUN apt install -y gunicorn3 gcc python3-dev libpq-dev
+RUN python3 -m venv /venv
 # Upgrade pip 
 RUN python3 -m pip install --upgrade pip
-RUN python -m venv /venv
 COPY ./requirements.txt /
-RUN . venv/bin/activate && python -m pip install psycopg[c] && python -m pip install -r requirements.txt
+RUN . venv/bin/activate && python -m pip install psycopg2 && python -m pip install -r requirements.txt
 COPY ./app /app
 ENV FLASK_APP=app
 ENV VIRTUAL_ENV=/venv

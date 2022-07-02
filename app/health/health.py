@@ -45,3 +45,10 @@ class Health:
         except DatabaseError:
             return_value = False
         return return_value
+
+    def gimme(self,the_value):
+        if isinstance(the_value, int):
+            return_value = the_value
+        else:
+            return_value = False
+        return return_value

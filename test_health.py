@@ -12,3 +12,13 @@ def test_db_user_check():
     h_obj = Health()
     user_test = h_obj.get_user_count()
     assert isinstance(user_test,int)
+
+def test_gimme_20():
+    health = Health()
+    my_result = health.gimme(20)
+    assert my_result == 20
+
+def test_gimme_20_wrong_input():
+    health = Health()
+    my_result = health.gimme('string')
+    assert my_result == False
