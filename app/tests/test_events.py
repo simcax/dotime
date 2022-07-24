@@ -3,7 +3,7 @@
 '''
 from asyncio import Handle
 import pytest
-from app.timereg.events import HandleEvents
+from ..timereg.events import HandleEvents
 
 def test_initialize_event_types():
     '''

@@ -2,10 +2,10 @@
 '''Test handling of settings for the users'''
 from venv import create
 import pytest
-from conftest import login, logout
+from .conftest import login, logout
 from app.profile.settings import SettingsHandling
 from app.db import database
-from test_utils import TestUtils
+from .test_utils import TestUtils
 
 def test_insert_data_to_setttings_table(create_user, app_test_context):
     with app_test_context:

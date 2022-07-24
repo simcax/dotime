@@ -1,5 +1,5 @@
 import pytest
-from test_utils import TestUtils
+from .test_utils import TestUtils
 from app import create_app
 from app.profile.profile import ProfileHandling
 @pytest.fixture

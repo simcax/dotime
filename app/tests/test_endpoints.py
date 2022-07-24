@@ -3,7 +3,7 @@ from datetime import date
 import os
 import pytest
 from app import create_app
-from test_utils import TestUtils
+from .test_utils import TestUtils
 from app.profile.profile import ProfileHandling
 
 @pytest.fixture

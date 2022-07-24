@@ -10,8 +10,8 @@ from app.timereg.register import TimeRegistration
 from app.profile.profile import ProfileHandling
 from app.timereg.events import HandleEvents
 from app.utils.date_utils import DoTimeDataHelp
-from test_utils import TestUtils
-from conftest import login, logout
+from .test_utils import TestUtils
+from app.tests.conftest import login, logout
 
 def add_activity_registrations(user_id,number_of_activities,number_of_registrations, date_of_registrations=None):
     '''

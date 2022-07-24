@@ -4,10 +4,10 @@ import profile
 import random
 import string
 from werkzeug.security import check_password_hash
-from app.profile.profile import ProfileHandling
-from app.profile.settings import SettingsHandling
-from test_utils import TestUtils
-from conftest import create_profile
+from ..profile.profile import ProfileHandling
+from ..profile.settings import SettingsHandling
+from .test_utils import TestUtils
+from app.tests.conftest import create_profile
 
 def test_generate_password():
     '''Test a password can be created, and then validated by werkzeug check_password_hash function'''

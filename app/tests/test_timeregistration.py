@@ -1,7 +1,7 @@
 '''Test the time registration page'''
 import datetime
 import pytest
-import test_utils
+from . import test_utils
 from app import create_app
 from app.utils import date_utils
 

@@ -1,7 +1,7 @@
 ''''Test authentication methods'''
 import pytest
-from conftest import app_test_context
-from test_utils import TestUtils
+from app.tests.conftest import app_test_context
+from .test_utils import TestUtils
 from app.profile.profile import ProfileHandling
 from app.auth import authentication
 

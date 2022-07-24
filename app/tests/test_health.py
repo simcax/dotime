@@ -1,5 +1,5 @@
 ''''Testing the health class'''
-from app.health.health import Health
+from ..health.health import Health
 
 def test_db_connection():
     '''Tests the method for testing the database connection'''
