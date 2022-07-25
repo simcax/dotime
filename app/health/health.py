@@ -47,6 +47,9 @@ class Health:
         return return_value
 
     def gimme(self,the_value):
+        """
+            Method returning a value only if input is an int
+        """
         if isinstance(the_value, int):
             return_value = the_value
         else:
