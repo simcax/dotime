@@ -1,12 +1,10 @@
 '''Module handling time registration'''
-from distutils.errors import LibError
-from typing import Literal
 from uuid import UUID
+from time import strftime, gmtime
+from datetime import datetime, timedelta
 from flask import current_app, flash
 from psycopg2 import DatabaseError,sql
 from psycopg2.extras import DictCursor
-from time import strftime, gmtime
-from datetime import datetime, timedelta
 from app.db import database
 from app.profile.settings import SettingsHandling
 from app.utils import date_utils
@@ -75,12 +73,6 @@ class TimeRegistration:
     def get_activites(self, activity_name=None, activity_uuid=None):
         '''Gets a list of unique activites from the database for the current user'''
         activities = {}
-        and_activity_name = ""
-        and_activity_uuid = ""
-        if activity_name:
-            and_activity_name = f"and activityname LIKE '%{activity_name}%'"
-        if activity_uuid:
-            and_activity_uuid = f"and activitesuuid = '{activity_uuid}'"
         try:
             db_obj = database.Database()
             conn = db_obj.connect()
@@ -109,10 +101,10 @@ class TimeRegistration:
                         SELECT activitesuuid, activityname FROM soc.activites
                         WHERE usersId = {userid}
                     """).format(
-                        userid = sql.Literal(self.userid)                        
+                        userid = sql.Literal(self.userid)
                     )
                 cur.execute(stmt)
-                current_app.logger.debug(stmt.as_string(conn)) 
+                current_app.logger.debug(stmt.as_string(conn))
                 if cur.rowcount:
                     activities = cur.fetchall()
         except DatabaseError as error:
@@ -139,6 +131,8 @@ class TimeRegistration:
         return item_list
 
     def add_timeregistration(self, activity_uuid, date, timefrom, timeto,testing=False):
+        # Disabling too many arguments, as we are not able to bring it down right now
+        # pylint: disable=too-many-arguments
         '''Adds a row to the time registration table with a link record to an activity uuid'''
         #datetime.datetime.strptime(timefrom, format)
         timereg_added = False
@@ -241,8 +235,12 @@ class TimeRegistration:
                     ORDER BY t.timefrom
                 """).format(
                     userid = sql.Literal(self.userid),
-                    registration_date_with_time_start = sql.Literal(f"{registration_date} 00:00:00"),
-                    registration_date_with_time_end = sql.Literal(f"{registration_date} 23:59:59")
+                    registration_date_with_time_start = sql.Literal(
+                        f"{registration_date} 00:00:00"
+                    ),
+                    registration_date_with_time_end = sql.Literal(
+                        f"{registration_date} 23:59:59"
+                    )
                 )
                 cur.execute(stmt)
                 rows = cur.fetchall()
@@ -274,7 +272,7 @@ class TimeRegistration:
                 cur.execute(stmt)
                 if cur.rowcount:
                     result = cur.fetchone()[0]
-                    if result != None:
+                    if result is not None:
                         time_string = strftime("%H:%M",gmtime(result.seconds))
                     else:
                         time_string = "00:00"
@@ -287,6 +285,8 @@ class TimeRegistration:
         return time_string
 
     def get_registration_time_for_week(self,the_date):
+        # Disabling unused variable since we can't get rid of return of end of week
+        # pylint: disable=unused-variable
         '''
             Get the amount of time registered for the week based on a given date in that week
         '''
@@ -308,24 +308,28 @@ class TimeRegistration:
         time_string = f"{hours:02d}:{minutes:02d}"
         return time_string
 
-    def percentage_worked(self,user_id, date_of_any_day_in_week, type):
+    def percentage_worked(self,user_id, date_of_any_day_in_week, input_type):
+        # Disabling unused-variable since we can't get rid of last_day_of_week
+        # pylint: disable=unused-variable
         '''
-            Returns the percentage of worked hours for a user for the week with the given date
+            Returns the percentage of worked hours for a user
+            for the day or week with the given date
         '''
-        date_util = date_utils.DoTimeDataHelp()
+        date_util_obj = date_utils.DoTimeDataHelp()
         settings = SettingsHandling()
         worked_time = 0
-        if type == 'week':
-            first_day_of_week, last_day_of_week = date_util.get_start_end_of_week(date_of_any_day_in_week)
+        if input_type == 'week':
+            first_day_of_week, last_day_of_week = date_util_obj.get_start_end_of_week(
+                date_of_any_day_in_week
+            )
             # Retrieve number of hours worked this week so far
             worked_time = self.get_registration_time_for_week(first_day_of_week)
             # How many hours is standard for a week
             intended_time = settings.get_number_of_work_hours_for_a_week(user_id)
-        elif type == 'day':
+        elif input_type == 'day':
             worked_time = self.get_registration_time_on_day(date_of_any_day_in_week)
             weekday_lengths = settings.get_workweek_day_lengths(user_id)
-            date_obj = datetime.strptime(date_of_any_day_in_week,'%Y-%m-%d')
-            daynumber = date_obj.weekday()
+            daynumber = datetime.strptime(date_of_any_day_in_week,'%Y-%m-%d').weekday()
             weekday_length_hour = weekday_lengths.get(f'workdayLength{daynumber+1}Hour')
             weekday_length_minutes = weekday_lengths.get(f'workdayLength{daynumber+1}Minutes')
             if weekday_length_hour:
@@ -333,7 +337,9 @@ class TimeRegistration:
             else:
                 intended_time = "00:00"
         if worked_time != '00:00':
-            percentage_worked = date_util.convert_hours_and_minutes_to_minutes(worked_time) / date_util.convert_hours_and_minutes_to_minutes(intended_time) * 100
+            percentage_worked = date_util_obj.convert_hours_and_minutes_to_minutes(worked_time) \
+                / \
+            date_util_obj.convert_hours_and_minutes_to_minutes(intended_time) * 100
         else:
             percentage_worked = 0
         return int(percentage_worked)
