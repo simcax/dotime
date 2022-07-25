@@ -30,7 +30,7 @@ jobs:
         python -m pip install -r requirements.txt
     - name: Analysing the code with pylint
       run: |
-        pylint --fail-under=9 --ignore test app
+        pylint --fail-under=9 --ignore tests app
     - name: Run cockroach db single node cluster
       run: | 
         docker run -d --name=roachtest --hostname=roachtest -p 26257:26257 -p 8085:8080 -v "${PWD}/cockroach-data/roach1:/cockroach/cockroach-data" cockroachdb/cockroach:v21.2.2 start-single-node --insecure
