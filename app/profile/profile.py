@@ -1,5 +1,4 @@
 '''Class to handle new users'''
-from platformdirs import user_runtime_dir
 from werkzeug.security import check_password_hash, generate_password_hash
 from psycopg2 import DatabaseError, sql
 from flask import current_app, flash
