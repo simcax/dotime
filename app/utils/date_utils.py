@@ -38,7 +38,7 @@ class DoTimeDataHelp:
     @classmethod
     def daynumber_within_range(cls,day_number):
         '''control method to make sure the values are within range'''
-        range_ok = bool(day_number >= 0 and day_number <= 7)
+        range_ok = bool( 0 <= day_number <= 7)
         return range_ok
 
     @classmethod
@@ -47,8 +47,8 @@ class DoTimeDataHelp:
             Takes a date in iso format YYYY-MM-DD
             Returns start and end date for the week the date is in
         '''
-        dt = datetime.strptime(the_date, '%Y-%m-%d')
-        start = dt - timedelta(days=dt.weekday())
+        date_of_the_date = datetime.strptime(the_date, '%Y-%m-%d')
+        start = date_of_the_date - timedelta(days=date_of_the_date.weekday())
         end = start + timedelta(days=6)
         return start.strftime("%Y-%m-%d"),end.strftime("%Y-%m-%d")
 
@@ -59,17 +59,20 @@ class DoTimeDataHelp:
             Takes: minutes
             Returns: hours and minutes (both ints)
             Thx to @Chris on Stack Overflow: https://stackoverflow.com/a/51566057
-            for this simple solution :-) 
+            for this simple solution :-)
         '''
         result_hours = minutes // 60
         result_minutes = minutes % 60
         return result_hours, result_minutes
-    
+
     @classmethod
     def convert_hours_and_minutes_to_minutes(cls,hours_and_minutes):
+        """
+            Takes input as number of hours:minutes and converts it to a total number of minutes
+        """
         return_value = False
         if ":" in hours_and_minutes and len(hours_and_minutes) == 5:
-            minutes = int(hours_and_minutes.split(':')[0]) * 60 
+            minutes = int(hours_and_minutes.split(':')[0]) * 60
             minutes += int(hours_and_minutes.split(':')[1])
             return_value = minutes
         return return_value
