@@ -15,6 +15,8 @@ class Database:
     db_ssl_settings = ''
 
     def __init__(self) -> None:
+        # Currently not able to make the connectionstring to work if not in one line
+        # pylint: disable=line-too-long
         '''Initialize the database settings'''
         if self.db_ssl == 'false' and self.db_sslmode == 'disable':
             self.db_ssl_settings = "sslmode=disable"
