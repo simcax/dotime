@@ -5,6 +5,7 @@ from flask import current_app, redirect, url_for, g, request
 from app.db import database
 
 class Authentication:
+    # pylint: disable=too-few-public-methods
     '''Class for handling authentication'''
     @classmethod
     def get_user_data(cls,uuid):
