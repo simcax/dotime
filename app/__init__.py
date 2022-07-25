@@ -5,9 +5,14 @@ import logging
 import redis
 from flask import Flask, render_template, send_from_directory, session
 from flask_session import Session
-
+from .routes import (
+    profile_routes, health_routes, auth_routes, image_routes, session_routes, \
+         time_routes, general_routes
+)
 
 def create_app(test_config=None):
+    # Disabling no-member, since app.logger comes from the flask framework
+    # pylint: disable=no-member
     '''App factory'''
     redis_host = environ.get('REDIS_HOST','localhost')
     app = Flask(__name__, instance_relative_config=True)
@@ -28,9 +33,6 @@ def create_app(test_config=None):
     sess = Session()
     with app.app_context():
         sess.init_app(app)
-        from app.routes import (
-            profile_routes, health_routes, auth_routes, image_routes, session_routes, time_routes, general_routes
-        )
         app.register_blueprint(image_routes.bp1)
         app.register_blueprint(general_routes.bp)
         app.register_blueprint(profile_routes.bp)
