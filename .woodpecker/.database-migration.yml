@@ -3,7 +3,7 @@ pipeline:
     image: ubuntu:latest
     when:
       path:
-        include: ['.woodpecker/.database-migration.yml', 'database/sql/**.*']
+        include: ['.woodpecker/.database-migration.yml', 'database/sql/*.sql']
     environment:
       - DB_SSL_MODE=require
       - DB_SSL=true
