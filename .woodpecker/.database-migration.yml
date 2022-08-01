@@ -5,10 +5,6 @@ pipeline:
       path:
         include: ['.woodpecker/.database-migration.yml', 'database/sql/**.*']
     environment:
-      - DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-      - DB_USERNAME=${{ secrets.DB_USERNAME }}
-      - DB_NAME=${{ secrets.DB_NAME }}
-      - DB_HOST=${{ secrets.DB_HOST }}
       - DB_SSL_MODE=require
       - DB_SSL=true
       - DB_ROOT_CERT_PATH=/tmp/.postgresql/root.crt
@@ -20,4 +16,5 @@ pipeline:
       - flyway info
       - flyway migrate
       - flyway info
+    secrets: [ DB_PASSWORD, DB_USERNAME, DB_NAME, DB_HOST ]
   
