@@ -9,7 +9,6 @@ pipeline:
     commands:
       - apt update
       - apt install -y curl wget
-      - export FLYWAY_VERSION=$${FLYWAY_VERSION}
       - curl --create-dirs -o /tmp/.postgresql/root.crt -O https://cockroachlabs.cloud/clusters/c7fd02d9-3cf3-48de-ba24-3b5852dccd19/cert
       - wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/$${FLYWAY_VERSION}/flyway-commandline-${FLYWAY_VERSION}-linux-x64.tar.gz | tar xvz && sudo ln -s `pwd`/flyway-${FLYWAY_VERSION}/flyway /usr/local/bin
       - cd database
