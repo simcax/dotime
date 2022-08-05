@@ -1,9 +1,6 @@
 pipeline:
   migration:
     image: ubuntu:latest
-    when:
-      path:
-        include: ['.woodpecker/.database-migration.yml', 'database/sql/*.sql']
     environment:
       - DB_SSL_MODE=require
       - DB_SSL=true
@@ -17,4 +14,6 @@ pipeline:
       - flyway migrate
       - flyway info
     secrets: [ DB_PASSWORD, DB_USERNAME, DB_NAME, DB_HOST ]
-  
+    when:
+      path:
+        include: ['.woodpecker/.database-migration.yml', 'database/sql/*.sql']
