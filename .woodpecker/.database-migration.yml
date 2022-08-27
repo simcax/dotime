@@ -7,6 +7,7 @@ pipeline:
       - DB_ROOT_CERT_PATH=/tmp/.postgresql/root.crt
       - FLYWAY_VERSION=9.1.2
     commands:
+      - export FLYWAY_VERSION=9.1.2
       - apt update
       - apt install -y curl wget
       - curl --create-dirs -o /tmp/.postgresql/root.crt -O https://cockroachlabs.cloud/clusters/c7fd02d9-3cf3-48de-ba24-3b5852dccd19/cert
