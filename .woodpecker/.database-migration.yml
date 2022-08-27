@@ -9,8 +9,8 @@ pipeline:
       - echo $FLYWAY_VERSION
       - export DB_USER=$${DB_USERNAME}
       - export DB_PASS=$${DB_PASSWORD}
-      - export DB_HOST1=$${DB_HOSTNAME}
-      - echo $${DB_HOSTNAME}
+      - export DB_HOST1=$${DB_HOST}
+      - echo $${DB_HOST}
       - apt update
       - apt install -y curl wget
       - curl https://binaries.cockroachdb.com/cockroach-v22.1.6.linux-amd64.tgz | tar -xz && cp -i cockroach-v22.1.6.linux-amd64/cockroach /usr/local/bin/
