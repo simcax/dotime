@@ -14,7 +14,7 @@ pipeline:
       - apt install -y curl wget
       - curl https://binaries.cockroachdb.com/cockroach-v22.1.6.linux-amd64.tgz | tar -xz && cp -i cockroach-v22.1.6.linux-amd64/cockroach /usr/local/bin/
       - curl --create-dirs -o /tmp/.postgresql/root.crt -O https://cockroachlabs.cloud/clusters/c7fd02d9-3cf3-48de-ba24-3b5852dccd19/cert
-      - cockroach sql --url postgresql://$${DB_USER}:$${DB_PASS}@$${DB_HOST1}:26257/defaultdb?sslmode=disable --execute "CREATE DATABASE $DB_NAME"
+      - cockroach sql --url postgresql://$DB_USER:$DB_PASS@$DB_HOST1:26257/defaultdb?sslmode=disable --execute "CREATE DATABASE $DB_NAME"
       - cockroach sql --url "postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST1}:26257/defaultdb?sslmode=disable" --execute "SHOW DATABASES"
       - wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/$FLYWAY_VERSION/flyway-commandline-$FLYWAY_VERSION-linux-x64.tar.gz | tar xvz && ln -s `pwd`/flyway-$FLYWAY_VERSION/flyway /usr/local/bin
       - cd database
