@@ -13,7 +13,7 @@ pipeline:
       - curl https://binaries.cockroachdb.com/cockroach-v22.1.6.linux-amd64.tgz | tar -xz && cp -i cockroach-v22.1.6.linux-amd64/cockroach /usr/local/bin/
       - wget -x https://cockroachlabs.cloud/clusters/c7fd02d9-3cf3-48de-ba24-3b5852dccd19/cert -O $DB_ROOT_CERT_PATH
       - cockroach sql --url $DB_CONNECTION_STRING --execute "SHOW DATABASES"
-      - cockroach sql --url "$DB_CONNECTION_STRING" --execute "CREATE DATABASE $DB_NAME"
+      - cockroach sql --url "$DB_CONNECTION_STRING" --execute "DROP DATABASE $DB_NAME;CREATE DATABASE $DB_NAME"
       - wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/$FLYWAY_VERSION/flyway-commandline-$FLYWAY_VERSION-linux-x64.tar.gz | tar xvz && ln -s `pwd`/flyway-$FLYWAY_VERSION/flyway /usr/local/bin
       - cd database
       - flyway info
