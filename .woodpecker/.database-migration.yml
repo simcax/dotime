@@ -6,8 +6,9 @@ pipeline:
       - export DB_SSL_MODE=require
       - export DB_SSL=true
       - export DB_ROOT_CERT_PATH=/tmp/.postgresql/root.crt
+      - export CDB_CLUSTER=pink-gopher-2382
       - echo $FLYWAY_VERSION
-      - echo "postgresql://$${DB_USERNAME}:$${DB_PASS}@$${DB_HOST}:26257/defaultdb?sslmode=reuire"
+      - echo "postgresql://$${DB_USERNAME}:$${DB_PASS}@$${DB_HOST}:26257/defaultdb?sslmode=require&sslrootcert=${DB_ROOT_CERT_PATH}&options=--cluster%3D$CDB_CLUSTER"
       - echo $${DB_USERNAME}
       - echo $DB_USERNAME
       - echo $${DB_HOST}
