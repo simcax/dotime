@@ -7,11 +7,9 @@ pipeline:
       - export DB_SSL=true
       - export DB_ROOT_CERT_PATH=/tmp/.postgresql/root.crt
       - echo $FLYWAY_VERSION
+      - echo "postgresql://$${DB_USERNAME}:$${DB_PASS}@$${DB_HOST}:26257/defaultdb?sslmode=reuire"
       - echo $${DB_USERNAME}
       - echo $DB_USERNAME
-      - export DB_USER=$${DB_USERNAME}
-      - export DB_PASS=$${DB_PASSWORD}
-      - export DB_HOST1=$${DB_HOST}
       - echo $${DB_HOST}
       - apt update
       - apt install -y curl wget
