@@ -7,6 +7,8 @@ pipeline:
       - export DB_SSL=true
       - export DB_ROOT_CERT_PATH=/tmp/.postgresql/root.crt
       - echo $FLYWAY_VERSION
+      - echo $${DB_USERNAME}
+      - echo $DB_USERNAME
       - export DB_USER=$${DB_USERNAME}
       - export DB_PASS=$${DB_PASSWORD}
       - export DB_HOST1=$${DB_HOST}
