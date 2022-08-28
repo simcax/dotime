@@ -2,7 +2,7 @@ pipeline:
   migration:
     image: ubuntu:rolling
     commands:
-      - export FLYWAY_VERSION=9.1.2
+      - export FLYWAY_VERSION=9.2.0
       - export DB_SSL_MODE=require
       - export DB_SSL=true
       - export DB_ROOT_CERT_PATH=/tmp/root.crt
