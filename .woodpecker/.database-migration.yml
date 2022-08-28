@@ -7,7 +7,7 @@ pipeline:
       - export DB_SSL=true
       - export DB_ROOT_CERT_PATH=/tmp/root.crt
       - export CDB_CLUSTER=pink-gopher-2382
-      - export DB_CONNECTION_STRING="postgresql://$${DB_USERNAME}:$${DB_PASS}@$${DB_HOST}:26257/defaultdb?sslmode=verify-full&sslrootcert=$DB_ROOT_CERT_PATH&options=--cluster%3D$CDB_CLUSTER"
+      - export DB_CONNECTION_STRING="postgresql://$${DB_USERNAME}:$${DB_PASSWORD}@$${DB_HOST}:26257/defaultdb?sslmode=verify-full&sslrootcert=$DB_ROOT_CERT_PATH&options=--cluster%3D$CDB_CLUSTER"
       - echo $DB_CONNECTION_STRING
       - apt update
       - apt install -y curl wget
