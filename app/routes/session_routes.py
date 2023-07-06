@@ -1,6 +1,7 @@
 '''Routes for session variables'''
 
 from flask import Blueprint, request, session
+import html
 
 bp = Blueprint('session_blueprint', __name__, url_prefix='/session')
 
@@ -13,7 +14,7 @@ def set_session_value():
         return_str = f"Session value set to: {value}"
     else:
         return_str = "No session value set"
-    return return_str
+    return html.escape(return_str)
 
 @bp.route("/getTest")
 def get_session_value():
