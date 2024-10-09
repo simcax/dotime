@@ -4,14 +4,14 @@ if [ `docker ps -a -f name=^redis|grep redis|wc -l` -eq 1 ];then
     docker start redis
 else
     echo "Starting redis"
-    docker run -d -p 6379:6379 redis --name redis
+    docker run --name redis -d -p 6379:6379 redis
 fi
-pushd $HOME/projekter/dotime/docker/cockroachdb
+pushd "$HOME/projekter/dotime/docker/cockroachdb"
 if [ `docker-compose top|grep roach|wc -l` -eq 6 ]; then
     echo "Cockroachdb is already running"
 else
     echo "Starting Cockroach DB"
-    docker-compose up -d
+    docker compose up -d
 fi
 pushd -0
 pwd
@@ -27,7 +27,7 @@ export SECRET_KEY=d2563cb665a7b04fac77ccf4
 export SESSION_REDIS=redis://localhost:6379
 export SESSION_TYPE=redis
 export REDIS_HOST=localhost
-export FLASK_APP=app
+export FLASK_APP=dotime
 export FLASK_ENV=DEVELOPMENT
 export FLASK_DEBUG=TRUE
 export VERSION=x.x.x
