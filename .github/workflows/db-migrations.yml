@@ -19,7 +19,7 @@ jobs:
           export DB_SSL_MODE=require
           export DB_SSL=true
           export DB_ROOT_CERT_PATH=/tmp/.postgresql/root.crt
-          export FLYWAY_VERSION=8.5.0
+          export FLYWAY_VERSION=10.19.0
           curl --create-dirs -o /tmp/.postgresql/root.crt -O ${{ secrets.DB_CERT_URL }}
           wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/${FLYWAY_VERSION}/flyway-commandline-${FLYWAY_VERSION}-linux-x64.tar.gz | tar xvz && sudo ln -s `pwd`/flyway-${FLYWAY_VERSION}/flyway /usr/local/bin
           cd database
