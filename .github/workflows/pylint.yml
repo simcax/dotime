@@ -11,7 +11,7 @@ on:
       - 'test_*.py'
 
 jobs:
-  linttest:
+  pylint:
     runs-on: ubuntu-latest
     strategy:
       matrix:
