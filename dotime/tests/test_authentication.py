@@ -1,7 +1,5 @@
 """'Test authentication methods"""
 
-import pytest
-from dotime.tests.conftest import app_test_context
 from .test_utils import TestUtils
 from dotime.profile.profile import ProfileHandling
 from dotime.auth import authentication

@@ -1,6 +1,5 @@
 """Test Database Class"""
 
-import psycopg2
 from dotime.db.database import Database
 
 

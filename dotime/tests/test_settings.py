@@ -1,10 +1,6 @@
 """Test handling of settings for the users"""
 
-from venv import create
-import pytest
-from .conftest import login, logout
 from dotime.profile.settings import SettingsHandling
-from dotime.db import database
 from .test_utils import TestUtils
 
 
@@ -17,7 +13,7 @@ def test_insert_data_to_setttings_table(create_user, app_test_context):
         userdata = create_user["info"]
         user_id = userdata["users_id"]
         value_added = settings.add_setting(user_id, settingName, settingValue)
-        assert value_added == True
+        assert value_added is True
 
 
 def test_get_settings_for_user(create_user, app_test_context):
@@ -29,7 +25,7 @@ def test_get_settings_for_user(create_user, app_test_context):
         userdata = create_user["info"]
         user_id = userdata["users_id"]
         value_added = settings.add_setting(user_id, settingName, settingValue)
-        assert value_added == True
+        assert value_added is True
         user_settings = settings.get_settings(user_id)
         assert len(user_settings) == 1
 
@@ -61,7 +57,7 @@ def test_get_workday_defaults(create_user, app_test_context):
         user_id = userdata["users_id"]
         # Make sure we have added default workday lengths to the users profile
         settings.add_defaults(user_id)
-        user_settings = settings.get_settings(user_id)
+        settings.get_settings(user_id)
         # Retrieve an object with the lenght of all the workdays.
         # This should be for Monday through Sunday.
         # The method should add any missing days with a 0 hours and 0 minutes
@@ -83,9 +79,9 @@ def test_inserting_duplicate_settings_for_user(create_user, app_test_context):
         userdata = create_user["info"]
         user_id = userdata["users_id"]
         # Add setting to user
-        settings_added = settings.add_setting(user_id, setting_name, setting_value)
+        settings.add_setting(user_id, setting_name, setting_value)
         # Add setting again
-        settings_added_2 = settings.add_setting(user_id, setting_name, setting_value)
+        settings.add_setting(user_id, setting_name, setting_value)
         # Retrieve settings
         user_settings = settings.get_settings(user_id, as_dict=False)
         # We should only have 1 setting
@@ -102,7 +98,7 @@ def test_updating_value_to_zero(create_user, app_test_context):
         userdata = create_user["info"]
         user_id = userdata["users_id"]
         # Add setting to user with value 0
-        settings_added = settings.add_setting(user_id, setting_name, setting_value)
+        settings.add_setting(user_id, setting_name, setting_value)
         # Retrieve settings
         user_settings = settings.get_settings(user_id, as_dict=True)
         # The value of the setting should be 0

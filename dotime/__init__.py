@@ -1,11 +1,10 @@
 """Do Time Flask App"""
 
-import logging
 from os import environ, urandom
 from socket import gethostname
 
 import redis
-from flask import Flask, render_template, send_from_directory, session
+from flask import Flask, render_template, send_from_directory
 
 from flask_session import Session
 

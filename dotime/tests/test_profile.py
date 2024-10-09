@@ -1,9 +1,5 @@
 """Test profile handling"""
 
-from profile import Profile
-import profile
-import random
-import string
 from werkzeug.security import check_password_hash
 from ..profile.profile import ProfileHandling
 from ..profile.settings import SettingsHandling
@@ -52,7 +48,7 @@ def test_check_password():
     # Now check the methods behind the user login
     prof = ProfileHandling()
     user_id = prof.check_credentials(email, password)
-    assert user_id != None
+    assert user_id is not None
 
 
 def test_retrieve_profile_data():
@@ -83,7 +79,7 @@ def test_edit_profile_data(app_test_context):
         update_succeeded = prof.update_profile(
             users_id=user_id.get("users_id"), email=new_email
         )
-        assert update_succeeded == True
+        assert update_succeeded is True
         userdata = prof.get_user_data(user_id.get("users_id"))
         assert userdata["email"] == new_email
 
@@ -101,7 +97,7 @@ def test_update_password(create_user):
     password_updated = prof.update_password(
         user_info["users_id"], user_info["email"], password, new_password
     )
-    assert password_updated == True
+    assert password_updated is True
 
 
 def test_get_email_by_uuid(create_user):

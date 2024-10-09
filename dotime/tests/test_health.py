@@ -7,7 +7,7 @@ def test_db_connection():
     """Tests the method for testing the database connection"""
     h_obj = Health()
     connection_test = h_obj.check_db()
-    assert connection_test == True
+    assert connection_test is True
 
 
 def test_db_user_check():
@@ -26,4 +26,4 @@ def test_gimme_20():
 def test_gimme_20_wrong_input():
     health = Health()
     my_result = health.gimme("string")
-    assert my_result == False
+    assert my_result is False

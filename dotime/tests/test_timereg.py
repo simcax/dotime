@@ -1,18 +1,16 @@
 """Test time registration methods"""
 
 import datetime
-from datetime import date, time
-from random import randint, choice
-from venv import create
 import uuid
-import pytest
+from random import choice, randint
+
 from dotime.profile.settings import SettingsHandling
-from dotime.timereg.register import TimeRegistration
-from dotime.profile.profile import ProfileHandling
+from dotime.tests.conftest import login
 from dotime.timereg.events import HandleEvents
+from dotime.timereg.register import TimeRegistration
 from dotime.utils.date_utils import DoTimeDataHelp
+
 from .test_utils import TestUtils
-from dotime.tests.conftest import login, logout
 
 
 def add_activity_registrations(
@@ -30,22 +28,21 @@ def add_activity_registrations(
         activity_uuid = time_reg.add_activity(activity_name_str)
         activities.append(activity_uuid)
     start_timefrom = datetime.datetime.now()
-    if date_of_registrations == None:
+    if date_of_registrations is None:
         thisdate = start_timefrom.strftime("%Y-%m-%d")
     else:
         thisdate = date_of_registrations
     for i in range(0, number_of_registrations):
         if i == 0:
             timefrom = start_timefrom
-        else:
-            timefrom = timeto_timestamp + datetime.timedelta(minutes=1)
+
         timeto_timestamp = timefrom + datetime.timedelta(minutes=2)
         timefrom = timefrom.strftime("%I:%M")
         timeto = timeto_timestamp.strftime("%I:%M")
+        if i != 0:
+            timefrom = timeto_timestamp + datetime.timedelta(minutes=1)
         this_activity_uuid = choice(activities)
-        timereg_added = time_reg.add_timeregistration(
-            this_activity_uuid, thisdate, timefrom, timeto
-        )
+        time_reg.add_timeregistration(this_activity_uuid, thisdate, timefrom, timeto)
 
 
 def test_add_activity(create_user):
@@ -76,7 +73,7 @@ def test_add_timereg_row(create_user):
     timereg_added = time_reg.add_timeregistration(
         activity_uuid, thisdate, timefrom, timeto
     )
-    assert timereg_added == True
+    assert timereg_added is True
 
 
 def test_add_timereg_wrong_order(create_user, app_test_context):
@@ -98,7 +95,7 @@ def test_add_timereg_wrong_order(create_user, app_test_context):
         timereg_added = time_reg.add_timeregistration(
             activity_uuid, thisdate, timefrom, timeto, testing=True
         )
-        assert timereg_added == False
+        assert timereg_added is False
 
 
 # TODO: Need to find a solution for this.
@@ -144,9 +141,9 @@ def test_add_timereg_overlapping_registrations(create_user, app_test_context):
         timereg_added_2 = time_reg.add_timeregistration(
             activity_uuid, thisdate, timefrom2, timeto2, testing=True
         )
-        assert timereg_added_1 == True
+        assert timereg_added_1 is True
         # Since the second timereg row overlaps with the first, insertion should fail.
-        assert timereg_added_2 == False
+        assert timereg_added_2 is False
 
 
 def test_get_activities(create_user, app_test_context):
@@ -156,9 +153,9 @@ def test_get_activities(create_user, app_test_context):
         tu = TestUtils()
         time_reg = TimeRegistration(user_id)
         activity_name_str = tu.createRandomString()
-        activity_uuid = time_reg.add_activity(activity_name_str)
+        time_reg.add_activity(activity_name_str)
         activity_name_str = tu.createRandomString()
-        activity_uuid = time_reg.add_activity(activity_name_str)
+        time_reg.add_activity(activity_name_str)
         activites = time_reg.get_activites()
         assert len(activites) == 2
 
@@ -173,7 +170,7 @@ def test_get_activity(create_user, app_test_context):
         activity_name_str = tu.createRandomString()
         activity_uuid1 = time_reg.add_activity(activity_name_str)
         activity_name_str = tu.createRandomString()
-        activity_uuid2 = time_reg.add_activity(activity_name_str)
+        time_reg.add_activity(activity_name_str)
         activites = time_reg.get_activites(activity_uuid=activity_uuid1)
         assert len(activites) == 1
 
@@ -221,30 +218,30 @@ def test_seeing_if_uuid_exists(create_user, app_test_context):
     with app_test_context:
         activity_name_str = tu.createRandomString()
         activity_uuid = time_reg.add_activity(activity_name_str)
-        length = len(activity_uuid)
+        len(activity_uuid)
         is_activity_uuid = time_reg.is_activityuuid(activity_uuid)
-        assert is_activity_uuid == True
+        assert is_activity_uuid is True
 
 
 def test_seeing_if_uuid_exists_with_non_existing_uuid(create_user, app_test_context):
     with app_test_context:
         userdata = create_user["info"]
         user_id = userdata["users_id"]
-        tu = TestUtils()
+        TestUtils()
         time_reg = TimeRegistration(user_id)
         test_uuid = uuid.uuid4()
         is_activity_uuid = time_reg.is_activityuuid(test_uuid)
-        assert is_activity_uuid == False
+        assert is_activity_uuid is False
 
 
 def test_seeing_if_uuid_exists_with_string(create_user):
     userdata = create_user["info"]
     user_id = userdata["users_id"]
-    tu = TestUtils()
+    TestUtils()
     time_reg = TimeRegistration(user_id)
     test_uuid = "test"
     is_uuid = time_reg.is_activityuuid(test_uuid)
-    assert is_uuid == False
+    assert is_uuid is False
 
 
 def test_having_end_time_in_one_registration_be_equal_to_start_time_of_next_registration(
@@ -276,13 +273,13 @@ def test_having_end_time_in_one_registration_be_equal_to_start_time_of_next_regi
         timeto2_timestamp = timefrom2_timestamp + datetime.timedelta(minutes=2)
         # Hour and minute times of 2nd entry
         timefrom2 = timefrom2_timestamp.strftime("%I:%M")
-        timeto2 = timeto2_timestamp.strftime("%I:%M")
+        timeto2_timestamp.strftime("%I:%M")
         time_reg.add_timeregistration(
             activity_uuid, thisdate, timefrom1, timeto1, testing=True
         )
         timefrom2_full = f"{thisdate} {timefrom2}"
         timestamp_is_not_here = time_reg.timestamp_is_not_registered(timefrom2_full)
-        assert timestamp_is_not_here == True
+        assert timestamp_is_not_here is True
 
 
 def test_event_type_is_not_registered(create_user):
@@ -301,7 +298,7 @@ def test_event_type_is_not_registered(create_user):
     event_obj = HandleEvents()
     # Is the event registered for the user on this date?
     registered = event_obj.is_event_registered(event_type_uuid, this_date, user_id)
-    assert registered == False
+    assert registered is False
 
 
 def test_adding_event_type_for_user_on_date(create_user):
@@ -319,7 +316,7 @@ def test_adding_event_type_for_user_on_date(create_user):
     event_obj = HandleEvents()
     # Is the event registered for the user on this date?
     registered = event_obj.add_event(event_type_uuid, this_date, user_id)
-    assert registered == True
+    assert registered is True
 
 
 def test_deleting_event_type_for_user_on_date(create_user, app_test_context):
@@ -337,9 +334,9 @@ def test_deleting_event_type_for_user_on_date(create_user, app_test_context):
 
         event_obj = HandleEvents()
         # Register the event
-        registered = event_obj.add_event(event_type_uuid, this_date, user_id)
+        event_obj.add_event(event_type_uuid, this_date, user_id)
         deleted = event_obj.delete_event(event_type_uuid, this_date, user_id)
-        assert deleted == True
+        assert deleted is True
 
 
 def test_toggling_event_type_on(create_user):
@@ -416,7 +413,7 @@ def test_get_event_type_for_date(create_user):
     registration_status = event_obj.is_event_registered(
         event_type_uuid, this_date, user_id
     )
-    assert registration_status == False
+    assert registration_status is False
 
 
 def test_get_current_commute_work_home_status_1(create_user, app_test_context):
@@ -430,18 +427,16 @@ def test_get_current_commute_work_home_status_1(create_user, app_test_context):
 
         event_obj = HandleEvents()
         # Set the date of the event happening
-        this_date = datetime.datetime.now().strftime("%Y-%m-%d")
+        datetime.datetime.now().strftime("%Y-%m-%d")
         # Make sure the default event types are registered
         event_obj.initialize_events()
         # Get event types
         work_at_home_event_type = event_obj.get_event_type("WorkFromHome")
-        commute_event_type = event_obj.get_event_type("CommuteToWork")
+        event_obj.get_event_type("CommuteToWork")
         # Set the date
         the_date = datetime.datetime.now().strftime("%Y-%m-%d")
         # Register work at home
-        toggle_status = event_obj.toggle_event(
-            work_at_home_event_type, the_date, user_id
-        )
+        event_obj.toggle_event(work_at_home_event_type, the_date, user_id)
         # Get the current commuted / worked at home status
         commute_status = event_obj.get_commute_status(user_id, the_date)
         assert commute_status == "WorkFromHome"
@@ -458,16 +453,16 @@ def test_get_current_commute_work_home_status_2(create_user, app_test_context):
 
         event_obj = HandleEvents()
         # Set the date of the event happening
-        this_date = datetime.datetime.now().strftime("%Y-%m-%d")
+        datetime.datetime.now().strftime("%Y-%m-%d")
         # Make sure the default event types are registered
         event_obj.initialize_events()
         # Get event types
-        work_at_home_event_type = event_obj.get_event_type("WorkFromHome")
+        event_obj.get_event_type("WorkFromHome")
         commute_event_type = event_obj.get_event_type("CommuteToWork")
         # Set the date
         the_date = datetime.datetime.now().strftime("%Y-%m-%d")
         # Register commuted to work
-        toggle_status = event_obj.toggle_event(commute_event_type, the_date, user_id)
+        event_obj.toggle_event(commute_event_type, the_date, user_id)
         # Get the current commuted / worked at home status
         commute_status = event_obj.get_commute_status(user_id, the_date)
         assert commute_status == "CommuteToWork"
@@ -484,17 +479,17 @@ def test_get_current_commute_work_home_status_3(create_user, app_test_context):
 
         event_obj = HandleEvents()
         # Set the date of the event happening
-        this_date = datetime.datetime.now().strftime("%Y-%m-%d")
+        datetime.datetime.now().strftime("%Y-%m-%d")
         # Make sure the default event types are registered
         event_obj.initialize_events()
         # Get event types
-        work_at_home_event_type = event_obj.get_event_type("WorkFromHome")
-        commute_event_type = event_obj.get_event_type("CommuteToWork")
+        event_obj.get_event_type("WorkFromHome")
+        event_obj.get_event_type("CommuteToWork")
         # Set the date
         the_date = datetime.datetime.now().strftime("%Y-%m-%d")
         # Get the current commuted / worked at home status
         commute_status = event_obj.get_commute_status(user_id, the_date)
-        assert commute_status == None
+        assert commute_status is None
 
 
 def test_get_current_commute_work_home_status_4(create_user, app_test_context):
@@ -509,7 +504,7 @@ def test_get_current_commute_work_home_status_4(create_user, app_test_context):
 
         event_obj = HandleEvents()
         # Set the date of the event happening
-        this_date = datetime.datetime.now().strftime("%Y-%m-%d")
+        datetime.datetime.now().strftime("%Y-%m-%d")
         # Make sure the default event types are registered
         event_obj.initialize_events()
         # Get event types
@@ -518,14 +513,12 @@ def test_get_current_commute_work_home_status_4(create_user, app_test_context):
         # Set the date
         the_date = datetime.datetime.now().strftime("%Y-%m-%d")
         # Register BOTH event types
-        toggle_status = event_obj.toggle_event(commute_event_type, the_date, user_id)
-        toggle_status = event_obj.toggle_event(
-            work_at_home_event_type, the_date, user_id
-        )
+        event_obj.toggle_event(commute_event_type, the_date, user_id)
+        event_obj.toggle_event(work_at_home_event_type, the_date, user_id)
         # Get the current commuted / worked at home status - we should get False
         # since this is not allowed
         commute_status = event_obj.get_commute_status(user_id, the_date)
-        assert commute_status == False
+        assert commute_status is False
 
 
 def test_get_time_registered_today(create_user, app_test_context):
@@ -773,7 +766,7 @@ def test_convert_hours_minutes_to_minutes_3():
     date_utils = DoTimeDataHelp()
     time_to_convert = "0:59"
     minutes = date_utils.convert_hours_and_minutes_to_minutes(time_to_convert)
-    assert minutes == False
+    assert minutes is False
 
 
 def test_convert_hours_minutes_to_minutes_4():
@@ -783,7 +776,7 @@ def test_convert_hours_minutes_to_minutes_4():
     date_utils = DoTimeDataHelp()
     time_to_convert = "00589"
     minutes = date_utils.convert_hours_and_minutes_to_minutes(time_to_convert)
-    assert minutes == False
+    assert minutes is False
 
 
 def test_get_percentage_worked_of_intended_hours(create_user, app_test_context):
@@ -838,7 +831,7 @@ def test_get_percentage_worked_of_intended_hours(create_user, app_test_context):
         assert percentage_worked == 40
 
 
-def test_get_percentage_worked_of_intended_hours(create_user, app_test_context):
+def test_get_percentage_worked_of_intended_hours_1(create_user, app_test_context):
     """
     Testing getting the percentage of hours worked on a specified day
     """

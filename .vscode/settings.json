@@ -1,6 +1,6 @@
 {
     "python.testing.pytestArgs": [
-        "app"
+        "dotime"
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true

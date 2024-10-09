@@ -1,11 +1,10 @@
 """Test the app endpoints"""
 
-from datetime import date
-import os
 import pytest
+
 from dotime import create_app
+
 from .test_utils import TestUtils
-from dotime.profile.profile import ProfileHandling
 
 
 @pytest.fixture
@@ -99,7 +98,7 @@ def test_loggedin_user_info_endpoint(client):
 
 def test_login_session_var_set(client, create_user):
     """Test a user is logged in and session variables are set accordingly"""
-    rv = login(client, create_user["email"], create_user["password"])
+    login(client, create_user["email"], create_user["password"])
     assert client.get("/user/info")
 
 
@@ -140,7 +139,7 @@ def test_get_session_value(client):
     tu = TestUtils()
     set_value = tu.createRandomString()
     rv = client.get(f"/session/set?value={set_value}")
-    rv2 = client.get("/session/getTest")
+    client.get("/session/getTest")
     assert bytes(set_value, "utf-8") in rv.data
 
 
@@ -202,7 +201,7 @@ def test_profile_change_password_form_exists(client):
     assert rv.status_code == 302
 
 
-def test_profile_change_password_form_exists(client, create_user):
+def test_profile_change_password_form_exists_1(client, create_user):
     """Test an endpoint exist for the update password form"""
     rv = login(client, create_user["email"], create_user["password"])
     rv = client.get("/profile/changePassword")
