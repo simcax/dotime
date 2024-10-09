@@ -11,7 +11,7 @@ on:
       - 'test_*.py'
 
 jobs:
-  pylint:
+  lint-test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -25,6 +25,8 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
+        apt-get update
+        apt-get install build-essential -y
         python -m pip install --upgrade pip
         python -m pip install ruff
         python -m pip install -r requirements.txt
