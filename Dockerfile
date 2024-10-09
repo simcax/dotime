@@ -1,21 +1,26 @@
-FROM python:3.12-slim
+FROM cgr.dev/chainguard/python:latest-dev AS dev
+
 LABEL maintainer="carsten@skov.codes"
-RUN apt update
-RUN apt install -y gunicorn3 gcc python3-dev libpq-dev
-RUN python3 -m venv /venv
-# Upgrade pip 
-RUN python3 -m pip install --upgrade pip
-COPY ./requirements.txt /
-RUN . venv/bin/activate && python -m pip install psycopg2 && python -m pip install -r requirements.txt
-COPY ./dotime /dotime
+
+WORKDIR /flask-app
+
+RUN python -m venv venv
+ENV PATH="/flask-app/venv/bin:$PATH"
+COPY requirements.txt requirements.txt
+RUN pip install psycopg2-binary gunicorn
+RUN pip install -r requirements.txt
+
+FROM cgr.dev/chainguard/python:latest
+
+WORKDIR /flask-app
+
+COPY ./dotime/ dotime/
+COPY ./docker/config config
+
+COPY --from=dev /flask-app/venv /flask-app/venv
 ENV FLASK_APP=app
-ENV VIRTUAL_ENV=/venv
+ENV VIRTUAL_ENV=/flask-app/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-COPY ./docker/config /config
-COPY ./docker/docker_entrypoint.sh /
-RUN chmod +x /docker_entrypoint.sh
-WORKDIR /
 EXPOSE 30000
 
-ENTRYPOINT [ "./docker_entrypoint.sh" ]
-CMD [ "/venv/bin/gunicorn", "-c", "python:config.gunicorn", "dotime.app:app" ]
+ENTRYPOINT ["python", "-m", "gunicorn", "-c", "python:config.gunicorn", "dotime.app:app" ]
